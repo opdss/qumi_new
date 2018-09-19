@@ -18,7 +18,7 @@ if (PHP_SAPI != 'cli') {
 }
 
 //define("RUN_ENV", 'production');
-define("ONLINE", RUN_ENV == 'production');
+define("ONLINE", 'development');
 define("HOMEPAGE", RUN_ENV == 'production' ? 'https://qumi.app' : 'http://798.cx');
 define("ROOT", realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR); //根目录
 define("VENDOR_DIR", ROOT . "vendor" . DIRECTORY_SEPARATOR);

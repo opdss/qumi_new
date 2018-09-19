@@ -8,6 +8,7 @@
 namespace App\Controllers;
 
 use App\Functions;
+use App\Models\Domain;
 use App\Models\Theme;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -15,7 +16,7 @@ use Slim\Http\Response;
 /**
  *
  * Class Template
- * @middleware App\Middleware\Auth|App\Middleware\Rtime
+ * @middleware App\Middleware\Rtime
  * @package App\Controllers
  */
 class Template extends Base
@@ -23,6 +24,7 @@ class Template extends Base
 	/**
 	 * 我的模板
 	 * @pattern /template
+     * @auth user|停靠模版
 	 * @name template
 	 * @param Request $request
 	 * @param Response $response
@@ -31,25 +33,46 @@ class Template extends Base
 	public function index(Request $request, Response $response, $args)
 	{
 		$data = array();
-
-		$kw = $request->getParam('kw');
-		$page = (int)$request->getParam('page') ?: 1;
-
-		$builder = \App\Models\Template::isMy($this->uid);
-		if ($kw){
-			$builder = $builder->where('name', 'like', '%'.$kw.'%');
-		}
-		$data['filter'] = array(
-			'kw' => $kw,
-		);
-		$data['count'] = $builder->count();
-		$data['records'] = [];
-		if ($data['count']) {
-			$data['records'] = $builder->offset(($page-1)*self::$page_number)->limit(self::$page_number)->get();
-		}
-        $data['currentName'] = $request->getAttribute('route')->getName();
 		return $this->view('template/index.twig', $data);
 	}
+
+    /**
+     * 我的模板
+     * @pattern /api/templates
+     * @name api.template.get
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function get(Request $request, Response $response, $args)
+    {
+        $data = array();
+        $kw = $request->getQueryParam('kw');
+        $order_name = trim($request->getQueryParam('order_name'));
+        $order_type = trim($request->getQueryParam('order_type'));
+        $page = (int)$request->getParam('page') ?: 1;
+        $limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
+
+        $builder = \App\Models\Template::isMy($this->uid);
+        if ($kw){
+            $builder = $builder->where('name', 'like', '%'.$kw.'%');
+        }
+
+        $data['count'] = $builder->count();
+        $data['records'] = [];
+        if ($data['count']) {
+            if ($order_type && $order_type != 'null' && in_array($order_name, array('id', 'name', 'qq', 'wechat', 'email', 'phone'))) {
+                $builder = $builder->orderBy($order_name, $order_type);
+            }
+            $data['records'] = $builder->offset(($page-1)*$limit)->limit($limit)->get()->toArray();
+            $data['records'] = array_map(function($arr){
+                $arr['domainCount'] = Domain::where('template_id', $arr['id'])->count();
+                return $arr;
+            }, $data['records']);
+        }
+        return $this->json($data);
+    }
 
 	/**
 	 * @pattern /template/modal/{act}
@@ -107,7 +130,9 @@ class Template extends Base
 	}
 
 	/**
-	 * @pattern /template/del
+	 * @pattern /api/template/del
+     * @name api.template.del
+     * @method delete
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
@@ -116,7 +141,7 @@ class Template extends Base
 	public function del(Request $request, Response $response, $args)
 	{
 		$errMsg = '';
-		$id = $request->getParam('template_id');
+		$id = $request->getParam('id');
 		$ids = Functions::formatIds($id, self::BATCH, $errMsg);
 		if (!$ids) {
 			$this->log('error', $errMsg, $id);
@@ -145,7 +170,8 @@ class Template extends Base
 	}
 
     /**
-     * @pattern /template/update
+     * @pattern /api/template/update
+     * @name api.template.update
      * @method post
      * @param Request $request
      * @param Response $response
@@ -153,13 +179,7 @@ class Template extends Base
      */
     public function update(Request $request, Response $response, $args)
     {
-        $id = (int)$request->getParsedBodyParam('template_id');
-        $data['name'] = $request->getParsedBodyParam('name', '');
-        $data['theme_id'] = (int)$request->getParsedBodyParam('theme_id', 0);
-        $data['qq'] = $request->getParsedBodyParam('qq',  '');
-        $data['wechat'] = $request->getParsedBodyParam('wechat', '');
-        $data['phone'] = $request->getParsedBodyParam('phone', '');
-        $data['email'] = $request->getParsedBodyParam('email', '');
+        $id = (int)$request->getParsedBodyParam('id');
         if (!$id) {
             return $this->json(40001);
         }
@@ -169,11 +189,17 @@ class Template extends Base
             return $this->json(40001);
         }
 
-        foreach ($data as $k=>$v) {
-            $templateModel->{$k} = $v;
+        $allow_update = ['name' => 'trim', 'theme_id'=>'intval', 'qq'=>'trim', 'wechat'=>'trim', 'phone'=> 'trim', 'email'=> 'trim'];
+        $flag = false;
+        foreach ($allow_update as $k => $v) {
+            $_val = $request->getParam($k, null);
+            if ($_val) {
+                $templateModel->{$k} = call_user_func($v, $_val);
+                $flag = true;
+            }
         }
 
-        if ($templateModel->save()) {
+        if ($flag && $templateModel->save()) {
             return $this->json(0);
         }
         return $this->json(1);

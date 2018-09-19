@@ -1,100 +1,109 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-    <div class="row">
-        <div class="col-md-12">
-            <div>
-                <div class="opts">
-                    <form class="form-inline" method="get">
-                        <div class="form-group">
-                            <select  class="selectpicker" data-live-search="true" name="domain_id">
-                                <option value="0">所有域名</option>
-                                {% for x in domains %}
-                                    <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group" >
-                            <select  class="selectpicker" name="is_bot">
-                                <option value="0">所有类型</option>
-                                <option value="1" {{ filter.is_bot==1 ? 'selected' : '' }}>用户或者其他</option>
-                                <option value="2" {{ filter.is_bot==2 ? 'selected' : '' }}>搜索引擎</option>
-                            </select>
-                        </div>
+    <!-- content start -->
+    <div class="site-content">
+        <!--<h1 class="site-h1">域名管理</h1>-->
 
-                        <div class="input-group col-md-2 date"  id="start-date">
-                            <input type='text' class="form-control" name="start_date" placeholder="开始日期" value="{{ filter.start_date }}"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </span>
-                        </div>
+        <!-- 数据查询条件 start -->
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="domain_id">
+                            <option value="0">所有域名</option>
+                            {% for x in domains %}
+                                <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="is_bot">
+                            <option value="">所有类型</option>
+                            <option value="1" {{ filter.is_bot==1 ? 'selected' : '' }}>用户或者其他</option>
+                            <option value="2" {{ filter.is_bot==2 ? 'selected' : '' }}>搜索引擎</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="is_real_clicks">
+                            <option value="">所有用户</option>
+                            <option value="2">回调确认</option>
+                            <option value="1">其他</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" name="date_time" id="dateTime" placeholder="请选择日期">
+                    </div>
 
-                        <div class="input-group col-md-2 date" id="end-date" >
-                            <input type='text' class="form-control" name="end_date" placeholder="结束日期" value="{{ filter.end_date }}"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </span>
-                        </div>
-                        <button type="submit" class="btn btn-primary">查询</button>
-                    </form>
-                </div>
-                <div class="table">
-                    <table class="table table-striped table-hover table-flex">
-                        <thead>
-                        <tr>
-                            <td>访问URL</td>
-                            <td>IP</td>
-                            <td>地理位置</td>
-                            {#<td class="col-md-1">来源</td>#}
-                            <td>访问类型</td>
-                            <td>客户端</td>
-                            <td>系统</td>
-                            <td>访问时间</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item in records %}
-                            {% set cli_name = item.cli_version ? item.cli_name~'('~ item.cli_version  ~')' : item.cli_name%}
-                            {% set os_name = item.os_version ? item.os_name~'('~ item.os_version  ~')' : item.os_name%}
-                            <tr>
-                                <td><a href="{{ item.url }}" target="_blank">{{ item.url }}</a></td>
-                                <td>{{ item.ip }}</td>
-                                <td>{{ item.region }}</td>
-                                {#<td>{{ item.referer }}</td>#}
-                                <td>{{ item.cli_type }}</td>
-                                <td>{{ cli_name }}</td>
-                                <td>{{ os_name }}</td>
-                                <td>{{ item.created_at }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="text-center">
-                            {{ pagination|raw }}
+                    <div class="layui-input-inline">
+                        <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
+        <!-- 数据查询条件 end -->
+
+        <!-- 数据表格 start -->
+        <script type="text/html" id="headerToolBar">
+        </script>
+        <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        <script type="text/html" id="toolBar">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+        <!-- 数据表格 end -->
     </div>
+    <!-- content end -->
 {% endblock %}
 {% block script %}
     <script type="text/javascript">
-        var dateCfg = {
-            language: 'zh-CN',
-            weekStart: 1,
-            format: 'yyyy-mm-dd',
-            autoclose: 1,
-            todayHighlight: 1,
-            minView : 2,
-            endDate : new Date()
-        };
-        $('#start-date').datetimepicker(dateCfg);
-        $('#end-date').datetimepicker(dateCfg);
-        $("#start-date").on("changeDate", function (e) {
-            $('#end-date').datetimepicker('setStartDate', e.date);
-        });
-        $("#end-date").on("changeDate", function (e) {
-            $('#start-date').datetimepicker('setEndDate', e.date);
+        layui.use(['layer', 'element', 'form', 'table', 'utils', 'laydate'], function(){
+            var layer = layui.layer;
+            var form = layui.form;
+            var laydate = layui.laydate;
+            var utils = layui.utils;
+
+            laydate.render({
+                elem: '#dateTime'
+                ,max: '{{ currDay }}'
+                ,format: 'yyyy/MM/dd'
+                ,range: true
+            });
+
+            //数据表格处理
+            var table = layui.table;
+            table.render(layui.$.extend({
+                elem: '#dataTable'
+                ,url:'{{ path_for('api.statistic.logs') }}'
+                ,toolbar : '#headerToolBar'
+                ,cols: [[
+                    {field:'url',  title: '访问url'}
+                    ,{field:'ip', title: '来源ip'}
+                    ,{field:'region', title: '地理位置'}
+                    ,{field:'cli_type', title: '访问类型'}
+                    ,{field:'cli_name', title: '客户端', templet : function (d) {
+                        return d.cli_version ? d.cli_name+'('+ d.cli_version  +')' : d.cli_name
+                    }}
+                    ,{field:'os_name', title: '系统信息', templet : function (d) {
+                        var om = d.os_name ? d.os_name+'('+ d.os_version  +')' : d.os_name;
+                        if (d.is_real_clicks) {
+                            om = '<span class="layui-badge-dot"></span>'+ om
+                        }
+                        return om;
+                    }}
+                    ,{field:'created_at', title: '访问时间'}
+                ]]
+            },utils.tableOptions));
+
+            //监听查询条件
+            form.on('submit(btnSearch)', function (data) {
+                table.reload('dataTable', {
+                    page: {curr: 1}
+                    ,where: data.field
+                });
+                return false;
+            });
+
         });
     </script>
 {% endblock %}

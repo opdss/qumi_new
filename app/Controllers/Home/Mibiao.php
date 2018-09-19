@@ -22,7 +22,7 @@ use Slim\Http\Response;
 class Mibiao extends Base
 {
     /**
-     * @pattern /api/mibiao
+     * //@pattern /api/mibiao
      * @name home.api.mibiao.get
      * @auth user|我的米表|首页
      * @param Request $request
@@ -49,7 +49,7 @@ class Mibiao extends Base
     }
 
     /**
-     * @pattern /api/mibiao/add
+     * //@pattern /api/mibiao/add
      * @method post
      * @auth user|我的米表|米表
      * @param Request $request
@@ -109,7 +109,7 @@ class Mibiao extends Base
     }
 
     /**
-     * @pattern /api/mibiao/delete
+     * //@pattern /api/mibiao/delete
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -130,7 +130,7 @@ class Mibiao extends Base
 
 
     /**
-     * @pattern /api/mibiao/update
+     * //@pattern /api/mibiao/update
      * @method post
      * @param Request $request
      * @param Response $response

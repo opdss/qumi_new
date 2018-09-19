@@ -25,7 +25,7 @@ class Statistic extends Base
 
     /**
      * 域名访问详情
-     * @pattern /api/statistic/detail[/{id:[0-9]+}]
+     * //@pattern /api/statistic/detail[/{id:[0-9]+}]
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -75,7 +75,7 @@ class Statistic extends Base
     }
 
     /**
-     * @pattern /api/statistic/day
+     * //@pattern /api/statistic/day
      * @name home.api.statistic.day
      * @method get
      * @param Request $request
@@ -133,7 +133,7 @@ class Statistic extends Base
     }
 
     /**
-     * @pattern /api/statistic/count
+     * //@pattern /api/statistic/count
      * @name home.api.statistic.count
      * @method get
      * @param Request $request
@@ -192,7 +192,7 @@ class Statistic extends Base
 
     /**
      * 详细的访问记录
-     * @pattern /api/statistic/logs
+     * //@pattern /api/statistic/logs
      * @name home.api.statistic.logs
      * @method get
      * @param Request $request

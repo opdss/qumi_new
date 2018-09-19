@@ -15,13 +15,14 @@ use Slim\Http\Response;
 
 /**
  * Class Mibiao
- * @middleware App\Middleware\Auth|App\Middleware\Rtime
+ * @middleware App\Middleware\Rtime
  * @package App\Controllers
  */
 class Mibiao extends Base
 {
     /**
      * @pattern /mibiao
+     * @auth user|我的米表
      * @name mibiao
      * @param Request $request
      * @param Response $response
@@ -29,7 +30,6 @@ class Mibiao extends Base
      */
     public function index(Request $request, Response $response, $args)
     {
-        $data['currentName'] = $request->getAttribute('route')->getName();
         $res = \App\Models\Mibiao::isMy($this->uid)->get()->toArray();
         if ($res) {
         	foreach ($res as &$item) {
@@ -43,32 +43,6 @@ class Mibiao extends Base
 		}
 		$data['records'] = $res;
         return $this->view('mibiao/index.twig', $data);
-    }
-
-    /**
-     * @pattern /mibiao/modal/{act}
-     * @param Request $request
-     * @param Response $response
-     * @param $args
-     */
-    public function modal(Request $request, Response $response, $args)
-    {
-        $act = $args['act'];
-        $data = [];
-        $data['themes'] = \App\Models\Theme::getICanUse($this->uid, '*', Theme::THEME_TYPE_MIBIAO);
-        $data['templates'] = \App\Models\Template::isMy($this->uid)->get();
-        $data['domains'] = \App\Models\Domain::isMy($this->uid)->isDns()->get();
-
-        if ($act == 'edit') {
-            $id = (int)$request->getParam('mibiao_id');
-            if (!$id || !($records = \App\Models\Mibiao::find($id)) || $records->uid != $this->uid) {
-                return 'id错误！';
-            }
-            $data['info'] = $records;
-            return $this->view('mibiao/modal-edit.twig', $data);
-        } elseif ($act == 'add') {
-            return $this->view('mibiao/modal-add.twig', $data);
-        }
     }
 
     /**
@@ -131,7 +105,9 @@ class Mibiao extends Base
     }
 
     /**
-     * @pattern /mibiao/delete
+     * @pattern /api/mibiao/delete
+     * @name api.mibiao.del
+     * @method delete
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -139,7 +115,7 @@ class Mibiao extends Base
      */
     public function del(Request $request, Response $response, $args)
     {
-        $id = $request->getQueryParam('mibiao_id');
+        $id = $request->getParam('id');
         if (!$id) {
 			return $this->json(40001);
 		}

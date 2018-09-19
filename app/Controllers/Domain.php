@@ -23,6 +23,7 @@ class Domain extends Base
 	/**
 	 * 我的域名列表
 	 * @pattern /domain
+     * @auth user|域名管理
 	 * @name domain
 	 * @param Request $request
 	 * @param Response $response
@@ -38,7 +39,7 @@ class Domain extends Base
 
 	/**
 	 * 我的域名列表
-	 * @pattern /api/domain
+	 * @pattern /api/domains
 	 * @name api.domain.get
 	 * @method get
 	 * @param Request $request

@@ -13,7 +13,7 @@ use Slim\Http\Response;
 class Api extends Base
 {
 	/**
-	 * @pattern /api/domains
+	 * //@pattern /api/domains
 	 * @middleware App\Middleware\Auth
 	 * @param Request $request
 	 * @param Response $response
@@ -78,7 +78,7 @@ class Api extends Base
 	}
 
 	/**
-	 * @pattern /api/templatess
+	 * //@pattern /api/templatess
 	 * @middleware App\Middleware\Auth
 	 * @param Request $request
 	 * @param Response $response

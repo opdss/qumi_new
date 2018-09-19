@@ -17,7 +17,7 @@ use Slim\Http\Response;
 
 /**
  * Class Statistic
- * @middleware App\Middleware\Auth|App\Middleware\Rtime
+ * @middleware App\Middleware\Rtime
  * @package App\Controllers
  */
 class Statistic extends Base
@@ -156,6 +156,7 @@ class Statistic extends Base
 
     /**
      * @pattern /statistic/day
+     * @auth user|数据统计|每日统计
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -164,54 +165,65 @@ class Statistic extends Base
     public function day(Request $request, Response $response, $args)
     {
         $data = [];
-        $allowOrder = array('domain_name', 'pv', 'ip', 'bot', 'user', 'domestic', 'overseas');
+        $data['currDay'] = date('Y-m-d');
+        return $this->view('statistic/day.twig', $data);
+    }
+
+    /**
+     * @pattern /api/statistic/day
+     * @name api.statistic.day
+     * @method get
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function dayApi(Request $request, Response $response, $args)
+    {
+        $data = [];
+        $allowOrder = array('domain_name', 'pv', 'ip', 'bot', 'user', 'domestic', 'overseas', 'real_clicks', 'day');
 
         //获取校验参数
         $page = (int)$request->getQueryParam('page') ?: 1;
-        $filter['kw'] = $request->getQueryParam('kw');
-        $filter['start_date'] = $request->getQueryParam('start_date');
-        $filter['end_date'] = $request->getQueryParam('end_date');
-        $filter['order_by'] = $request->getQueryParam('order_by');
-        if (($domain_id = (int)$request->getQueryParam('domain_id')) && $domainModel = Domain::find($domain_id)) {
-            $filter['kw'] = $domainModel->name;
-        }
-        $data['filter'] = $filter;
+        $kw = $request->getQueryParam('kw');
+        $domain_id = (int)$request->getQueryParam('domain_id');
+        $date_time = $request->getQueryParam('date_time');
+        $order_name = trim($request->getQueryParam('order_name'));
+        $order_type = trim($request->getQueryParam('order_type'));
+        $limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
 
         //构造条件
         $builder = \App\Models\DomainAccessLogCount::isMy($this->uid);
-        if ($filter['kw']) {
-            $builder = $builder->where('domain_name', 'like', '%' . $filter['kw'] . '%');
+        if ($domain_id) {
+            $builder = $builder->where('domain_id', $domain_id);
+        } else {
+            if ($kw) {
+                $builder = $builder->where('domain_name', 'like', '%' . $kw . '%');
+            }
         }
 
-        if ($filter['start_date'] && $filter['end_date']) {
-            $builder = $builder->whereBetween('day', [$filter['start_date'], $filter['end_date']]);
-        } elseif ($filter['start_date']) {
-            $builder = $builder->where('day', '>=', $filter['start_date']);
-        } elseif ($filter['end_date']) {
-            $builder = $builder->where('day', '<=', $filter['end_date']);
+        if ($date_time) {
+            list($start_date, $end_date) = explode('-', $date_time);
+            $start_date = strtotime($start_date);
+            $end_date = strtotime($end_date);
+            if ($start_date && $end_date) {
+                $start_date = date('Y-m-d', $start_date);
+                $end_date = date('Y-m-d', $end_date);
+                $builder = $start_date == $end_date ? $builder->where('day', $start_date) : $builder->whereBetween('day', [$start_date, $end_date]);
+            }
         }
 
         //最终获取数据
         $data['count'] = $builder->count();
         $data['records'] = [];
         if ($data['count']) {
-            $builder = $builder->offset(($page - 1) * self::$page_number)->limit(self::$page_number);
-            if ($filter['order_by'] && is_array($filter['order_by'])) {
-                foreach ($filter['order_by'] as $k => $v) {
-                    if (in_array($k, $allowOrder)) {
-                        $builder = $builder->orderBy($k, $v == 'asc' ? 'asc' : 'desc');
-                    }
-                }
-            } else {
-                $builder = $builder->orderBy('day', 'desc');
+            if ($order_type && $order_type != 'null' && in_array($order_name, $allowOrder)) {
+                $builder = $builder->orderBy($order_name, $order_type);
             }
-            $data['records'] = $builder->get();
-            $data['pagination'] = Functions::pagination($data['count'], self::$page_number);
+            $data['records'] = $builder->offset(($page - 1) * $limit)->limit($limit)->orderBy('day', 'desc')->get();
         }
 
-        //获取其他数据
-        $data['currentName'] = 'statistic';
-        return $this->view('statistic/day.twig', $data);
+        return $this->json($data);
     }
 
     /**
@@ -273,6 +285,7 @@ class Statistic extends Base
     /**
      * 详细的访问记录
      * @pattern /statistic/logs
+     * @auth user|数据统计|访问详情
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -281,56 +294,74 @@ class Statistic extends Base
     public function logs(Request $request, Response $response, $args)
     {
         $data = [];
+        $data['currDay'] = date('Y-m-d');
+        $data['domains'] = \App\Models\Domain::select('id', 'name')->isMy($this->uid)->get()->toArray();
+        return $this->view('statistic/logs.twig', $data);
+    }
 
+
+    /**
+     * 详细的访问记录
+     * @pattern /api/statistic/logs
+     * @name api.statistic.logs
+     * @method get
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function logsApi(Request $request, Response $response, $args)
+    {
+        $data = [];
         //获取校验参数
         $page = (int)$request->getQueryParam('page') ?: 1;
-        $filter['domain_id'] = (int)$request->getQueryParam('domain_id', 0);
-        $filter['is_bot'] = (int)$request->getQueryParam('is_bot');
-        $filter['start_date'] = $request->getQueryParam('start_date');
-        $filter['end_date'] = $request->getQueryParam('end_date');
-        if ($filter['domain_id']) {
-            if (($domainModel = \App\Models\Domain::find($filter['domain_id'])) && $domainModel->uid == $this->uid) {
+        $domain_id = (int)$request->getQueryParam('domain_id', 0);
+        $is_bot = (int)$request->getQueryParam('is_bot');
+        $is_real_clicks = (int)$request->getQueryParam('is_real_clicks');
+        $date_time = $request->getQueryParam('date_time');
+        $limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
+
+        if ($domain_id) {
+            if (($domainModel = \App\Models\Domain::find($domain_id)) && $domainModel->uid == $this->uid) {
                 $data['currentDomain'] = $domainModel;
             } else {
-                $filter['domain_id'] = 0;
+                $domain_id = 0;
             }
         }
-        $data['filter'] = $filter;
 
         //构造条件
         $builder = new \App\Models\DomainAccessLog();
-        if ($filter['domain_id']) {
-            $builder = $builder->where('domain_id', $filter['domain_id'])->isMy($this->uid);
+        if ($domain_id) {
+            $builder = $builder->where('domain_id', $domain_id)->isMy($this->uid);
         } else {
             $builder = $builder->isMy($this->uid);
         }
-        if ($filter['is_bot']) {
-            $builder = $builder->where('is_bot', $filter['is_bot'] - 1);
+        if ($is_bot) {
+            $builder = $builder->where('is_bot', $is_bot);
         }
-        $filter['start_date'] = $filter['start_date'] ? $filter['start_date'] . ' 00:00:00' : false;
-        $filter['end_date'] = $filter['end_date'] ? $filter['end_date'] . ' 23:59:59' : false;
-        if ($filter['start_date'] && $filter['end_date']) {
-            $builder = $builder->whereBetween('created_at', [$filter['start_date'], $filter['end_date']]);
-        } elseif ($filter['start_date']) {
-            $builder = $builder->where('created_at', '>=', $filter['start_date']);
-        } elseif ($filter['end_date']) {
-            $builder = $builder->where('created_at', '<=', $filter['end_date']);
+        if ($is_real_clicks > 0) {
+            $builder = $builder->where('is_real_clicks', $is_real_clicks - 1);
+        }
+
+        if ($date_time) {
+            list($start_date, $end_date) = explode('-', $date_time);
+            $start_date = strtotime($start_date);
+            $end_date = strtotime($end_date);
+            if ($start_date && $end_date) {
+                $start_date = date('Y-m-d', $start_date).' 00:00:00';
+                $end_date = date('Y-m-d', $end_date).' 23:59:59';
+                $builder = $builder->whereBetween('created_at', [$start_date, $end_date]);
+            }
         }
 
         //最终获取数据
         $data['count'] = $builder->count();
         $data['records'] = [];
         if ($data['count']) {
-            $data['records'] = $builder->offset(($page - 1) * self::$page_number)->limit(self::$page_number)->orderBy('id', 'desc')->get();
-            $data['pagination'] = Functions::pagination($data['count'], self::$page_number);
+            $data['records'] = $builder->offset(($page - 1) * $limit)->limit($limit)->orderBy('id', 'desc')->get();
         }
-
-        //获取其他数据
-        $data['currentName'] = 'statistic';
-        $data['domains'] = \App\Models\Domain::select('id', 'name')->isMy($this->uid)->get()->toArray();
-        return $this->view('statistic/logs.twig', $data);
+        return $this->json($data);
     }
-
 
     /**
      * @pattern /api/statistic/echarts_count

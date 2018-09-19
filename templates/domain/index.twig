@@ -92,16 +92,19 @@
     <script>
         layui.use(['layer', 'element', 'form', 'table', 'utils'], function(){
             var layer = layui.layer;
-            var element = layui.element;
             var form = layui.form;
             var $ = layui.$;
             var utils = layui.utils;
-            layui.utils.log('gwaega');
+
+            var API = {
+                del : '{{ path_for('api.domain.del') }}',
+            }
+
             //数据表格处理
             var table = layui.table;
-            table.render({
+            table.render(layui.$.extend({
                 elem: '#dataTable'
-                ,url:'/api/domain'
+                ,url:'{{ path_for('api.domain.get') }}'
                 ,toolbar : '#headerToolBar'
                 ,cols: [[
                     {type:'checkbox'}
@@ -136,31 +139,12 @@
                         }}
                     ,{fixed:'right', title: '操作', align:'center', toolbar : '#toolBar' }
                 ]]
-                ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                    ,curr: 1 //设定初始在第 1 页
-                    ,limits : [10, 20, 30, 50, 100]
-                    ,limit : 20
-                    ,groups: 5 //只显示 1 个连续页码
-                    ,first: '首页' //不显示首页
-                    ,last: '尾页' //不显示尾页
-
-                }
-                ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
-                    return {
-                        "code": res.errCode, //解析接口状态
-                        "msg": res.errMsg, //解析提示文本
-                        "count": res.data.count, //解析数据长度
-                        "data": res.data.records //解析数据列表
-                    };
-                }
-            });
+            },utils.tableOptions));
 
             //监听查询条件
             form.on('submit(btnSearch)', function (data) {
                 table.reload('dataTable', {
-                    //重新从第 1 页开始
-                    page: {curr: 1}
+                    page: {curr: 1}//重新从第 1 页开始
                     ,where: data.field
                 });
                 return false;
@@ -184,7 +168,15 @@
                         break;
                     case 'batchDel':
                         var data = checkStatus.data;
-                        layer.msg('选中了：'+ data.length + ' 个');
+                        if (data.length > 0) {
+                            var ids = [];
+                            data.forEach(function (o, i) {
+                                ids.push(o.id)
+                            })
+                            utils.delById(API.del, ids, function (res) {
+                                table.reload('dataTable');
+                            })
+                        }
                         break;
                     case 'batchDnsCheck':
                         layer.msg(checkStatus.isAll ? '全选': '未全选');
@@ -195,16 +187,11 @@
             table.on('tool(dataTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
                 var data = obj.data; //获得当前行数据
                 var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-                var tr = obj.tr; //获得当前行 tr 的DOM对象
 
                 if(layEvent === 'del'){ //删除
-                    layer.confirm('确定删除改数据吗？', function(index){
-                        //向服务端发送删除指令
-                        utils.$.delete('{{ path_for('api.domain.del') }}', {id:data.id}, function (res) {
-                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                            layer.close(index);
-                        })
-                    });
+                    utils.delById(API.del, data.id, function (res) {
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    })
                 } else if(layEvent === 'edit'){ //编辑
                     //do something
 
@@ -221,13 +208,13 @@
                     }, function(value, index){
                         layer.close(index);
                         //这里一般是发送修改的Ajax请求
-                        utils.$.post('{{ path_for('api.domain.update') }}',{id:data.id, description:value}, function (res) {
+                        utils.ajax.post('{{ path_for('api.domain.update') }}',{id:data.id, description:value}, function (res) {
                             //同步更新表格和缓存对应的值
                             obj.update({
                                 description: value
                             });
+                            layer.msg('修改成功！')
                         });
-
                     });
                 }
             });

@@ -51,7 +51,7 @@ $session->setLogger($container->logger);
 $session->start();
 $container['session'] = $session;*/
 
-if (RUN_ENV == 'production') {
+/*if (RUN_ENV == 'production') {
 //500错误处理
 	$container['errorHandler'] = function ($c) {
 		return function ($request, $response, $exception) use ($c) {
@@ -65,7 +65,7 @@ if (RUN_ENV == 'production') {
 			}
 		};
 	};
-}
+}*/
 
 //404
 $container['notFoundHandler'] = function ($c) {

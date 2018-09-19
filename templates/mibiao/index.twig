@@ -1,82 +1,63 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-        <div class="well">
-            每用户最多5个米表
-        </div>
-        <div class="row">
+    <div class="site-content">
+
+        <!-- 数据表格 start -->
+        <div class="layui-row">
             {% for x in records %}
-            <div class="col-md-4">
-                <div class="box" style="height: 240px;">
-                    <div class="box-header">
-                        <h2 class="h2">{{ x.name }}</h2>
-                        <div class="box-tool">
-                            <a href="javascript:edit({{ x.id }})"><span class="glyphicon glyphicon-cog"></span></a>
-                            &nbsp;
-                            <a href="javascript:del({{ x.id }})"><span class="glyphicon glyphicon-trash"></span></a>
+            <div class="layui-col-xs12 layui-col-md4">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        {{ x.name }}
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="{{ x.id }}"><i class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="{{ x.id }}"><i class="layui-icon layui-icon-delete"></i></a>
                         </div>
                     </div>
-                    <div class="box-content">
-                        <div class="text-center">
-                            <p style="line-height: 80px;font-size: 24px;">共有<span style="font-size: 48px;color: #00a8c6">{{ x.domainCount }}</span>个域名</p>
-                            <p><a href="{{ x.defaultUrl }}" target="_blank">{{ x.defaultUrl }}</a></p>
-                            {% if x.myUrl %}
-                                <p>自定义地址：<a href="http://{{ x.myUrl }}" target="_blank">http://{{ x.myUrl }}</a></p>
-                            {% endif %}
-                        </div>
+                    <div class="layui-card-body card-mibiao">
+                        <p style="line-height: 80px;font-size: 24px;">共有<span style="font-size: 48px;color: #00a8c6">{{ x.domainCount }}</span>个域名</p>
+                        <p><a href="{{ x.defaultUrl }}" target="_blank">{{ x.defaultUrl }}</a></p>
+                        {% if x.myUrl %}
+                            <p>自定义地址：<a href="http://{{ x.myUrl }}" target="_blank">http://{{ x.myUrl }}</a></p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             {% endfor %}
-            <div class="col-md-4">
-                <div class="box" style="height: 240px;">
-                    <div class="box-content">
-                        <div class="text-center">
-                            <a href="javascript:add()" style="line-height: 200px;font-size: 24px;"><span class="glyphicon glyphicon-plus"></span>  添加米表</a>
-                        </div>
+            <div class="layui-col-xs12 layui-col-md4">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        添加米表
+                    </div>
+                    <div class="layui-card-body card-mibiao">
+                        <a style="font-size: 36px;padding: 50px 0px;display:block;cursor: pointer;" id="btnAdd">
+                            <i class="layui-icon layui-icon-add-1" style="font-size: 36px;font-weight: bold"></i>
+                            添加米表
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- 数据表格 end -->
+    </div>
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript">
-        function add() {
-            var modalObj = loadModal({remote:'{{ path_for('mibiao.modal', {'act':'add'}) }}', backdrop: 'static', keyboard: false}, 0);
-            modalObj.on('hidden.bs.modal', function (e) {
-                this.remove();
-            });
-        }
 
-        function edit(id) {
-            var modalObj = loadModal({remote:'{{ path_for('mibiao.modal', {'act':'edit'}) }}?mibiao_id='+id, backdrop: 'static', keyboard: false}, 0);
-            modalObj.on('hidden.bs.modal', function (e) {
-                this.remove();
-            });
-        }
-        
-        function del(id) {
-            if (!id) {return false;}
-            swal({
-                    title: "确定删除选吗",
-                    text: "",
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    cancelButtonText: '取消',
-                    confirmButtonText : '确认删除',
-                    showLoaderOnConfirm: true,
-                },
-                function(){
-                    $.get('{{ path_for('mibiao.del') }}', {'mibiao_id':id}, function (res) {
-                        if (res.errCode == 0) {
-                            utils.swal.success('', true);
-                        } else {
-                            utils.swal.error(res.errMsg);
-                        }
-                    })
-                });
-        }
+        layui.use(['layer', 'utils'], function(){
+            var $ = layui.$;
+            var utils = layui.utils;
+            $('.btnEdit').on('click', function () {
+                alert('edit')
+            })
+            $('.btnDel').on('click', function () {
+                var $this = $(this);
+                utils.delById('{{ path_for('api.mibiao.del') }}', $this.data('id'), function (res) {
+                    $this.parents('.layui-card').parent().remove();
+                })
+            })
+        });
     </script>
 {% endblock %}
