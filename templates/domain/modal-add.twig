@@ -1,0 +1,60 @@
+
+{#<link rel="stylesheet" href="/statics/layui/css/layui.css">
+<link rel="stylesheet" href="/statics/css/style.css">#}
+<div style="padding: 20px">
+<form class="layui-form" action="" id="editForm">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">域名</label>
+        <div class="layui-input-block">
+            <textarea placeholder="一行一个域名，也可支持逗号','和空格' '等分隔的域名，域名不用带www" rows="10" lay-verify="required"  class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">域名简介</label>
+        <div class="layui-input-block">
+            <textarea placeholder="域名简介" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">报价</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input" value="0">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">停靠模板</label>
+        <div class="layui-input-block">
+            <select name="template_id">
+                <option value="0">所有模版</option>
+                {% for item in templates %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+
+    //layui.use(['layer', 'element', 'form', 'table', 'jquery'], function(){});
+    /*(function () {
+        $('.selectpicker').selectpicker();
+        $('textarea[name=domains]').blur(function () {
+            var domains = utils.formatDomainStr($(this).val());
+            $(this).val(domains.join('\n'));
+        })
+        $('.modal-submit').click(function () {
+            var modalObj = $(this).parents('div.modal');
+            var form = modalObj.find('form.modal-form');
+            $.post('', form.serialize(), function(res){
+                if (res.errCode == 0) {
+                    modalObj.modal('hide');
+                    utils.swal.success('', true);
+                } else {
+                    utils.swal.error(res.errMsg);
+                }
+            })
+        })
+    })()*/
+</script>

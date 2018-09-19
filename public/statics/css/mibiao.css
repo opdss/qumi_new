@@ -1,0 +1,21 @@
+*    { margin: 0; padding: 0; }
+html { font-size: 10px;  }
+body { font-size: 1.8rem; }
+a    { color: black; text-decoration:none; }
+.foxbox {
+    max-width: 105rem;
+    margin-left:auto;
+    margin-right:auto;
+    box-sizing:border-box;
+    display: flex;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+header { width:100%; box-shadow: 0px 2px 4px rgba(0, 0, 0, .3); background: #fff; }
+header div {justify-content:space-between;}
+header img{ height: auto; max-height: 8rem; }
+header ul { display: flex; }
+header a{ list-style: none; display: block; margin: 1rem; cursor: pointer; font-weight: bold; display: block;}
+header a:hover{ color: #af1d1E; }
+

@@ -1,0 +1,121 @@
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">修改米表</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal modal-form">
+        <div class="form-group">
+            <label for="name" class="col-md-3 control-label">米表名称</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="name" name="name" value="{{ info.name }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="col-md-3 control-label">米表简介</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="3" name="description" placeholder="米表简介">{{ info.description }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="name" class="col-md-3 control-label">选择主题</label>
+            <div class="col-md-8">
+                <div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a class="ttype" href="#def" aria-controls="def" role="tab" data-toggle="tab" data-type="0">默认主题</a></li>
+                        <li role="presentation"><a class="ttype" href="#bianji" aria-controls="bianji" role="tab" data-toggle="tab" data-type="1">在线编写</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <input type="hidden" name="theme_id" value="{{ info.theme_id }}">
+                        <div role="tabpanel" class="tab-pane active" id="def">
+                            <div class="row" style="padding: 10px;max-height: 240px;overflow-y: auto">
+                                {% for x in themes %}
+                                    <div class="col-xs-3 col-md-4">
+                                        <a href="#" class="thumbnail theme-check {{ x.id==info.theme_id ? 'theme-checked' : '' }}" data-themeid="{{ x.id }}" title="{{ x.name }}">
+                                            <img src="{{ x.image }}" alt="{{ x.name }}">
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="bianji">
+                            <div style="padding: 10px">
+                                <p class="well">
+                                    在线主题编辑功能尚在准备开发中。。。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="domain_id" class="col-sm-3 control-label">访问地址</label>
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <div class="input-group-addon">https://qumi.app/m/</div>
+                    <input type="text" class="form-control" name="path" value="{{ info.path }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="domain_id" class="col-sm-3 control-label">自定义域名</label>
+            <div class="col-sm-6">
+                <select class="selectpicker" name="domain_id">
+                    <option value="0">请选择域名</option>
+                    {% for x in domains %}
+                        <option value="{{ x.id }}" {{ x.id==info.domain_id ? 'selected' : '' }}>{{ x.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="qq" class="col-sm-3 control-label">停靠的模版</label>
+            <div class="col-sm-6">
+                <select class="selectpicker" name="template_id">
+                    <option value="0">请选择模板</option>
+                    {% for x in templates %}
+                        <option value="{{ x.id }}" {{ x.id==info.template_id ? 'selected' : '' }}>{{ x.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="mibiao_id" value="{{ info.id }}">
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary modal-submit">确认</button>
+</div>
+<script type="text/javascript">
+    (function () {
+        $('.selectpicker').selectpicker();
+        $('.modal-submit').click(function () {
+            var modalObj = $(this).parents('div.modal');
+            var form = modalObj.find('form.modal-form');
+            $.post('{{ path_for('mibiao.update') }}', form.serialize(), function(res){
+                if (res.errCode == 0) {
+                    modalObj.modal('hide');
+                    utils.swal.success('', true);
+                } else {
+                    utils.swal.error(res.errMsg);
+                }
+            })
+        })
+        $('.theme-check').click(function () {
+            $(this).parent('div').siblings().find('.theme-check').removeClass('theme-checked');
+            $(this).addClass('theme-checked');
+            $('input[name=theme_id]').val($(this).data('themeid'));
+        })
+    })()
+</script>

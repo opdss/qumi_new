@@ -1,0 +1,11 @@
+$TTL 1D
+@	IN SOA	@ rname.invalid. (
+				0;
+				1D;
+				1H;
+				1W;
+				3H
+					);
+	NS	@
+	IN A	47.90.29.244
+*	IN A	47.90.29.244

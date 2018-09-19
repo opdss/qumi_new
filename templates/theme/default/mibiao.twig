@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content=" {{mibiao.name}},趣米，趣米APP,Qumi.app,APP"/>
+    <meta name="description" content="{{ mibiao.description }} -- 趣米APP"/>
+    <title>{{mibiao.name}} - 趣米APP</title>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" logid="{{ logid }}"  src="/statics/js/realclicks.js"></script>
+    <style type="text/css">
+        .foxbox {
+            max-width: 105rem;
+            margin-left:auto;
+            margin-right:auto;
+            box-sizing:border-box;
+            display: flex;
+            flex-wrap:wrap;
+            align-items:center;
+        }
+
+        header { width:100%; box-shadow: 0px 2px 4px rgba(0, 0, 0, .3); background: #fff; }
+        header div {justify-content:space-between;}
+        header img{ height: auto; max-height: 8rem; }
+        header p { display: flex; }
+        header p .big{
+        }
+
+
+        footer {
+            width:100%;
+            border-top:1px solid rgba(0, 0, 0, .3);
+            text-align: center;
+            padding: 20px;
+        }
+        .tools{
+            padding: 10px 20px;
+            background-color: #eee;
+            margin-bottom: 10px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, .3);
+        }
+        /*********************/
+        @keyframes do_des
+        {
+            from {
+                top: 96px;
+                height: 24px;
+                background-color: rgba(0, 0, 0, .3);
+            }
+            to {
+                top: 0px;
+                height: 120px;
+                background-color: rgba(0, 0, 0, .8);
+            }
+        }
+
+        @-webkit-keyframes do_des /* Safari 与 Chrome */
+        {
+            from {
+                top: 96px;
+                height: 24px;
+                background-color: rgba(0, 0, 0, .3);
+            }
+            to {
+                top: 0px;
+                height: 120px;
+                background-color: rgba(0, 0, 0, .8);
+            }
+        }
+
+        .box-domain {
+            position: relative;
+            border: 1px solid #e0e0e0;
+            /*box-shadow: 0px 0px 10px #ddd;*/
+            margin-bottom: 20px;
+        }
+
+        .box-domain:hover{
+            /*box-shadow: 0px 0px 10px #aaa;*/
+            border: 1px solid #bbb;
+        }
+
+
+        .box-domain .domain{
+            height: 120px;
+            padding: 20px;
+            font-size: 24px;
+            color: #0099CC;
+            font-weight: 400;
+            width: 100%;
+            overflow: auto;
+            word-break:break-all;
+
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-justify-content: center;
+            justify-content: center;"
+        }
+        .box-domain a{
+            text-decoration: none;
+        }
+
+        .box-domain .price {
+            position: absolute;
+            top:0px;
+            right: 0px;
+            color:red;
+            padding: 5px 10px;
+        }
+
+        .box-domain .description
+        {
+            position: absolute;
+            top:96px;
+            height: 24px;
+            width: 100%;
+            color:white;
+            font-size: 16px;
+            line-height: 24px;
+            padding: 0px 10px;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, .3);
+            z-index: 999;
+            text-align: center;
+
+        }
+
+        .box-domain .description:hover
+        {
+            top:0px;
+            height: 120px;
+            background-color: rgba(0, 0, 0, .8);
+            padding: 10px;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-justify-content: center;
+            justify-content: center;"
+
+        animation: do_des 300ms;
+            -webkit-animation: do_des 300ms; /* Safari 与 Chrome */
+        }
+
+    </style>
+    {{ site.tongji|raw }}
+</head>
+<body>
+
+<header>
+    <div class="foxbox">
+        <a href="{{ site.homepage }}"><img src="https://qumi.app/statics/images/logo.jpg" alt="Qumi.app 趣米网"/></a>
+        <p>{{ mibiao.name }} </p>
+        <p>
+            {% if template.phone %}
+            <span>电话:{{ template.phone }}</span>&nbsp;&nbsp;
+            {% endif %}
+            {% if template.qq %}
+            <span>QQ:{{ template.qq }}</span>&nbsp;&nbsp;
+            {% endif %}
+            {% if template.wechat %}
+            <span>微信:{{ template.wechat }}</span>&nbsp;&nbsp;
+            {% endif %}
+            {% if template.email %}
+            <span>邮箱:{{ template.email }}</span>
+            {% endif %}
+        </p>
+    </div>
+</header>
+<div class="container">
+    <div class="tools">
+        <form method="get">
+            <div class="input-group input-group-lg col-md-offset-2 col-md-8">
+                <input type="text" class="form-control input-lg" placeholder="请输出您想查询的域名" name="kw" value="{{ filter.kw }}">
+                <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" type="button">搜域名</button>
+            </span>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        {% for x in records %}
+            <div class="col-md-3">
+                <div class="box-domain">
+                    <a class="domain" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.uc_name }}</a>
+                    {% if x.description %}
+                        <div class="description">
+                            {{ x.description }}
+                        </div>
+                    {% endif %}
+                    <div  class="price">
+                        {% if x.sale_type %}询价{% else %} {{ lang(1013)~x.price }}{% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="row text-center">
+        {{ pagination | raw }}
+    </div>
+</div>
+<footer>
+        <p class="text-muted">©2018 <a href="https://Qumi.app">Qumi. </a>All rights reserved. | .app域名的专属停靠站  </p>
+</footer>
+</body>
+</html>

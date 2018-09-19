@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6575139f-b989-4dcc-8c97-545946d11949" name="47.75.250.110" url="http://47.75.250.110">
+        <fileTransfer host="47.75.250.110" port="22" rootFolder="/www/wwwroot/qumi_new" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

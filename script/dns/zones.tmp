@@ -1,0 +1,2 @@
+zone "798.cx" IN { type master; file "mibiao/zone/798.cx.zone"; allow-update {none;}; };
+zone "liuyaa.cn" IN { type master; file "mibiao/zone/liuyaa.cn.zone"; allow-update {none;}; };

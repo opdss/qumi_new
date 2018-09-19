@@ -1,0 +1,36 @@
+{% extends 'layout.twig' %}
+
+{% block container %}
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md2 layui-col-xs12">
+                <div class="site-menu">
+                    <ul class="layui-nav layui-nav-tree layui-inline layui-bg">
+                        {% set _auth = current_menu[0] ?: 'user' %}
+                        {% set _menus = menus[_auth] %}
+                        {% for item in _menus %}
+                            <li class="layui-nav-item layui-nav-itemed">
+                                <a href="{{ item['sub'] ? '#' : item.url }}">{{ item.name }}</a>
+                                {% if item['sub']%}
+                                    <dl class="layui-nav-child">
+                                        {% for child in item['sub'] %}
+                                            <dd><a href="{{ child.url }}">{{ child.name }}</a></dd>
+                                        {% endfor %}
+                                    </dl>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="layui-col-md10 layui-col-xs12">
+            {% block console %}
+                <div class="site-content">
+                    <div class="" style="text-align: center;padding:20%;background-color: #aaaaaa"><h1>好像啥也没有。。。</h1></div>
+                </div>
+            {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'console.twig' %}
+
+{% block console %}
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <div class="opts">
+                    <form class="form-inline" method="get" id="filter_form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="kw" placeholder="搜索关键词" value="{{ filter.kw }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">查询</button>
+                        <a href="{{ path_for('statistic.day') }}" class="btn btn-info">查看域名每天访问统计</a>
+                        <a href="{{ path_for('statistic.logs') }}" class="btn btn-info">查看全部详细访问记录</a>
+                    </form>
+                </div>
+                <div class="table text-center">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <td class="text-left">
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="domain_name"
+                                   data-val="{{ filter.order_by.domain_name ? (filter.order_by.domain_name == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    域名
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="pvs"
+                                   data-val="{{ filter.order_by.pvs ? (filter.order_by.pvs == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    PV
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="ips"
+                                   data-val="{{ filter.order_by.ips ? (filter.order_by.ips == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    IP
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="bots"
+                                   data-val="{{ filter.order_by.bots ? (filter.order_by.bots == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    搜索引擎
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="users"
+                                   data-val="{{ filter.order_by.users ? (filter.order_by.users == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    自然用户
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="domestics"
+                                   data-val="{{ filter.order_by.domestics ? (filter.order_by.domestics == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    国内用户
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)"
+                                   class="order_by"
+                                   data-order_name="overseass"
+                                   data-val="{{ filter.order_by.overseass ? (filter.order_by.overseass == 'asc' ? 'desc' : 'asc') : 'desc'}}">
+                                    海外用户
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </a>
+                            </td>
+                            {#<td>操作</td>#}
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for item in records %}
+                            <tr>
+                                <td class="text-left"><a href="{{ path_for('statistic.logs') }}?domain_id={{ item.domain_id }}" target="_blank">{{ item.domain_name }}</a></td>
+                                <td>{{ item.pvs }}</td>
+                                <td>{{ item.ips }}</td>
+                                <td>{{ item.bots }}</td>
+                                <td>{{ item.users }}</td>
+                                <td>{{ item.domestics }}</td>
+                                <td>{{ item.overseass }}</td>
+                                {#<td>详情</td>#}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            {{ pagination|raw }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+    </script>
+{% endblock %}

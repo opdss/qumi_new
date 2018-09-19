@@ -1,0 +1,43 @@
+{% extends 'console.twig' %}
+
+{% block console %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box">
+                    <div class="box-header">
+                        <h2 class="h2">个人资料</h2>
+                        <div class="box-tool">
+                            {#<a href="#" class="btn-close">test</a>#}
+                        </div>
+                    </div>
+                    <div class="box-content">
+                        <div class="alert">
+                            <p><label>账户UID：</label><span class="label label-primary">{{ userInfo.uid }}</span></p>
+                            <p><label>邮箱：</label><span>{{ userInfo.email }}</span></p>
+                            <p><label>上次登陆时间：</label><span>{{ userInfo.login_time }}</span></p>
+                            <p><label>上次登陆IP：</label><span>{{ userInfo.login_ip }}</span></p>
+                            <p><label>域名总数：</label><span class="label label-success">{{ info.domainCount }}</span></p>
+                            <p><label>域名访问总数：</label><span class="label label-info">{{ info.accessCount }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box">
+                    <div class="box-header">
+                        <h2 class="h2">NS服务器</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="alert">
+                            <p>您的专属停放NS服务器</p><br/>
+                            <div class="alert alert-info">
+                                {{ userInfo.dns_server_str|raw }}
+                            </div>
+                            <p>请在域名平台处，将域名的DNS服务器修改为您的专属停放DNS服务器，以便完成域名停放所有者验证。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

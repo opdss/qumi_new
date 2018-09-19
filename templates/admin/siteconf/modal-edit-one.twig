@@ -1,0 +1,45 @@
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">配置修改 [{{ detail.key }}]</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal modal-form" >
+
+        <div class="form-group">
+            <label for="description" class="col-sm-2 control-label">配置值</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="3" name="val" placeholder="配置值">{{ detail.val }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-group price-group">
+            <label for="price" class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" id="sort" name="sort" value="{{ domain.sort }}">
+            </div>
+        </div>
+
+        <input type="hidden" name="domain_id" value="{{ detail.id }}">
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary modal-submit">确认</button>
+</div>
+<script type="text/javascript">
+    (function () {
+        $('.modal-submit').click(function () {
+            var modalObj = $(this).parents('div.modal');
+            var form = modalObj.find('form.modal-form');
+            $.post('{{ path_for('admin.siteconf.update') }}', form.serialize(), function(res){
+                if (res.errCode == 0) {
+                    modalObj.modal('hide');
+                    utils.swal.success('', true);
+                } else {
+                    utils.swal.error(res.errMsg);
+                }
+            })
+        })
+    })()
+</script>

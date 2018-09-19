@@ -1,0 +1,40 @@
+{% extends "layout.twig" %}
+
+{% block container %}
+    <div class="container">
+        <div class="row-fluid">
+            {% include 'public/searchBox.twig' %}
+        </div>
+        {% if records %}
+        <div class="row-fluid">
+            <p class="text-success">与"{{ filter.kw }}"相关的域名一共查询到{{ count }}个：</p>
+        </div>
+        <div class="row">
+            {% for x in records %}
+                <div class="col-md-3">
+                    <div class="box-domain">
+                        <a class="domain" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank" style="color: #0099CC;font-weight: 400">{{ x.uc_name }}</a>
+                        {% if x.description %}
+                            <div class="description">
+                                {{ x.description }}
+                            </div>
+                        {% endif %}
+                        <div  class="price">
+                            {% if x.sale_type %}询价{% else %}¥ {{ x.price }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="row text-center">
+            {{ pagination | raw }}
+        </div>
+        {% else %}
+        <div class="row-fluid">
+            <div class="well text-center" >
+                请输入相关搜索词
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

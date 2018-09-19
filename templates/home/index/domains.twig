@@ -1,0 +1,90 @@
+{% extends "layout.twig" %}
+
+{% block css %}
+    <style>
+        .domain-label {
+            cursor: pointer;
+        }
+        .active{
+            background: #286090;
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="well">
+            <p>
+                <span>域名类型：</span>
+                <label class="label label-info domain-label {{ filter.dtype == 1 ? 'active' : '' }}" data-name="dtype" data-val="1">字母</label>
+                <label class="label label-info domain-label {{ filter.dtype == 2 ? 'active' : '' }}" data-name="dtype" data-val="2">数字</label>
+                <label class="label label-info domain-label {{ filter.dtype == 3 ? 'active' : '' }}" data-name="dtype" data-val="3">杂米</label>
+            </p>
+            <p>
+                <span>域名长度：</span>
+                {% for item in lens %}
+                    <label class="label label-info domain-label {{ filter.len == item ? 'active' : '' }}" data-name="len" data-val="{{ item }}">{{ item }}位</label>
+                {% endfor %}
+            </p>
+            <p>
+                <span>后缀类型：</span>
+                {% for item in suffixs %}
+                    <label class="label label-info domain-label {{ filter.suffix == item ? 'active' : '' }}" data-name="suffix" data-val="{{ item }}">{{ item }}</label>
+                {% endfor %}
+            </p>
+        </div>
+        <div class="row-fluid">
+            <p class="text-success">一共查询到{{ count }}个相关域名：</p>
+        </div>
+        <div class="row">
+            {% for x in records %}
+                <div class="col-md-3">
+                    <div class="box-domain">
+                        <a class="domain" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank" style="color: #0099CC;font-weight: 400">{{ x.uc_name }}</a>
+                        {% if x.description %}
+                            <div class="description">
+                                {{ x.description }}
+                            </div>
+                        {% endif %}
+                        <div  class="price">
+                            {% if x.sale_type %}询价{% else %}¥ {{ x.price }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="row text-center">
+            {{ pagination | raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        var filter = {{ filterObj|raw }}
+        var urlEncode = function (param, key, encode) {
+            if(param==null) return '';
+            var paramStr = '';
+            var t = typeof (param);
+            if (t == 'string' || t == 'number' || t == 'boolean') {
+                paramStr += '&' + key + '=' + ((encode==null||encode) ? encodeURIComponent(param) : param);
+            } else {
+                for (var i in param) {
+                    var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+                    paramStr += urlEncode(param[i], k, encode);
+                }
+            }
+            return paramStr;
+        };
+        $('.domain-label').click(function () {
+            var name = $(this).data('name')
+            var val = $(this).data('val')
+            if ($(this).prop('class').indexOf('active') > 0) {
+                val = 0
+            }
+            filter[name] = val;
+            filter['page'] = 1
+            location.href = '?'+urlEncode(filter)
+        })
+    </script>
+{% endblock %}

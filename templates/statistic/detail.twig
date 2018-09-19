@@ -1,0 +1,106 @@
+{% extends 'console.twig' %}
+
+{% block console %}
+    {% if currentDomain %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header">
+                    <h2 class="h2">[{{ currentDomain.name }}]的访问曲线图</h2>
+                </div>
+                <div class="box-content">
+                    <div id="echarts" style="height: 320px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <div class="table">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <td>访问URL</td>
+                            <td>IP</td>
+                            <td>地理位置</td>
+                            {#<td>来源</td>#}
+                            <td>访问类型</td>
+                            <td>客户端</td>
+                            <td>系统</td>
+                            <td>访问时间</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for item in records %}
+                            <tr>
+                                <td>{{ item.url }}</td>
+                                <td>{{ item.ip }}</td>
+                                <td>{{ item.region }}</td>
+                                {#<td>{{ item.referer }}</td>#}
+                                <td>{{ item.cli_type }}</td>
+                                <td>{{ item.cli_name }}{% if item.cli_version %}({{ item.cli_version }}){% endif %}</td>
+                                <td>{{ item.os_name }}{% if item.os_version %}({{ item.os_version }}){% endif %}</td>
+                                <td>{{ item.created_at }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="text-center">
+                            {{ pagination|raw }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        {% if currentDomain %}
+        var myChart = echarts.init(document.getElementById('echarts'));
+        /*myChart.showLoading({
+         text: '正在努力的读取数据中...',    //loading话术
+         });*/
+        // 图表使用-------------------
+        option = {
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                //data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+                data: {{ echarts.legendData|raw }}
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    //data : ['周一','周二','周三','周四','周五','周六','周日']
+                    data : {{ echarts.xAxisData|raw }}
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : {{ echarts.series|raw }}
+        };
+        myChart.setOption(option);
+
+        {% endif %}
+    </script>
+{% endblock %}

@@ -1,0 +1,26 @@
+server {
+    listen 443;
+    server_name ${domain} *.${domain};
+    index index.php;
+    root /data/www/wuxin/qumi/mibiao;
+
+    ssl on;
+    ssl_certificate "${domainCrt}";
+    ssl_certificate_key "${domainKey}";
+    ssl_session_timeout  1d;
+    ssl_protocols  SSLv2 SSLv3 TLSv1;
+    ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+    ssl_prefer_server_ciphers   on;
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location ~ \.php {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+        fastcgi_index index.php;
+        fastcgi_pass 127.0.0.1:9000;
+    }
+}

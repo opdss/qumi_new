@@ -1,0 +1,5 @@
+1 session 闪存失效
+2 增加nroute全局middleware设置
+3 curl增加错误捕捉
+3 opdss/http  PHP Notice:  Undefined offset: 1 in /wwwroot/project/qumi/vendor/opdss/http/src/Response.php on line 226
+4 list($cookieName, $value) = explode('=', $list[0], 2); 改成2，不然获取的cookie有问题

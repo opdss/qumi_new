@@ -1,0 +1,10 @@
+<div class="well">
+    <form method="get" action="{{ path_for('search') }}">
+        <div class="input-group input-group-lg col-md-offset-2 col-md-8">
+            <input type="text" class="form-control input-lg" placeholder="请输出您想查询的域名" name="kw" id="search_kw" value="{{ filter.kw }}">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" onclick="if(!$('#search_kw').val()){return false;}" type="button">搜域名</button>
+            </span>
+        </div>
+    </form>
+</div>

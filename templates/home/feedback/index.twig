@@ -1,0 +1,54 @@
+{% extends "layout.twig" %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="login-form">
+                    <form method="post" action="{{ path_for('home.feedback.index') }}" class="form-horizontal">
+                        <div class="title text-center">
+                            <h3>留言建议</h3>
+                        </div>
+                        <hr/>
+                        {% if errorMsg %}
+                        <div class="alert alert-danger">
+                            {{ errorMsg }}
+                        </div>
+                        {% endif %}
+                        <div>
+                            <div class="form-group">
+                                <label for="email" class="col-md-3 control-label">主题</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" id="title" name="title" placeholder="title" value="{{ title }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="col-md-3 control-label">内容</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control" rows="8" name="content">{{ content }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-md-3 control-label">验证码</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" id="captcha" name="captcha" >
+                                </div>
+                                <div class="col-md-3">
+                                    {{ captchaImg|raw }}
+                                </div>
+                            </div>
+                            <input type="hidden" name="_form" value="{{ _form }}">
+
+                            <div class="form-group">
+                                <div class="col-md-offset-3 col-md-9 text-right" style="line-height: 34px">
+                                    <button type="submit" class="btn btn-primary" style="float: left">提交留言</button>
+                                    <a href="{{ path_for('index') }}"><i class="fa fa-lock"></i> 返回主页</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

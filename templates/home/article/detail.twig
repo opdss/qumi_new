@@ -1,0 +1,40 @@
+{% extends "layout.twig" %}
+
+{% block container %}
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-12" style="min-height: 720px">
+                {#<h2>{{ article.title }}</h2>#}
+                <h2 style="font-weight: bold">如何使用本站停靠域名</h2>
+                {#<p>{{ article.content }}</p>#}
+                <div class="text-left">
+                    <h4 style="font-weight: bold">一、本站说明</h4>
+                    <p class="well">本站是个人开发的一个域名停靠站，本着对.app 无限热爱，对.app米友免费开放停靠。本站支持.app的泛域名证书自动申请以及续签续签。由于个人精力有限，网站处于持续开发当中，如有问题或个人意见，欢迎共同交流。联系QQ:479531993.{#但不限于将来可能资金问题停止运营本站- -！。#}</p>
+                    <h4 style="font-weight: bold">二、注册账户</h4>
+                    <p class="well">忽略，如注册账号遇到问题，请直接联系本人。</p>
+                    <h4 style="font-weight: bold">三、添加域名</h4>
+                    <p class="well">
+                        1.在 域名管理 -> 添加域名， 域名支持批量添加，批量修改等批量操作，批量操作不超过100个。<br/>
+                        2.域名添加完成后，一定要在注册商处修改域名的DNS服务器为本站提供的地址，在"个人中心"可找到这两个地址。修改dns的用处，是验证你对该域名的所有权，同时将域名解析到本站来，进行证书申请。<br/>
+                        3.修改dns后，在"域名管理"，进行dns验证，验证成功之后才会自动停靠到本站。dns生效可能有些延时，可以稍等在尝试。<br/>
+                    </p>
+                    <p class="alert alert-danger"> 注：狗爹的域名如果修改自己的专属dns失败，请使用：ns1.wuxin.info, ns2.wuxin.info两个地址。只限狗爹域名使用。</p>
+                    <h4 style="font-weight: bold">四、模板管理</h4>
+                    <p class="well">在模板管理 -> 添加模板， 模板是用于域名的展示，所以添加完模板后，一定要设置域名的展示模板，域名才能正确的被展示。如果你有更好的展示模板，欢迎联系我添加进去使用。</p>
+                    <h4 style="font-weight: bold">五、米表管理</h4>
+                    <p class="well">在米表管理 -> 添加模板， 米表是域名展示的集合，是一个列表页，目前是按照展示模板来分类的。如果你有更好的米表模板，欢迎联系我添加进去使用。</p>
+                    <h4 style="font-weight: bold">六、数据统计</h4>
+                    <p class="well">这里是域名访问的记录以及相关统计，目前在不断完善数据的展示。</p>
+                    <h4 style="font-weight: bold">六、其他说明</h4>
+                    <p class="well">
+                        1.由于大陆政策原因，https://qumi.app访问可能不太稳定，可使用备用域名 http://798.cx<br/>
+                        2.当备用域名都打不开的时候，请联系我。
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            {{ pagination | raw }}
+        </div>
+    </div>
+{% endblock %}

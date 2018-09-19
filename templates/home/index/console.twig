@@ -1,0 +1,38 @@
+{% extends 'home/layout.twig' %}
+
+{% block container %}
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md2 layui-col-xs12">
+                <div class="site-menu">
+                    <ul class="layui-nav layui-nav-tree layui-inline layui-bg" style="margin-right: 10px;">
+                        <li class="layui-nav-item layui-nav-itemed">
+                            <a href="javascript:;">默认展开</a>
+                            <dl class="layui-nav-child">
+                                <dd><a href="">跳转项</a></dd>
+                            </dl>
+                        </li>
+                        <li class="layui-nav-item">
+                            <a href="javascript:;">解决方案</a>
+                            <dl class="layui-nav-child">
+                                <dd><a href="">移动模块</a></dd>
+                                <dd><a href="">后台模版</a></dd>
+                                <dd><a href="">电商平台</a></dd>
+                            </dl>
+                        </li>
+                        <li class="layui-nav-item"><a href="">云市场</a></li>
+                        <li class="layui-nav-item"><a href="">社区</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="layui-col-md10 layui-col-xs12">
+            {% block console %}
+                <div class="site-content">
+                    <div class="" style="text-align: center;padding:20%;background-color: #aaaaaa"><h1>好像啥也没有。。。</h1></div>
+                </div>
+            {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

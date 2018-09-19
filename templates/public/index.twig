@@ -1,0 +1,37 @@
+{% extends "layout.twig" %}
+
+{% block container %}
+    <div class="container">
+        <div class="row-fluid">
+            {% if carousel %}
+            {% include 'public/carousel.twig' %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="container">
+        <div class="row-fluid">
+            {% include 'public/searchBox.twig' %}
+        </div>
+        <div class="row">
+            {% for x in records %}
+                <div class="col-md-3">
+                    <div class="box-domain">
+                        <a class="domain" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.uc_name }}</a>
+                        {% if x.description %}
+                        <div class="description">
+                            {{ x.description }}
+                        </div>
+                        {% endif %}
+                        <div  class="price">
+                            {% if x.sale_type %}询价{% else %}¥ {{ x.price }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="row text-center">
+            {{ pagination | raw }}
+        </div>
+    </div>
+{% endblock %}
