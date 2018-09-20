@@ -681,9 +681,15 @@ class Functions
 		exit();
 	}
 
-	public static function sendEmail($email, $content)
+	public static function verifyEmail($email)
     {
-        return true;
+        return $email ? filter_var($email, FILTER_VALIDATE_EMAIL) : false;
+    }
+
+    public static function verifyPasswd($password)
+    {
+        $len = strlen($password);
+        return $len >= 6 && $len <= 20;
     }
 
 }

@@ -147,11 +147,11 @@ class Email
 			$emailQueue->from_name = '趣米停靠站';
 			$emailQueue->level = 0;
 		} elseif (count($params) == 1 && is_array($params[0])) {
-			if (!isset($params['to']) || !$params['to']) {
+		    $params = $params[0];
+            if (!isset($params['to']) || !$params['to']) {
 				return false;
 			}
 			$emailQueue->to = $params['to'];
-
 			if (!isset($params['body']) || !$params['body']) {
 				return false;
 			}

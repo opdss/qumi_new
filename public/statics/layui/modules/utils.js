@@ -1,41 +1,56 @@
 layui.define(['layer', 'jquery'], function(exports){
+    var hasLoading = true;
+    //ajax的loading
+    var loading;
     //设置ajax的全局配置
     layui.$.ajaxSetup({
-        timeout : 30000,
+        timeout : 10000,
         dataType: "json",
         beforeSend: function (obj) {
-            //$('body').append(loading);
-            //loading.open();
+            if (hasLoading) {
+                loading = layer.load(2, {time: 10000});
+            }
         },
         error: function (res) {
             layer.alert('网络可能有点不正常，刷新再看看', {icon: 2});
         },
         complete: function (res) {
-            //console.log(res);
+            if (hasLoading) {
+                layer.close(loading);
+            }
         }
     });
     //对相应成功的请求进行errCode预处理
-    var ajaxProcess = function (res, success) {
+    var ajaxProcess = function (res, success, error) {
         if (res.errCode == 0) {
-            success(res.data, res);
+            if (success) {
+                success(res.data, res);
+            }
         } else {
-            layer.alert(res.errMsg, {icon: 2});
+            if (error) {
+                error(res);
+            } else {
+                layer.alert(res.errMsg, {icon: 2});
+            }
         }
     }
     var obj = {
+        setAjaxLoading : function (hl) {
+            hasLoading = hl ? true : false;
+        },
         //重新封装ajax 的curd请求方法
         ajax : {
-            get : function (url, success) {
-                layui.$.ajax({'url':url, 'method':'get', 'success':function (res) {ajaxProcess(res, success)}});
+            get : function (url, success, error) {
+                layui.$.ajax({'url':url, 'method':'get', 'success':function (res) {ajaxProcess(res, success, error)}});
             },
-            post : function (url, data, success) {
-                layui.$.ajax({'url':url, 'method':'post', 'data':data, 'success':function (res) {ajaxProcess(res, success)}});
+            post : function (url, data, success, error) {
+                layui.$.ajax({'url':url, 'method':'post', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
             },
-            put : function (url, data, success) {
-                layui.$.ajax({'url':url, 'method':'put', 'data':data, 'success':function (res) {ajaxProcess(res, success)}});
+            put : function (url, data, success, error) {
+                layui.$.ajax({'url':url, 'method':'put', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
             },
-            delete : function (url, data, success) {
-                layui.$.ajax({'url':url, 'method':'delete', 'data':data, 'success':function (res) {ajaxProcess(res, success)}});
+            delete : function (url, data, success, error) {
+                layui.$.ajax({'url':url, 'method':'delete', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
             }
         },
         //默认数据表格配置
@@ -51,11 +66,14 @@ layui.define(['layer', 'jquery'], function(exports){
 
             }
             ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+                if (!res.hasOwnProperty("data")) {
+                    res['data'] = {count:0, records:[]}
+                }
                 return {
                     "code": res.errCode, //解析接口状态
                     "msg": res.errMsg, //解析提示文本
-                    "count": res.data.count, //解析数据长度
-                    "data": res.data.records //解析数据列表
+                    "count": res['data']['count'], //解析数据长度
+                    "data": res['data']['records'] //解析数据列表
                 };
             }
         },
@@ -107,8 +125,20 @@ layui.define(['layer', 'jquery'], function(exports){
             });
             return domains;
         },
-
-
+        verifyEmail : function(email){
+            if (!email) {
+                return false;
+            }
+            var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+            if(!reg.test(email)){ //正则验证不通过，格式不对
+                return false;
+            }else{
+                return true;
+            }
+        },
+        loading : function () {
+            return layer.load(2, {time: 10000});
+        }
     };
     //输出接口
     exports('utils', obj);

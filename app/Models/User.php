@@ -52,6 +52,12 @@ class User extends Base
 		return $this->hasMany('\App\Models\UserNs', 'uid', 'uid');
 	}
 
+	public function resetPassword($password)
+    {
+        $this->password = self::passwordHash($password);
+        return $this->save();
+    }
+
 	/**
 	 * 邮箱和密码检验用户
 	 * @param $email

@@ -5,22 +5,17 @@
         <div class="layui-row">
             <div class="layui-col-md5 layui-col-md-offset3 ">
                 <div class="login-form login">
-                    <form method="post" action="{{ path_for('register') }}" class="layui-form" >
+                    <form method="post" action="{{ path_for('forget') }}" class="layui-form" >
                         <div class="title text-center">
                             <h2>趣米 - 重置密码</h2>
                         </div>
                         <hr/>
-                        {% if errorMsg %}
-                            <div class="alert alert-danger">
-                                {{ errorMsg }}
-                            </div>
-                        {% endif %}
                         <div>
                             <div class="layui-form-item">
                                 <div class="layui-inline">
                                     <label class="layui-form-label login-label">注册邮箱</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="email" class="layui-input">
+                                        <input type="text" name="email" lay-verify="email" class="layui-input">
                                     </div>
                                     <div class="layui-input-inline" style="width: 106px">
                                         <button class="layui-btn layui-btn-normal" id="sendCode">发送验证码</button>
@@ -28,23 +23,27 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
+                                <label for="password" class="layui-form-label login-label">验证码</label>
+                                <div class="layui-input-block login-input-block">
+                                    <input type="text" class="layui-input" name="code" lay-verify="code" placeholder="验证码" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
                                 <label for="password" class="layui-form-label login-label">新密码</label>
                                 <div class="layui-input-block login-input-block">
-                                    <input type="password" class="layui-input" id="password" name="password" placeholder="Password" value="{{ password }}">
+                                    <input type="password" class="layui-input" name="password" lay-verify="passwd" placeholder="新密码" autocomplete="off">
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="repassword" class="layui-form-label login-label">确认密码</label>
                                 <div class="layui-input-block login-input-block">
-                                    <input type="password" class="layui-input" id="repassword" name="repassword" placeholder="Password" value="{{ repassword }}">
+                                    <input type="password" class="layui-input" name="repassword" lay-verify="passwd" placeholder="确认密码" autocomplete="off">
                                 </div>
                             </div>
 
-                            <input type="hidden" name="_form" value="{{ _form }}">
-
                             <div class="layui-form-item">
                                 <div class="layui-input-block login-input-block text-right">
-                                    <button class="layui-btn" lay-submit lay-filter="formDemo" style="float: left">注册</button>
+                                    <button class="layui-btn" lay-submit="" lay-filter="submit"  style="float: left">确认修改</button>
                                     <a href="{{ path_for('login') }}" style="line-height: 38px;"><i class="fa fa-external-link"></i> 已有账号？点击登录</a>
                                 </div>
                             </div>
@@ -54,7 +53,7 @@
             </div>
         </div>
     </div>
-    <div style="display: none" id="popCaptcha">
+    <div style="display: none" id="modalCaptcha">
         <div style="padding: 20px 40px">
             {{ captchaImg|raw }}
             <input type="text" name="captcha" class="layui-input" style="width: 150px;margin-top: 10px;" placeholder="输入上图字符">
@@ -64,32 +63,72 @@
 
 {% block script %}
     <script>
-        layui.use(['layer', 'element', 'form', 'table', 'utils'], function() {
+        layui.use(['layer', 'element', 'form', 'utils'], function() {
             var layer = layui.layer;
             var form = layui.form;
             var table = layui.table;
             var utils = layui.utils;
             var $ = layui.$
+            var API = {
+                sendemailcode : '{{ path_for('api.login.sendemailcode') }}',
+                updatePasswd : '{{ path_for('api.login.updatepasswd') }}',
+            }
+            //监听提交
+            form.on('submit(submit)', function(data){
+                utils.ajax.post(API.updatePasswd, data.field, function (res) {
+                    layer.alert('密码已修改成功', function(index){
+                        location.href = '/login';
+                    });
+                })
+                return false;
+            });
+
+            //自定义验证规则
+            form.verify({
+                code: function(value){
+                    if(value.length != 6){
+                        return '请输入邮件收到的六位验证码';
+                    }
+                }
+                ,passwd: [/(.+){6,20}$/, '密码必须6到20位']
+            });
+
             $('#sendCode').on('click', function () {
+                var $this = $(this);
                 var email = $('input[name=email]').val();
                 if (!email) {
                     layer.msg('请输入您的注册邮箱！');
                     return false;
                 }
-                /*layer.open({
+                if (!utils.verifyEmail(email)) {
+                    layer.msg('您输入的邮箱错误！');
+                    return false;
+                }
+                layer.open({
                     type : 1
                     ,id: 'sendEmail' //防止重复弹出
-                    , content : $('#popCaptcha').html()
+                    ,content : $('#modalCaptcha').html()
                     ,btn: '确定'
                     ,btnAlign: 'c' //按钮居中
                     ,shade: 0 //不显示遮罩
-                    ,yes: function(){
-                        var data = {};
-                        data['captcha'] = $('#sendEmail').find('input[name=captcha]').val()
-                        data['email'] = ;
-                        //layer.closeAll();
+                    ,yes: function(index){
+                        var data = {'email':email};
+                        var captcha = $('#sendEmail').find('input[name=captcha]').val()
+                        if (!captcha) {
+                            layer.msg('请输入正确的验证码！');
+                            return false;
+                        }
+                        data['captcha'] = captcha
+                        utils.ajax.post(API.sendemailcode, data, function (res) {
+                            $this.text('已发送成功');
+                            $this.attr('disabled', true);
+                            layer.close(index);
+                        }, function (res) {
+                            $('#sendEmail').find('img').trigger('click');
+                            layer.alert(res.errMsg, {icon: 2});
+                        })
                     }
-                });*/
+                });
                 return false;
             })
         });

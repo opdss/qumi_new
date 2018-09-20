@@ -3,36 +3,30 @@
 {% block container %}
     <div class="layui-container">
         <div class="layui-row">
-            <div class="layui-col-md4 layui-col-md-offset4">
+            <div class="layui-col-md5 layui-col-md-offset3">
                 <div class="login-form login">
-                    <form method="post" action="{{ path_for('login') }}" class="layui-form" id="hasPwd">
+                    <form method="post" action="{{ path_for('login') }}" class="layui-form">
                         <div class="title text-center">
                             <h2>趣米 - 登录</h2>
                         </div>
                         <hr/>
-                        {% if errorMsg %}
-                            <div class="alert alert-danger">
-                                {{ errorMsg }}
-                            </div>
-                        {% endif %}
                         <div>
                             <div class="layui-form-item">
                                 <label for="email" class="layui-form-label login-label">邮箱</label>
                                 <div class="layui-input-block login-input-block">
-                                    <input type="email" class="layui-input" required  lay-verify="required" id="email" name="email" placeholder="Email" value="{{ email }}">
+                                    <input type="email" class="layui-input" required lay-verify="email" id="email" name="email" placeholder="Email">
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="password" class="layui-form-label login-label">密码</label>
                                 <div class="layui-input-block login-input-block">
-                                    <input type="password" class="layui-input" required  lay-verify="required"  id="password" name="password" placeholder="Password" value="{{ password }}">
+                                    <input type="password" class="layui-input" required  lay-verify="passwd"  id="password" name="password" placeholder="Password">
                                 </div>
                             </div>
-                            <input type="hidden" name="_form" value="{{ _form }}">
-                            <input type="hidden" name="redirect_url" value="{{ redirect_url }}">
+
                             <div class="layui-form-item">
                                 <div class="layui-input-block login-input-block text-right">
-                                    <button class="layui-btn" lay-submit style="float: left">登录</button>
+                                    <button class="layui-btn" lay-submit lay-filter="submit" style="float: left">登录</button>
                                     <a href="{{ path_for('register') }}" style="line-height: 38px;"><i class="fa fa-external-link"></i>注册</a>&nbsp;
                                     <a href="{{ path_for('forget') }}" style="line-height: 38px;"><i class="fa fa-lock"></i> 忘记密码</a>
                                 </div>
@@ -47,12 +41,37 @@
 
 {% block script %}
     <script>
-
-        layui.use(['layer', 'element', 'form', 'table', 'utils'], function() {
+        layui.use(['layer', 'element', 'form', 'utils'], function() {
             var layer = layui.layer;
             var form = layui.form;
-            var table = layui.table;
             var utils = layui.utils;
+            var $ = layui.$
+
+            var API = {
+                login : '{{ path_for('api.login') }}',
+            }
+            //监听提交
+            form.on('submit(submit)', function(data){
+                utils.ajax.post(API.login, data.field, function (res) {
+                    layer.alert('登陆成功！', function(index){
+                        location.href = res && res['redirect_url'] ? res['redirect_url'] : '/';
+                    });
+                }, function (res) {
+                    $('#captchaImg').find('img').trigger('click');
+                    layer.alert(res.errMsg, {icon: 2});
+                })
+                return false;
+            });
+
+            //自定义验证规则
+            form.verify({
+                captcha: function(value){
+                    if(value.length != 4){
+                        return '请输入4位验证码';
+                    }
+                }
+                ,passwd: [/(.+){6,20}$/, '密码必须6到20位']
+            });
         });
     </script>
 {% endblock %}

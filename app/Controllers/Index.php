@@ -138,8 +138,20 @@ class Index extends Base
 	 */
 	public function test(Request $request, Response $response, $args)
 	{
-		$res = Email::factory()->insertQueue('opdss@qq.com', '我登陆了', '登陆通知');;
-	    var_dump($res);
+	    //$preg = '/login|logout|forget|register/';
+	    $preg = '/\/login|\/logout|\/forget|\/register/';
+	    $str = 'gweg/agaeg/aweg/aewleoginregister/loegout';
+	    var_dump(preg_match($preg, $str));
+	    exit;
+        $userModel = User::where('email', 'opdss@qq.com')->first();
+       $res = $userModel->resetPassword('222222');
+	   var_dump($res);
+       exit;
+        $emailCode = Functions::genRandStr(6);
+        $body = "您好，opdss@qq.com，您正在使用找回密码功能，验证码：${emailCode} 。";
+        $data = ['to'=>'opdss@qq.com', 'body'=>$body, 'subject'=>'趣米停靠站-找回密码', 'level'=>10];
+        $flag = Email::factory()->insertQueue($data);
+        var_dump($flag);
 	    exit;
 		Functions::runTime('test');
 		$email = Email::factory();

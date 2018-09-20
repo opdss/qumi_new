@@ -15,7 +15,7 @@ use Slim\Http\Response;
 /**
  *
  * Class Domain
- * @middleware App\Middleware\Rtime
+ * @middleware App\Middleware\Auth|App\Middleware\Rtime
  * @package App\Controllers
  */
 class Domain extends Base
