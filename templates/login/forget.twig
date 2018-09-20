@@ -3,11 +3,11 @@
 {% block container %}
     <div class="layui-container">
         <div class="layui-row">
-            <div class="layui-col-md4 layui-col-md-offset4 ">
+            <div class="layui-col-md5 layui-col-md-offset3 ">
                 <div class="login-form login">
-                    <form method="post" action="{{ path_for('register') }}" class="layui-form" id="hasPwd">
+                    <form method="post" action="{{ path_for('register') }}" class="layui-form" >
                         <div class="title text-center">
-                            <h2>趣米 - 注册</h2>
+                            <h2>趣米 - 重置密码</h2>
                         </div>
                         <hr/>
                         {% if errorMsg %}
@@ -17,13 +17,18 @@
                         {% endif %}
                         <div>
                             <div class="layui-form-item">
-                                <label for="email" class="layui-form-label login-label">用户邮箱</label>
-                                <div class="layui-input-block login-input-block">
-                                    <input type="email" class="layui-input" id="email" name="email" placeholder="Email" value="{{ email }}">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label login-label">注册邮箱</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="email" class="layui-input">
+                                    </div>
+                                    <div class="layui-input-inline" style="width: 106px">
+                                        <button class="layui-btn layui-btn-normal" id="sendCode">发送验证码</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label for="password" class="layui-form-label login-label">密码</label>
+                                <label for="password" class="layui-form-label login-label">新密码</label>
                                 <div class="layui-input-block login-input-block">
                                     <input type="password" class="layui-input" id="password" name="password" placeholder="Password" value="{{ password }}">
                                 </div>
@@ -49,6 +54,12 @@
             </div>
         </div>
     </div>
+    <div style="display: none" id="popCaptcha">
+        <div style="padding: 20px 40px">
+            {{ captchaImg|raw }}
+            <input type="text" name="captcha" class="layui-input" style="width: 150px;margin-top: 10px;" placeholder="输入上图字符">
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
@@ -58,6 +69,29 @@
             var form = layui.form;
             var table = layui.table;
             var utils = layui.utils;
+            var $ = layui.$
+            $('#sendCode').on('click', function () {
+                var email = $('input[name=email]').val();
+                if (!email) {
+                    layer.msg('请输入您的注册邮箱！');
+                    return false;
+                }
+                /*layer.open({
+                    type : 1
+                    ,id: 'sendEmail' //防止重复弹出
+                    , content : $('#popCaptcha').html()
+                    ,btn: '确定'
+                    ,btnAlign: 'c' //按钮居中
+                    ,shade: 0 //不显示遮罩
+                    ,yes: function(){
+                        var data = {};
+                        data['captcha'] = $('#sendEmail').find('input[name=captcha]').val()
+                        data['email'] = ;
+                        //layer.closeAll();
+                    }
+                });*/
+                return false;
+            })
         });
     </script>
 {% endblock %}

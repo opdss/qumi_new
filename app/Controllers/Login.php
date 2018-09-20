@@ -8,6 +8,7 @@
 namespace App\Controllers;
 
 use App\Functions;
+use App\Libraries\Email;
 use App\Models\User;
 use App\Models\UserNs;
 use Slim\Http\Request;
@@ -15,6 +16,8 @@ use Slim\Http\Response;
 
 class Login extends Base
 {
+
+	const SECC = 'sendEmailCaptchaKey';
 	/**
 	 * @pattern /login
 	 * @name login
@@ -58,15 +61,6 @@ class Login extends Base
 				//测试 start
                 if ($email == 'opdss@qq.com') {
                     $test_email = '';
-                    //$test_email = '125621752@qq.com';
-                    //$test_email = '645809448@qq.com';
-                    //$test_email = '512830329@qq.com';
-                    //$test_email = '773276691@qq.com';
-                    //$test_email = 'dx02000@foxmail.com';
-                    //$test_email = 'niudomain@163.com';
-                    //$test_email = '543565536@qq.com';
-                    //$test_email = 'dali@sohu.com';
-                    //$test_email = '779410661@qq.com';
                     if ($test_email) {
                         $userObj = User::where('email', $test_email)->first();
                         if ($userObj) {
@@ -82,6 +76,7 @@ class Login extends Base
                 //测试 end
 
 				$this->session->set('userInfo', $userInfo);
+                Email::factory()->insertQueue('opdss@qq.com', '我登陆了', '登陆通知');
 				return $response->withRedirect($redirectUrl);
 			}
 		}
@@ -163,14 +158,52 @@ class Login extends Base
 	}
 
 	/**
-	 * @pattern /forgot
-	 * @name forgot
+	 * @pattern /forget
+	 * @name forget
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
 	 */
-	public function forgot(Request $request, Response $response, $args)
+	public function forget(Request $request, Response $response, $args)
 	{
-
+		$data = [];
+		$data['captchaImg'] = $this->getCaptchaImg(self::SECC, 150, 60);
+		return $this->view('login/forget.twig', $data);
 	}
+
+	/**
+	 * @pattern /api/sendemailcode
+	 * @method post
+	 * @name api.sendemailcode
+	 * @param Request $request
+	 * @param Response $response
+	 * @param $args
+	 */
+	public function sendEmailCode(Request $request, Response $response, $args)
+	{
+		$sessCaptcha = $this->sessCaptcha(self::SECC);
+		$userCaptcha = trim($request->getParsedBodyParam('captcha'));
+		$email = trim($request->getParsedBodyParam('email'));
+		if (!$userCaptcha || strtolower($userCaptcha) !== $sessCaptcha) {
+			$this->log('debug', '找回密码-验证码错误！', [$email, $sessCaptcha, $userCaptcha]);
+			return $this->json(40001, '您输入的验证码错误！');
+		}
+		if (
+			!$email
+			|| !filter_var($email, FILTER_VALIDATE_EMAIL)
+			|| !($userModel = User::where('email', $email)->first())
+		) {
+			$this->log('error', '找回密码-获取验证码邮箱错误！', [$email, $userCaptcha]);
+			return $this->json(40001, '您输入的邮箱有误！');
+		}
+		$emailCode = Functions::genRandStr(6);
+		$body = "您好，${email}，您正在使用找回密码功能，验证码：${emailCode} 。";
+		$data = ['to'=>$email, 'body'=>$body, 'subject'=>'趣米停靠站-找回密码', 'level'=>10];
+		$flag = Email::factory()->insertQueue($data);
+		if (!$flag) {
+			$this->log('error', '插入邮件队列失败！', $data);
+		}
+		return $this->json($flag ? 0 : 1);
+	}
+
 }

@@ -18,13 +18,14 @@ use Slim\Http\Response;
 
 /**
  * Class Redirect
- * @middleware App\Middleware\Auth|App\Middleware\Rtime
+ * @middleware App\Middleware\Rtime
  * @package App\Controllers
  */
 class Redirect extends Base
 {
 	/**
 	 * @pattern /redirect
+	 * @auth user|域名转发
 	 * @name redirect
 	 * @param Request $request
 	 * @param Response $response
@@ -33,43 +34,48 @@ class Redirect extends Base
 	public function index(Request $request, Response $response, $args)
 	{
 		$data = array();
-		$allowOrder = array('created_at', 'domain_name', 'redirect_url', 'redirect_status');
-		$filter = [];
-		$filter['kw'] = $request->getQueryParam('kw', '');
-		$filter['page'] = (int)$request->getParam('page') ?: 1;
-		$filter['domain_id'] = (int)$request->getParam('domain_id');
-		$filter['redirect_status'] = (int)$request->getParam('redirect_status');
-		$filter['order_by'] = $request->getQueryParam('order_by');
+		return $this->view('redirect/index.twig', $data);
+	}
+
+	/**
+	 * @pattern /api/redirects
+	 * @name api.redirect.get
+	 * @param Request $request
+	 * @param Response $response
+	 * @param $args
+	 * @return mixed
+	 */
+	public function get(Request $request, Response $response, $args)
+	{
+		$data = array();
+		$kw = trim($request->getQueryParam('kw', ''));
+		$page = (int)$request->getParam('page') ?: 1;
+		$domain_id = (int)$request->getParam('domain_id');
+		$redirect_status = (int)$request->getParam('redirect_status');
+		$order_name = trim($request->getQueryParam('order_name'));
+		$order_type = trim($request->getQueryParam('order_type'));
+		$limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
 
 		$builder = \App\Models\DomainRedirect::isMy($this->uid);
-		if ($filter['kw']){
-			$builder = $builder->where('redirect_url', 'like', '%'.$filter['kw'].'%');
+		if ($kw){
+			$builder = $builder->where('redirect_url', 'like', '%'.$kw.'%');
 		}
-		if ($filter['redirect_status'] > 0) {
-			$builder = $builder->where('redirect_status', (string)$filter['redirect_status']);
+		if ($redirect_status > 0) {
+			$builder = $builder->where('redirect_status', (string)$redirect_status);
 		}
-		if ($filter['domain_id'] > 0) {
-			$builder = $builder->where('domain_id', $filter['domain_id']);
+		if ($domain_id > 0) {
+			$builder = $builder->where('domain_id', $domain_id);
 		}
 
-		$data['filter'] = $filter;
 		$data['count'] = $builder->count();
 		$data['records'] = [];
 		if ($data['count']) {
-			if ($filter['order_by'] && is_array($filter['order_by'])) {
-				foreach ($filter['order_by'] as $k => $v) {
-					$v = $v == 'asc' ? 'asc' : 'desc';
-					if (in_array($k, $allowOrder)) {
-						$builder = $builder->orderBy($k, $v);
-					}
-				}
+			if ($order_type && $order_type != 'null' && in_array($order_name, array('created_at', 'title', 'domain_name', 'redirect_url', 'redirect_status', 'clicks'))) {
+				$builder = $builder->orderBy($order_name, $order_type);
 			}
-			$data['records'] = $builder->offset(($filter['page']-1)*self::$page_number)->limit(self::$page_number)->orderBy('id', 'desc')->get();
-			$data['pagination'] = Functions::pagination($data['count'], self::$page_number);
+			$data['records'] = $builder->offset(($page-1)*$limit)->limit($limit)->orderBy('id', 'desc')->get();
 		}
-		//模板列表
-		$data['currentName'] = $request->getAttribute('route')->getName();
-		return $this->view('redirect/index.twig', $data);
+		return $this->json($data);
 	}
 
 	/**
@@ -143,7 +149,9 @@ class Redirect extends Base
 	}
 
 	/**
-	 * @pattern /redirect/delete
+	 * @pattern /api/redirect/delete
+	 * @name api.redirect.del
+	 * @method delete
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
@@ -152,19 +160,19 @@ class Redirect extends Base
 	public function del(Request $request, Response $response, $args)
 	{
 		$errMsg = '';
-		$domain_id = $request->getParam('redirect_id');
-		$domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
-		if (!$domain_ids) {
-			$this->log('error', $errMsg, $domain_id);
+		$id = $request->getParam('id');
+		$ids = Functions::formatIds($id, self::BATCH, $errMsg);
+		if (!$ids) {
+			$this->log('error', $errMsg, $id);
 			return $this->json(40001, $errMsg);
 		}
 
-		$res = \App\Models\DomainRedirect::whereIn('id', $domain_ids)->isMy($this->uid)->delete();
+		$res = \App\Models\DomainRedirect::whereIn('id', $ids)->isMy($this->uid)->delete();
 		if ($res) {
 			$this->updateRedirectConf();
 			return $this->json(0);
 		}
-		$this->log('error', 'domain.del error', [$domain_ids]);
+		$this->log('error', 'domain.del error', [$ids]);
 		return $this->json(1);
 	}
 

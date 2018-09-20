@@ -157,7 +157,7 @@ class Base
 
 	protected function getCaptchaImg($k, $w = 150, $h = 40)
 	{
-		$captchaUrl = $this->ci->router->pathFor('captcha.index').'?k='.$k;
+		$captchaUrl = $this->ci->router->pathFor('captcha.index', ['key'=>$k]).'?1';
 		if ($w = intval($w)) {
 			$captchaUrl .= '&w='.$w;
 		}
@@ -222,4 +222,12 @@ class Base
         }
         return $menus;
     }
+
+    protected function sessCaptcha($key, $val=null) {
+    	if ($val === null) {
+    		return $this->session->getFlashdata($key);
+		} else {
+    		return $this->session->setFlashdata($key, strtolower($val));
+		}
+	}
 }

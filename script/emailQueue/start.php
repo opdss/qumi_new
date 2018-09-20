@@ -18,21 +18,41 @@ if (PHP_SAPI != 'cli') {
 }
 
 \App\Libraries\Config::setConfigPath(CONFIG_DIR);
-//设置数据库q
+
+//设置数据库
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection(\App\Libraries\Config::get('mysql'));
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-//需要添加到dns服务器的域名条件
-$filter = array('dns_status'=>1, 'dns_parse'=>0);
 //每次最大执行数量
-$max_number = 200;
+$max_number = 100;
+$loop = 0;
 
-$res = \App\Models\EmailQueue::where('status', 1)->orderBy('id', 'desc')->limit($max_number)->get()->toArray();
-
-if ($res) {
-    foreach ($res as $item) {
-
-    }
+while ($loop < $max_number) {
+	$res = \App\Models\EmailQueue::where('status', 1)->orderBy('level', 'desc')->orderBy('id', 'asc')->limit($max_number)->get()->toArray();
+	if ($res) {
+		foreach ($res as $item) {
+			$email = \App\Libraries\Email::factory();
+			$email->setSubject($item['subject'])
+				->addAddress($item['to'])
+				->setBody($item['body']);
+			if ($item['attachment']) {
+				foreach (json_decode($item['attachment']) as $one) {
+					$email->addAttachment($one);
+				}
+			}
+			if ($item['from_name']) {
+				$email->setFromName($item['from_name']);
+			}
+			$status = 2;
+			if (!$email->send()) {
+				$status = 3;
+				\App\Functions::getLogger()->error('发送队列邮件失败!', $item);
+			}
+			\App\Models\EmailQueue::where('id', $item['id'])->update(array('status' => $status));
+			$loop++;
+		}
+	}
+	sleep(2);
 }

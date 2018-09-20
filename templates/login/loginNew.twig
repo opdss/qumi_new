@@ -1,40 +1,40 @@
 {% extends "layout.twig" %}
 
 {% block container %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4 login">
-                <div class="login-form">
-                    <form method="post" action="{{ path_for('login') }}" class="form-horizontal" id="hasPwd">
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-md-offset4">
+                <div class="login-form login">
+                    <form method="post" action="{{ path_for('login') }}" class="layui-form" id="hasPwd">
                         <div class="title text-center">
-                            <h3>趣米 - 登录</h3>
+                            <h2>趣米 - 登录</h2>
                         </div>
                         <hr/>
                         {% if errorMsg %}
-                        <div class="alert alert-danger">
-                            {{ errorMsg }}
-                        </div>
+                            <div class="alert alert-danger">
+                                {{ errorMsg }}
+                            </div>
                         {% endif %}
                         <div>
-                            <div class="form-group">
-                                <label for="email" class="col-md-3 control-label">用户名</label>
-                                <div class="col-md-9">
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="{{ email }}">
+                            <div class="layui-form-item">
+                                <label for="email" class="layui-form-label login-label">邮箱</label>
+                                <div class="layui-input-block login-input-block">
+                                    <input type="email" class="layui-input" required  lay-verify="required" id="email" name="email" placeholder="Email" value="{{ email }}">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="password" class="col-md-3 control-label">密码</label>
-                                <div class="col-md-9">
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" value="{{ password }}">
+                            <div class="layui-form-item">
+                                <label for="password" class="layui-form-label login-label">密码</label>
+                                <div class="layui-input-block login-input-block">
+                                    <input type="password" class="layui-input" required  lay-verify="required"  id="password" name="password" placeholder="Password" value="{{ password }}">
                                 </div>
                             </div>
                             <input type="hidden" name="_form" value="{{ _form }}">
                             <input type="hidden" name="redirect_url" value="{{ redirect_url }}">
-                            <div class="form-group">
-                                <div class="col-md-offset-3 col-md-9 text-right" style="line-height: 34px">
-                                    <button type="submit" class="btn btn-primary" style="float: left">登录</button>
-                                    <a href="{{ path_for('register') }}"><i class="fa fa-external-link"></i> 注册</a>
-                                    <a href="{{ path_for('forgot') }}"><i class="fa fa-lock"></i> 忘记密码</a>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block login-input-block text-right">
+                                    <button class="layui-btn" lay-submit style="float: left">登录</button>
+                                    <a href="{{ path_for('register') }}" style="line-height: 38px;"><i class="fa fa-external-link"></i>注册</a>&nbsp;
+                                    <a href="{{ path_for('forget') }}" style="line-height: 38px;"><i class="fa fa-lock"></i> 忘记密码</a>
                                 </div>
                             </div>
                         </div>
@@ -43,4 +43,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        layui.use(['layer', 'element', 'form', 'table', 'utils'], function() {
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var utils = layui.utils;
+        });
+    </script>
 {% endblock %}

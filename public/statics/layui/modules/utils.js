@@ -14,6 +14,7 @@ layui.define(['layer', 'jquery'], function(exports){
             //console.log(res);
         }
     });
+    //对相应成功的请求进行errCode预处理
     var ajaxProcess = function (res, success) {
         if (res.errCode == 0) {
             success(res.data, res);
@@ -22,6 +23,7 @@ layui.define(['layer', 'jquery'], function(exports){
         }
     }
     var obj = {
+        //重新封装ajax 的curd请求方法
         ajax : {
             get : function (url, success) {
                 layui.$.ajax({'url':url, 'method':'get', 'success':function (res) {ajaxProcess(res, success)}});
@@ -36,6 +38,7 @@ layui.define(['layer', 'jquery'], function(exports){
                 layui.$.ajax({'url':url, 'method':'delete', 'data':data, 'success':function (res) {ajaxProcess(res, success)}});
             }
         },
+        //默认数据表格配置
         tableOptions : {
             page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
                 layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
@@ -72,7 +75,7 @@ layui.define(['layer', 'jquery'], function(exports){
             };
             return map[toString.call(obj)];
         },
-
+        //根据id删除
         delById : function (url, ids, success) {
             if (obj.type(ids) == 'array') {
                 var msg = '确定删除选中的'+ids.length+'条数据吗？';
@@ -86,7 +89,26 @@ layui.define(['layer', 'jquery'], function(exports){
                     layer.close(index);
                 });
             });
-        }
+        },
+        //格式化处理domainStr
+        formatDomainStr : function (domainStr) {
+            var spl = ',';
+            domainStr = domainStr.replace(/[\r|\n| |，]+/g, ',').replace(/^,+|,+$/g, '').replace(/,{1,}/g, spl);
+            var domains = [];
+            var reg = /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}/;
+            (domainStr.split(spl)).forEach(function (value) {
+                var _val = value.split('.')
+                if (_val.length > 2) {
+                    value = _val[_val.length-2]+'.'+_val[_val.length-1]
+                }
+                if (reg.test(value) && domains.indexOf(value) == -1) {
+                    domains.push(value)
+                }
+            });
+            return domains;
+        },
+
+
     };
     //输出接口
     exports('utils', obj);

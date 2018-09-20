@@ -1,12 +1,14 @@
 
 
-h1,h2,h3{font-size: 14px;}
 ::-webkit-input-placeholder{color: #999}
 
 /* 布局 */
 .site-menu, .site-content{vertical-align: top; font-size: 14px;}
 .site-content{min-height: 600px; padding: 20px 0 10px 20px;}
 .modal {padding: 20px 10px}
+.text-center {text-align:center}
+.text-left {text-align:left}
+.text-right {text-align:right}
 /* 头部 */
 .header {
     height: 59px;
@@ -83,6 +85,24 @@ h1,h2,h3{font-size: 14px;}
 .site-block .layui-form{margin-right: 200px;}
 */
 
+/* login */
+.login {
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    background-color: #fff;
+    overflow: hidden;
+    color: #303133;
+    border: 1px solid #ebeef5;
+    margin-top:20%;
+    margin-bottom: 20%;
+    padding: 20px;
+}
+.login-label {
+    width: 60px;
+}
+.login-input-block {
+    margin-left: 90px;
+}
 
 
 /* 底部 */

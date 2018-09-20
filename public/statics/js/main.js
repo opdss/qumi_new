@@ -3,3 +3,5 @@ layui.config({
 }).extend({ //设定组件别名
     utils :  'utils',
 });
+
+layui.use(['layer', 'element'], function(){});

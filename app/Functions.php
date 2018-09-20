@@ -196,9 +196,9 @@ class Functions
 	public static function genRandStr($num = 16, $has=true)
 	{
 		$num = intval($num) ?: 16;
-		$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+		$str = '1234567890';
 		#$str1 = '~!@#$%^&*()_+={}|\][<>?/';
-		$str1 = '!@#$%^&*()_+=-';
+		$str1 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 		if ($has) {
 			$str .= $str1;
 		}

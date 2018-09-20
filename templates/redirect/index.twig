@@ -1,6 +1,40 @@
 {% extends 'console.twig' %}
 
 {% block console %}
+    <!-- content start -->
+    <div class="site-content">
+        <!--<h1 class="site-h1">域名管理</h1>-->
+
+        <!-- 数据查询条件 start -->
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="text" name="kw" class="layui-input" placeholder="关键词">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
+                        <button class="layui-btn layui-btn-normal" id="btnAdd">添加域名</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- 数据查询条件 end -->
+
+        <!-- 数据表格 start -->
+        <script type="text/html" id="headerToolBar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="batchDel">批量删除</button>
+            </div>
+        </script>
+        <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        <script type="text/html" id="toolBar">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+        <!-- 数据表格 end -->
+    </div>
+    <!-- content end -->
+
     <div class="row">
         <div class="col-md-12">
         <div>
@@ -103,54 +137,130 @@
 
 {% block script %}
     <script type="text/javascript">
-        function add() {
-            var modalObj = loadModal({remote:'{{ path_for('redirect.modal', {'act':'add'}) }}', backdrop: 'static', keyboard: false}, 0);
-            modalObj.on('hidden.bs.modal', function (e) {
-                this.remove();
-            });
-        }
+        layui.use(['layer', 'element', 'form', 'table', 'utils'], function(){
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var utils = layui.utils;
 
-        function edit(ids) {
-            if (!ids) {return false;}
-            var modalObj = loadModal({remote:'{{ path_for('redirect.modal', {'act':'edit'}) }}?redirect_id='+ids, backdrop: 'static', keyboard: false});
-            modalObj.on('hidden.bs.modal', function (e) {
-                this.remove();
-            });
-        }
+            var API = {
+                list : '{{ path_for('api.redirect.get') }}',
+                del : '{{ path_for('api.redirect.del') }}',
+            }
 
-        function del(ids) {
-            if (!ids) {return false;}
-            swal({
-                    title: "确定删除选中项吗",
-                    text: "删除将不在提供转发服务",
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    cancelButtonText: '取消',
-                    confirmButtonText : '确认删除',
-                    showLoaderOnConfirm: true,
-                },
-                function(){
-                    $.get('{{ path_for('redirect.del') }}', {'redirect_id':ids}, function (res) {
-                        if (res.errCode == 0) {
-                            utils.swal.success('', true);
-                        } else {
-                            utils.swal.error(res.errMsg);
-                        }
-                    })
+            table.render(layui.$.extend({
+                elem: '#dataTable'
+                ,url:API.list
+                ,toolbar : '#headerToolBar'
+                ,cols: [[
+                    {type:'checkbox'}
+                    ,{field:'title',  title: '标题', sort: true, edit:'text'}
+                    ,{field:'domain_name', title: '源地址', sort: true, edit:'text'}
+                    ,{field:'redirect_url', title: '目标地址', sort: true, edit:'text'}
+                    ,{field:'redirect_status', title: '转发状态', sort: true}
+                    ,{field:'clicks', title: '点击数', sort: true}
+                    ,{fixed:'right', title: '操作', align:'center', toolbar : '#toolBar' }
+                ]]
+            },utils.tableOptions));
+
+            //监听查询条件
+            form.on('submit(btnSearch)', function (data) {
+                table.reload('dataTable', {
+                    //重新从第 1 页开始
+                    page: {curr: 1}
+                    ,where: data.field
                 });
-        }
-        $('.more-del').click(function () {
-            del(getChecked($(this)));
+                return false;
+            });
+
+            //监听排序
+            table.on('sort(dataTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                //尽管我们的 table 自带排序功能，但并没有请求服务端。
+                //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+                table.reload('dataTable', {
+                    initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                    ,where: {'order_name' : obj.field, 'order_type':obj.type}
+                });
+            });
+
+            //头工具栏事件
+            table.on('toolbar(dataTable)', function(obj){
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch(obj.event){
+                    case 'batchEdit':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'batchDel':
+                        var data = checkStatus.data;
+                        if (data.length > 0) {
+                            var ids = [];
+                            data.forEach(function (o, i) {
+                                ids.push(o.id)
+                            })
+                            utils.delById(API.del, ids, function (res) {
+                                table.reload('dataTable');
+                            })
+                        }
+                        break;
+                    case 'batchDnsCheck':
+                        layer.msg(checkStatus.isAll ? '全选': '未全选');
+                        break;
+                };
+            });
+            //监听单元格
+            table.on('edit(dataTable)', function(obj){
+                var value = obj.value //得到修改后的值
+                    ,data = obj.data //得到所在行所有键值
+                    ,field = obj.field; //得到字段
+                var _data = {id: data.id}
+                _data[field] = value;
+                console.log(_data);
+                console.log(data);
+                console.log(obj);
+                utils.ajax.post('{{ path_for('api.template.update') }}',_data, function (res) {
+                    //同步更新表格和缓存对应的值
+                    obj.update(_data);
+                    layer.msg('修改成功！')
+                });
+            });
+            //监听行工具条
+            table.on('tool(dataTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                if(layEvent === 'del'){ //删除
+                    utils.delById(API.del, data.id, function (res) {
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    })
+                } else if(layEvent === 'edit'){ //编辑
+                    //do something
+
+                    //同步更新缓存对应的值
+                    /*obj.update({
+                     username: '123'
+                     ,title: 'xxx'
+                     });*/
+                }
+                /*var evt = layEvent.split('.');
+                if (evt.length == 2 && evt[0] == 'edit') {
+                    //这里一般是发送修改的Ajax请求
+                    var _data = {id:data.id}
+                    _data[evt[1]] = _data[evt[1]]
+                    utils.ajax.post('{ #path_for('api.template.update') }}',_data, function (res) {
+                        //同步更新表格和缓存对应的值
+                        obj.update(_data);
+                        layer.msg('修改成功！')
+                    });
+                }*/
+            });
+
+            layui.$('#btnAdd').on('click', function () {
+                layer.msg('添加新域名');
+                return false;
+            })
         });
-
-        $('.more-edit').click(function () {
-            edit(getChecked($(this)));
-        })
-
-        $('.more-dns').click(function () {
-            dnsCheck(getChecked($(this)));
-        })
 
     </script>
 {% endblock %}

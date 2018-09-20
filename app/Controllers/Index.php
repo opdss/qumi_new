@@ -138,7 +138,8 @@ class Index extends Base
 	 */
 	public function test(Request $request, Response $response, $args)
 	{
-	    //var_dump($request->);
+		$res = Email::factory()->insertQueue('opdss@qq.com', '我登陆了', '登陆通知');;
+	    var_dump($res);
 	    exit;
 		Functions::runTime('test');
 		$email = Email::factory();

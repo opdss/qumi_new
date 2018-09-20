@@ -8,6 +8,7 @@
 namespace App\Libraries;
 
 use App\Functions;
+use App\Models\EmailQueue;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Email
@@ -127,4 +128,55 @@ class Email
         }
         return $res;
     }
+
+	/**
+	 * 插入邮件队列
+	 * $address, $body, $subject
+	 * @param array $params
+	 */
+    public function insertQueue(...$params)
+	{
+		$emailQueue = new EmailQueue();
+		if (count($params) == 3) {
+			if (!$params[0] || !$params[1] || !$params[2]) {
+				return false;
+			}
+			$emailQueue->to = $params[0];
+			$emailQueue->body = $params[1];
+			$emailQueue->subject = $params[2];
+			$emailQueue->from_name = '趣米停靠站';
+			$emailQueue->level = 0;
+		} elseif (count($params) == 1 && is_array($params[0])) {
+			if (!isset($params['to']) || !$params['to']) {
+				return false;
+			}
+			$emailQueue->to = $params['to'];
+
+			if (!isset($params['body']) || !$params['body']) {
+				return false;
+			}
+			$emailQueue->body = $params['body'];
+
+			if (!isset($params['subject']) || !$params['subject']) {
+				return false;
+			}
+			$emailQueue->subject = $params['subject'];
+
+			if (isset($params['attachment']) && $params['attachment']) {
+				$emailQueue->attachment = json_encode($params['attachment']);
+			}
+
+			if (isset($params['from_name']) && $params['from_name']) {
+				$emailQueue->from_name = $params['from_name'];
+			} else {
+				$emailQueue->from_name = '趣米停靠站';
+			}
+			$emailQueue->level = isset($params['level']) ? intval($params['level']) : 0;
+		} else {
+			return false;
+		}
+		$emailQueue->status = 1;
+		$emailQueue->from = $this->config['username'];
+		return $emailQueue->save();
+	}
 }

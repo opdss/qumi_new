@@ -14,7 +14,7 @@
     <title>{{ title|default(site.title) }}</title>
 
     <link rel="stylesheet" href="/statics/layui/css/layui.css">
-    <link rel="stylesheet" href="/statics/css/style.css">
+    {#<link rel="stylesheet" href="/statics/css/style.css">#}
 
     {#每个页面额外载入的css文件#}
     {% for css in statics.css %}
@@ -42,26 +42,26 @@
                     <a href="https://qumi.app/article/1" target="_blank">如何使用</a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs">
-                    <a href="https://fly.layui.com/extend/">留言建议<span class="layui-badge-dot"></span></a>
+                    <a href="{{ path_for('home.feedback.index') }}">留言建议<span class="layui-badge-dot"></span></a>
                 </li>
-                <li class="layui-nav-item">
-                    <a href="https://fly.layui.com/extend/">登陆</a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="https://fly.layui.com/extend/">注册</a>
-                </li>
-
-                </li>
-
-                <li class="layui-nav-item">
-                    <a href=""><img src="https://t.cn/RCzsdCq" class="layui-nav-img">我</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">修改信息</a></dd>
-                        <dd><a href="javascript:;">安全管理</a></dd>
-                        <dd><a href="javascript:;">退了</a></dd>
-                    </dl>
-                </li>
-
+                {% if userInfo %}
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">{{ userInfo.email }}</a>
+                        <dl class="layui-nav-child">
+                            {% for item in menus.user %}
+                            <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
+                            {% endfor %}
+                            <dd><a href="{{ path_for('logout') }}">安全退出</a></dd>
+                        </dl>
+                    </li>
+                {% else %}
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('login') }}">登陆</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('register') }}">注册</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
