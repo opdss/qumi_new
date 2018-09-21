@@ -111,7 +111,7 @@ class Domain extends Base
 
     /**
      * 检查dns服务器来确认是否属于当前用户的域名
-     * @pattern /api/domain/dnsCheck
+     * //@pattern /api/domain/dnsCheck
      * @name home.api.domain.dnscheck
      * @method get
      * @param Request $request

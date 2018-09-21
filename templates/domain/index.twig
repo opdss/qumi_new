@@ -50,40 +50,58 @@
         <!-- 数据表格 end -->
     </div>
 
-    <div id="modal" style="display: none">
-        <div id="modalAdd">
-                <form class="layui-form modal" action="" lay-filter="modalAdd">
-                    <div class="layui-form-item layui-form-text">
-                        <label class="layui-form-label">域名</label>
-                        <div class="layui-input-block">
-                            <textarea name="name" placeholder="一行一个域名，也可支持逗号','和空格' '等分隔的域名，域名不用带www" rows="10" lay-verify="required"  class="layui-textarea"></textarea>
-                        </div>
+    <div class="modal-tpl" id="modalAdd-tpl">
+        <div class="modal">
+            <form class="layui-form" action="">
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">域名</label>
+                    <div class="layui-input-block">
+                        <textarea name="domains" placeholder="一行一个域名，也可支持逗号','和空格' '等分隔的域名，域名不用带www" rows="10" lay-verify="required"  class="layui-textarea"></textarea>
                     </div>
-                    <div class="layui-form-item layui-form-text">
-                        <label class="layui-form-label">域名简介</label>
-                        <div class="layui-input-block">
-                            <textarea  name="description" placeholder="域名简介" class="layui-textarea"></textarea>
-                        </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">域名简介</label>
+                    <div class="layui-input-block">
+                        <textarea  name="description" placeholder="域名简介" lay-verify="description" class="layui-textarea"></textarea>
                     </div>
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">报价</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="price" autocomplete="off" placeholder="请输入标题" class="layui-input" value="0">
-                        </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">报价</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="price" autocomplete="off" placeholder="请输入您的报价，0或空则为询价" class="layui-input">
                     </div>
+                </div>
 
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">停靠模板</label>
-                        <div class="layui-input-block">
-                            <select name="template_id">
-                                <option value="0">所有模版</option>
-                                {% for item in templates %}
-                                    <option value="{{ item.id }}">{{ item.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">停靠模板</label>
+                    <div class="layui-input-block">
+                        <select name="template_id" lay-verify="required">
+                            <option value="">所有模版</option>
+                            {% for item in templates %}
+                                <option value="{{ item.id }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </form>
+                </div>
+                <button lay-submit lay-filter="modalAdd" style="display: none" class="submit">提交</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-tpl" id="dnsCheck-tpl">
+        <div class="modal layui-row">
+            <div class="layui-col-md6 ">
+                <div class="dnsCheck" style="max-height: 230px;overflow: auto">
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <blockquote class="layui-elem-quote">
+                    请将您的域名dns服务器地址修改成下面您的专属dns地址<br/>
+                    {{ userInfo.dns_server_str|raw }}<br/><hr>
+                    如果狗爹的添加上面的dns地址失败，请使用下面的狗爹专用<br/>
+                    ns1.wuxin.info<br/>ns2.wuxin.info
+                </blockquote>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -98,6 +116,7 @@
 
             var API = {
                 del : '{{ path_for('api.domain.del') }}',
+                add : '{{ path_for('api.domain.add') }}',
             }
 
             //数据表格处理
@@ -130,7 +149,7 @@
                                 }
                             }
                         }}
-                    ,{field:'dns_status', title: 'NS验证', sort: true, templet : function (d) {
+                    ,{field:'dns_status', title: 'NS验证', sort: true, event: 'dnsCheck', templet : function (d) {
                             if (d.dns_status) {
                                 return '<span class="layui-badge layui-bg-blue">已通过</span>';
                             } else {
@@ -150,6 +169,16 @@
                 return false;
             });
 
+            //监听查询条件
+            form.on('submit(modalAdd)', function (data) {
+                utils.ajax.post(API.add, data.field, function (res) {
+                    table.reload('dataTable');
+                    layer.closeAll();
+                    layer.msg('添加域名成功！');
+                })
+                return false;
+            });
+
             //监听排序
             table.on('sort(dataTable)', function(obj){
                 table.reload('dataTable', {
@@ -161,25 +190,27 @@
             //头工具栏事件
             table.on('toolbar(dataTable)', function(obj){
                 var checkStatus = table.checkStatus(obj.config.id);
+                var data = checkStatus.data;
+                if (data.length == 0) {
+                    layer.msg('未选中数据')
+                    return false;
+                }
+                var ids = [];
+                data.forEach(function (o, i) {
+                    ids.push(o.id)
+                })
                 switch(obj.event){
                     case 'batchEdit':
                         var data = checkStatus.data;
                         layer.alert(JSON.stringify(data));
                         break;
                     case 'batchDel':
-                        var data = checkStatus.data;
-                        if (data.length > 0) {
-                            var ids = [];
-                            data.forEach(function (o, i) {
-                                ids.push(o.id)
-                            })
-                            utils.delById(API.del, ids, function (res) {
-                                table.reload('dataTable');
-                            })
-                        }
+                        utils.delById(API.del, ids, function (res) {
+                            table.reload('dataTable');
+                        })
                         break;
                     case 'batchDnsCheck':
-                        layer.msg(checkStatus.isAll ? '全选': '未全选');
+                        dnsCheck(ids)
                         break;
                 };
             });
@@ -200,6 +231,12 @@
                         username: '123'
                         ,title: 'xxx'
                     });*/
+                } else if (layEvent === 'dnsCheck') {
+                    if (data.dns_status == 0) {
+                        dnsCheck([data.id], function (status) {
+                            obj.update({dns_status:status?1:0});
+                        });
+                    }
                 } else if (layEvent == 'editDescription') {
                     layer.prompt({
                         formType: 2
@@ -219,30 +256,67 @@
                 }
             });
 
-            layui.$('#btnAdd').on('click', function () {
-                    layer.open({
-                        type: 1,
-                        id : 'form-modal-add',
-                        title: '添加域名',
-                        maxmin: true, //开启最大化最小化按钮
-                        shadeClose: false,
-                        shade: 0.3,
-                        area: ['800px'],
-                        content: layui.$('#modalAdd').html(), //注意，如果str是object，那么需要字符拼接。
-                        btn: ['提交', '取消'],
-                        scrollbar:false,
-                        yes: function(index, layero){
-                            //按钮【按钮一】的回调
-                            //console.log($('#form-modal-add').serializearray());
-                        },
-                        btn2: function(index, layero){
-                            //按钮【按钮二】的回调
-                            //return false 开启该代码可禁止点击该按钮关闭
-                        },
-                        success : function () {
-                            form.render();
+            function dnsCheck(ids, success) {
+                var id = 'dnsCheck';
+                layer.open({
+                    type:1,
+                    id : id,
+                    title: '校验NS地址',
+                    shadeClose: false,
+                    shade: 0.3,
+                    area: ['600px'],
+                    content : $('#dnsCheck-tpl').html(),
+                    success : function () {
+                        var $this = $('#'+id).find('.dnsCheck');
+                        ids.forEach(function (n, i) {
+                            $.get('{{ path_for('api.domain.dnscheck') }}', {id : n}, function (res) {
+                                var info = '';
+                                if (res.errCode == 0) {
+                                    if (success) {
+                                        success(res.data[0].dnsCheck);
+                                    }
+                                    info = '<p style="margin: 2px 10px;"><span>'+res.data[0].domain+'</span>:&nbsp;<span>'+(res.data[0].dnsCheck ? '<span class="layui-badge layui-bg-blue">校验成功</span>' : '<span class="layui-badge layui-bg-red">检验失败</span>')+'</span></p>'
+                                } else {
+                                    info = '<p>domain_id:'+n+'  => '+res.errMsg+' </p>'
+                                }
+                                $this.append(info);
+                            },'json')
+                        });
+                    },
+                    end : function () {
+                        if (!success) {
+                            table.reload('dataTable');
                         }
-                    });
+                    }
+                });
+            }
+
+            //添加域名
+            layui.$('#btnAdd').on('click', function () {
+                var id = 'modalAdd'
+                layer.open({
+                    type: 1,
+                    id : id,
+                    title: '添加域名',
+                    maxmin: true, //开启最大化最小化按钮
+                    shadeClose: false,
+                    shade: 0.3,
+                    area: ['600px', '600px'],
+                    content: layui.$('#modalAdd-tpl').html(), //注意，如果str是object，那么需要字符拼接。
+                    btn: ['提交', '取消'],
+                    scrollbar:false,
+                    yes: function(index, layero){
+                        $('#'+id).find('button.submit').trigger('click')
+                    },
+                    success : function () {
+                        form.render();
+                        $('#'+id).find('textarea[name=domains]').blur(function () {
+                            var domains = utils.formatDomainStr($(this).val());
+                            $(this).val(domains.join('\n'));
+                        })
+                    }
+                });
+                return false;
             })
         });
     </script>

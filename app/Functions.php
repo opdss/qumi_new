@@ -286,7 +286,7 @@ class Functions
 		$exitCode = 0;
 		$output = null;
 		//脚本执行限制3秒
-		exec('timeout 3 whois '.$domain,$output, $exitCode);
+		@exec('timeout 3 whois '.$domain,$output, $exitCode);
 		$data = [];
 		if ($exitCode == 0 && $output) {
 			foreach ($output as $item) {

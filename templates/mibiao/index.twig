@@ -41,21 +41,107 @@
         </div>
         <!-- 数据表格 end -->
     </div>
+
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript">
 
-        layui.use(['layer', 'utils'], function(){
+        layui.use(['layer', 'utils', 'form'], function(){
             var $ = layui.$;
             var utils = layui.utils;
+            var form = layui.form;
+            var API = {
+                modalEdit : '{{ path_for('mibiao.modal', {'act':'edit'}) }}',
+                modalAdd : '{{ path_for('mibiao.modal', {'act':'add'}) }}',
+                add : '{{ path_for('api.mibiao.add') }}',
+                update : '{{ path_for('api.mibiao.update') }}',
+            }
+
+            //modal表单的监听添加
+            form.on('submit(modalAdd)', function (data) {
+                utils.ajax.post(API.add, data.field, function (res) {
+                    layer.alert('添加成功！', function(index){
+                        location.reload();
+                    });
+                });
+                return false;
+            })
+
+
+            //自定义验证规则
+            form.verify(utils.getVerifyByField(['title', 'path', 'description']));
+            //modal表单的监听修改
+            form.on('submit(modalEdit)', function (data) {
+                utils.ajax.post(API.update, data.field, function (res) {
+                    layer.alert('修改成功！', function(index){
+                        location.reload();
+                    });
+                });
+                return false;
+            })
+
+            //修改
             $('.btnEdit').on('click', function () {
-                alert('edit')
+                $.get(API.modalEdit+'?id='+$(this).data('id'), function (res) {
+                    var id = 'modalEdit';
+                    layer.open({
+                        title:'修改米表',
+                        id:id,
+                        type : 1,
+                        area : ['600px', '600px'],
+                        content: res,
+                        btn : ['确认', '取消'],
+                        yes : function (index) {
+                            $('#'+id).find('button.submit').trigger('click')
+                        },
+                        success:function () {
+                            form.render()
+                            //渲染modal表单后，相关js逻辑
+                            var $form = $('#'+id);
+                            var $inp = $form.find('input[name=theme_id]');
+                            $form.find('.theme-img').on('click', function () {
+                                $inp.val($(this).data('themeid'));
+                                $form.find('.theme-img').removeClass('theme-checked');
+                                $(this).addClass('theme-checked');
+                            })
+                        }
+                    });
+                })
             })
             $('.btnDel').on('click', function () {
                 var $this = $(this);
                 utils.delById('{{ path_for('api.mibiao.del') }}', $this.data('id'), function (res) {
                     $this.parents('.layui-card').parent().remove();
+                })
+            })
+
+            //添加
+            $('#btnAdd').on('click', function () {
+                $.get(API.modalAdd, function (res) {
+                    var id = 'modalAdd';
+                    layer.open({
+                        title:'添加米表',
+                        id:id,
+                        type : 1,
+                        area : ['600px', '600px'],
+                        content: res,
+                        btn : ['确认', '取消'],
+                        yes : function (index) {
+                            $('#'+id).find('button.submit').trigger('click')
+                        },
+                        success:function () {
+                            form.render()
+                            //渲染modal表单后，相关js逻辑
+                            var $form = $('#'+id);
+                            var $inp = $form.find('input[name=theme_id]');
+                            $form.find('.theme-img').on('click', function () {
+                                $inp.val($(this).data('themeid'));
+                                $form.find('.theme-img').removeClass('theme-checked');
+                                $(this).addClass('theme-checked');
+                            })
+                        }
+                    });
                 })
             })
         });

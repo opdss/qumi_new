@@ -20,6 +20,10 @@ use Slim\Http\Response;
  */
 class Domain extends Base
 {
+    const COIN_CNY = 1;
+    const COIN_USD = 2;
+    const COIN_GBP = 3;
+    const COIN_EUR = 4;
 	/**
 	 * 我的域名列表
 	 * @pattern /domain
@@ -113,7 +117,8 @@ class Domain extends Base
 
     /**
      * 检查dns服务器来确认是否属于当前用户的域名
-     * @pattern /domain/dnsCheck
+     * @pattern /api/domain/dnsCheck
+     * @name api.domain.dnscheck
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -121,7 +126,7 @@ class Domain extends Base
     public function dnsCheck(Request $request, Response $response, $args)
     {
 		$errMsg = '';
-		$domain_id = $request->getParam('domain_id');
+		$domain_id = $request->getParam('id');
 		$domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
 		if (!$domain_ids) {
 			$this->log('error', $errMsg, $domain_id);
@@ -178,7 +183,8 @@ class Domain extends Base
 
 	/**
 	 * 添加域名
-	 * @pattern /domain/add
+	 * @pattern /api/domain/add
+     * @name api.domain.add
 	 * @method post
 	 * @param Request $request
 	 * @param Response $response
@@ -193,11 +199,11 @@ class Domain extends Base
 		}
 		$description = trim($request->getParsedBodyParam('description', ''));
 		$price = (int)$request->getParsedBodyParam('price', '');
-		$sale_type = (int)$request->getParsedBodyParam('sale_type',  0);
-		$template_id = $request->getParsedBodyParam('template_id', 0);
-		if ($sale_type) {
-			$price = 0;
-		}
+        $price = $price > 0 ? $price : 0;
+        $sale_type = $price ? 0 : 1;
+		//$sale_type = (int)$request->getParsedBodyParam('sale_type',  0);
+		$template_id = (int)$request->getParsedBodyParam('template_id', 0);
+
 
 		//获取用户已经添加的域名
 		$existsArray = [];
