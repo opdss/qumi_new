@@ -45,10 +45,6 @@
             var table = layui.table;
             var utils = layui.utils;
 
-            var API = {
-                del : '{{ path_for('api.template.del') }}',
-            }
-
             table.render(layui.$.extend({
                 elem: '#dataTable'
                 ,url:'{{ path_for('api.template.get') }}'
@@ -95,15 +91,7 @@
                         break;
                     case 'batchDel':
                         var data = checkStatus.data;
-                        if (data.length > 0) {
-                            var ids = [];
-                            data.forEach(function (o, i) {
-                                ids.push(o.id)
-                            })
-                            utils.delById(API.del, ids, function (res) {
-                                table.reload('dataTable');
-                            })
-                        }
+                        layer.msg('选中了：'+ data.length + ' 个');
                         break;
                     case 'batchDnsCheck':
                         layer.msg(checkStatus.isAll ? '全选': '未全选');
@@ -136,6 +124,22 @@
                     utils.delById(API.del, data.id, function (res) {
                         obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                     })
+                    layer.confirm('确定删除改数据吗？', function(index){
+                        //向服务端发送删除指令
+                        layui.$.ajax({
+                            method:'delete',
+                            url : '/proxy.php?api=/api/domain&id=' + data.id,
+                            success : function (res) {
+                                if (res.errCode == 0) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    layer.close(index);
+                                } else {
+                                    layer.msg(res.errMsg);
+                                }
+                            },
+                            dataType : 'json'
+                        });
+                    });
                 } else if(layEvent === 'edit'){ //编辑
                     //do something
 
@@ -150,7 +154,7 @@
                     //这里一般是发送修改的Ajax请求
                     var _data = {id:data.id}
                     _data[evt[1]] = _data[evt[1]]
-                    utils.ajax.post('{ #path_for('api.template.update') }}',_data, function (res) {
+                    utils.ajax.post('{{ path_for('api.template.update') }}',_data, function (res) {
                         //同步更新表格和缓存对应的值
                         obj.update(_data);
                         layer.msg('修改成功！')
