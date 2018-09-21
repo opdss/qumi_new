@@ -62,7 +62,6 @@
             var form = layui.form;
             var utils = layui.utils;
             var $ = layui.$
-
             var API = {
                 register : '{{ path_for('api.login.register') }}',
             }
@@ -78,16 +77,8 @@
                 })
                 return false;
             });
-
             //自定义验证规则
-            form.verify({
-                captcha: function(value){
-                    if(value.length != 4){
-                        return '请输入4位验证码';
-                    }
-                }
-                ,passwd: [/(.+){6,20}$/, '密码必须6到20位']
-            });
+            form.verify(utils.getVerifyByField(['captcha', 'passwd']));
         });
     </script>
 {% endblock %}

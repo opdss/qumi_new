@@ -62,7 +62,7 @@ class Template extends Base
 	}
 
 	/**
-	 * @pattern /api/template/add
+	 * //@pattern /api/template/add
 	 * @method post
 	 * @param Request $request
 	 * @param Response $response

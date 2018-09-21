@@ -45,8 +45,36 @@ class Mibiao extends Base
         return $this->view('mibiao/index.twig', $data);
     }
 
+
+	/**
+	 * @pattern /mibiao/modal/{act}
+	 * @param Request $request
+	 * @param Response $response
+	 * @param $args
+	 */
+	public function modal(Request $request, Response $response, $args)
+	{
+		$act = $args['act'];
+		$data = [];
+		$data['themes'] = \App\Models\Theme::getICanUse($this->uid, '*', Theme::THEME_TYPE_MIBIAO);
+		$data['templates'] = \App\Models\Template::isMy($this->uid)->get();
+		$data['domains'] = \App\Models\Domain::isMy($this->uid)->isDns()->get();
+
+		if ($act == 'edit') {
+			$id = (int)$request->getParam('id');
+			if (!$id || !($records = \App\Models\Mibiao::find($id)) || $records->uid != $this->uid) {
+				return 'id错误！';
+			}
+			$data['info'] = $records;
+			return $this->view('mibiao/modal-edit.twig', $data);
+		} elseif ($act == 'add') {
+			return $this->view('mibiao/modal-add.twig', $data);
+		}
+	}
+
     /**
-     * @pattern /mibiao/add
+     * @pattern /api/mibiao/add
+	 * @name api.mibiao.add
      * @method post
      * @param Request $request
      * @param Response $response
@@ -128,7 +156,8 @@ class Mibiao extends Base
 
 
     /**
-     * @pattern /mibiao/update
+     * @pattern /api/mibiao/update
+	 * @name api.mibiao.update
      * @method post
      * @param Request $request
      * @param Response $response
@@ -136,7 +165,7 @@ class Mibiao extends Base
      */
     public function update(Request $request, Response $response, $args)
     {
-        $id = (int)$request->getParsedBodyParam('mibiao_id');
+        $id = (int)$request->getParsedBodyParam('id');
 		if (!$id || !($current = \App\Models\Mibiao::find($id)) || $current->uid != $this->uid) {
 			return $this->json(40001);
 		}

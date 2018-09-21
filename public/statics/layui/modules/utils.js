@@ -1,11 +1,31 @@
 layui.define(['layer', 'jquery'], function(exports){
+
+    //查看对象类型
+    var type = function(obj) {
+        var toString = Object.prototype.toString;
+        var map = {
+            '[object Boolean]': 'boolean',
+            '[object Number]': 'number',
+            '[object String]': 'string',
+            '[object Function]': 'function',
+            '[object Array]': 'array',
+            '[object Date]': 'date',
+            '[object RegExp]': 'regExp',
+            '[object Undefined]': 'undefined',
+            '[object Null]': 'null',
+            '[object Object]': 'object'
+        };
+        return map[toString.call(obj)];
+    }
+
+    //是否启用ajax的全局loading
     var hasLoading = true;
-    //ajax的loading
+    //ajax的全局loading的index
     var loading;
     //设置ajax的全局配置
     layui.$.ajaxSetup({
         timeout : 10000,
-        dataType: "json",
+        //dataType: "json",
         beforeSend: function (obj) {
             if (hasLoading) {
                 loading = layer.load(2, {time: 10000});
@@ -20,7 +40,7 @@ layui.define(['layer', 'jquery'], function(exports){
             }
         }
     });
-    //对相应成功的请求进行errCode预处理
+    //对响应成功(httpcode=200)的请求进行errCode预处理
     var ajaxProcess = function (res, success, error) {
         if (res.errCode == 0) {
             if (success) {
@@ -34,25 +54,83 @@ layui.define(['layer', 'jquery'], function(exports){
             }
         }
     }
+    //封装ajax 的curd 方法
+    var ajax = {
+        get : function (url, success, error) {
+            layui.$.ajax({'url':url, 'method':'get', 'dataType': "json", 'success':function (res) {ajaxProcess(res, success, error)}});
+        },
+        post : function (url, data, success, error) {
+            layui.$.ajax({'url':url, 'method':'post', 'dataType': "json", 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
+        },
+        put : function (url, data, success, error) {
+            layui.$.ajax({'url':url, 'method':'put', 'dataType': "json", 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
+        },
+        delete : function (url, data, success, error) {
+            layui.$.ajax({'url':url, 'method':'delete', 'dataType': "json", 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
+        }
+    }
+
+    //预设的表单字段校验
+    var verifyFieldAll = {
+        //邮件发送的六位数字code
+        code: function(value){
+            if(value.length != 6){
+                return '请输入邮件收到的六位验证码';
+            }
+        },
+        //图片4位验证码
+        captcha: function(value){
+            if(value.length != 4){
+                return '请输入4位验证码';
+            }
+        },
+        //密码
+        passwd: [/(.+){6,20}$/, '密码必须6到20位'],
+        description : function(value){
+            if(value.length > 500){
+                return '简介最多不超过五百字';
+            }
+        },
+        title : function (value) {
+            if(value.length == 0){
+                return '标题不能为空';
+            }
+            if(value.length > 100){
+                return '标题最多不超过一百个字';
+            }
+        },
+        name : function (value) {
+            if(value.length == 0){
+                return '名称不能为空';
+            }
+            if(value.length > 100){
+                return '名称最多不超过一百个字';
+            }
+        },
+        path : function (value) {
+            if(value.length == 0){
+                return '地址路径不能为空';
+            }
+            if(value.length > 20){
+                return '地址路径最多不超过20个字符';
+            }
+        },
+        varchat : function (value) {
+            if(value.length > 20){
+                return '最大长度不超过100个字符';
+            }
+        },
+    }
+
+
+    //导出模块对象
     var obj = {
+        type : type,
         setAjaxLoading : function (hl) {
             hasLoading = hl ? true : false;
         },
         //重新封装ajax 的curd请求方法
-        ajax : {
-            get : function (url, success, error) {
-                layui.$.ajax({'url':url, 'method':'get', 'success':function (res) {ajaxProcess(res, success, error)}});
-            },
-            post : function (url, data, success, error) {
-                layui.$.ajax({'url':url, 'method':'post', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
-            },
-            put : function (url, data, success, error) {
-                layui.$.ajax({'url':url, 'method':'put', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
-            },
-            delete : function (url, data, success, error) {
-                layui.$.ajax({'url':url, 'method':'delete', 'data':data, 'success':function (res) {ajaxProcess(res, success, error)}});
-            }
-        },
+        ajax : ajax,
         //默认数据表格配置
         tableOptions : {
             page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
@@ -77,31 +155,15 @@ layui.define(['layer', 'jquery'], function(exports){
                 };
             }
         },
-        type : function(obj) {
-            var toString = Object.prototype.toString;
-            var map = {
-                '[object Boolean]': 'boolean',
-                '[object Number]': 'number',
-                '[object String]': 'string',
-                '[object Function]': 'function',
-                '[object Array]': 'array',
-                '[object Date]': 'date',
-                '[object RegExp]': 'regExp',
-                '[object Undefined]': 'undefined',
-                '[object Null]': 'null',
-                '[object Object]': 'object'
-            };
-            return map[toString.call(obj)];
-        },
         //根据id删除
         delById : function (url, ids, success) {
-            if (obj.type(ids) == 'array') {
+            if (type(ids) == 'array') {
                 var msg = '确定删除选中的'+ids.length+'条数据吗？';
             } else {
                 var msg = '确定删除选中的数据吗？';
             }
             layer.confirm(msg, function(index){
-                obj.ajax.delete(url, {id: ids}, function (res) {
+                ajax.delete(url, {id: ids}, function (res) {
                     success(res)
                     layer.msg('删除成功！')
                     layer.close(index);
@@ -125,6 +187,7 @@ layui.define(['layer', 'jquery'], function(exports){
             });
             return domains;
         },
+        //校验邮箱
         verifyEmail : function(email){
             if (!email) {
                 return false;
@@ -136,8 +199,24 @@ layui.define(['layer', 'jquery'], function(exports){
                 return true;
             }
         },
-        loading : function () {
-            return layer.load(2, {time: 10000});
+        //一些预设的自定义字段校验
+        getVerifyByField : function (fields) {
+            if (!fields) {
+                return verifyFieldAll;
+            }
+            if (type(fields) == 'string') {
+                return verifyFieldAll['fields'] ? verifyFieldAll['fields'] : function () {}
+            }
+            if (type(fields) == 'array') {
+                var res = {};
+                fields.forEach(function (value) {
+                    if (verifyFieldAll[value]) {
+                        res[value] = verifyFieldAll[value];
+                    }
+                })
+                return res;
+            }
+            return {};
         }
     };
     //输出接口

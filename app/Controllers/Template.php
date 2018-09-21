@@ -33,6 +33,16 @@ class Template extends Base
 	public function index(Request $request, Response $response, $args)
 	{
 		$data = array();
+		$data['themes'] = \App\Models\Theme::getICanUse($this->uid);
+		$res = [];
+		foreach ($data['themes'] as $item) {
+			$res[$item['id']] = [
+				'name' => $item['name'],
+				'id' => $item['id'],
+				'image' => $item['image'],
+			];
+		}
+		$data['themesJson'] = json_encode($res);
 		return $this->view('template/index.twig', $data);
 	}
 
@@ -100,7 +110,8 @@ class Template extends Base
 	}
 
 	/**
-	 * @pattern /template/add
+	 * @pattern /api/template/add
+	 * @name api.template.add
 	 * @method post
 	 * @param Request $request
 	 * @param Response $response

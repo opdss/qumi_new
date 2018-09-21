@@ -66,7 +66,6 @@
         layui.use(['layer', 'element', 'form', 'utils'], function() {
             var layer = layui.layer;
             var form = layui.form;
-            var table = layui.table;
             var utils = layui.utils;
             var $ = layui.$
             var API = {
@@ -82,24 +81,12 @@
                 })
                 return false;
             });
-
             //自定义验证规则
-            form.verify({
-                code: function(value){
-                    if(value.length != 6){
-                        return '请输入邮件收到的六位验证码';
-                    }
-                }
-                ,passwd: [/(.+){6,20}$/, '密码必须6到20位']
-            });
+            form.verify(utils.getVerifyByField(['code', 'passwd']));
 
             $('#sendCode').on('click', function () {
                 var $this = $(this);
                 var email = $('input[name=email]').val();
-                if (!email) {
-                    layer.msg('请输入您的注册邮箱！');
-                    return false;
-                }
                 if (!utils.verifyEmail(email)) {
                     layer.msg('您输入的邮箱错误！');
                     return false;

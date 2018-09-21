@@ -138,10 +138,7 @@ class Index extends Base
 	 */
 	public function test(Request $request, Response $response, $args)
 	{
-	    //$preg = '/login|logout|forget|register/';
-	    $preg = '/\/login|\/logout|\/forget|\/register/';
-	    $str = 'gweg/agaeg/aweg/aewleoginregister/loegout';
-	    var_dump(preg_match($preg, $str));
+	    var_dump(($this->ci->routes));
 	    exit;
         $userModel = User::where('email', 'opdss@qq.com')->first();
        $res = $userModel->resetPassword('222222');
@@ -268,5 +265,18 @@ class Index extends Base
         }
         return $this->json(1);
     }
+
+	/**
+	 *
+	 */
+    public function jsApi()
+	{
+		$js = 'var API =';
+		$routes = $this->ci->routes;
+		foreach ($routes as $route) {
+
+		}
+		return $js;
+	}
 
 }

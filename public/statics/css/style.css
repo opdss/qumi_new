@@ -19,12 +19,12 @@
 .logo {
     position: absolute;
     left: 0;
-    top: 16px;
+    top: 9px;
 }
 
 .logo img {
-    width: 82px;
-    height: 31px;
+    width: 42px;
+    height: 42px;
 }
 
 
@@ -123,6 +123,19 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
 .layui-table-page>div {
     text-align: center;
 }
+/*主题*/
+.theme-img {
+    padding: 2px;
+    margin: 5px;
+    border: 3px solid #eee;
+}
+.theme-img:hover {
+    border: 3px solid #1E9FFF;
+}
+.theme-checked {
+    border: 3px solid #1E9FFF;
+}
+
 
 /* 适配多设备 */
 @media screen and (max-width: 750px) {

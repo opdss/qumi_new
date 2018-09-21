@@ -53,25 +53,15 @@
             //监听提交
             form.on('submit(submit)', function(data){
                 utils.ajax.post(API.login, data.field, function (res) {
-                    layer.alert('登陆成功！', function(index){
-                        location.href = res && res['redirect_url'] ? res['redirect_url'] : '/';
-                    });
+                    location.href = res && res['redirect_url'] ? res['redirect_url'] : '/';
                 }, function (res) {
                     $('#captchaImg').find('img').trigger('click');
                     layer.alert(res.errMsg, {icon: 2});
                 })
                 return false;
             });
-
             //自定义验证规则
-            form.verify({
-                captcha: function(value){
-                    if(value.length != 4){
-                        return '请输入4位验证码';
-                    }
-                }
-                ,passwd: [/(.+){6,20}$/, '密码必须6到20位']
-            });
+            form.verify(utils.getVerifyByField(['passwd']));
         });
     </script>
 {% endblock %}
