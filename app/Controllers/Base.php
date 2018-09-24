@@ -120,7 +120,7 @@ class Base
 		$render_data['runtime'] = round(\App\Functions::runTime('run', true), 6);
 		$render_data['userInfo'] = $this->userInfo;
 		$render_data['online'] = RUN_ENV == 'production';
-		$render_data['menus'] = $this->getMenus();
+		$render_data['menus'] = $this->getMenus($this->ci->menuGroup);
 		return $this->ci->view->render($this->ci->response, $tpl, $render_data);
 	}
 
@@ -186,7 +186,7 @@ class Base
 	 * 获取菜单
 	 * @return array
 	 */
-    protected function getMenus()
+    protected function getMenus($gruop = null)
     {
         $routes = $this->ci->routes;
         $cacheKey = md5(json_encode($routes));
@@ -220,7 +220,7 @@ class Base
             }
             $cache->save($cacheKey, $menus, 30*86400);
         }
-        return $menus;
+        return $gruop && isset($menus[$gruop]) ? $menus[$gruop] : $menus;
     }
 
     protected function sessCaptcha($key, $val=null) {

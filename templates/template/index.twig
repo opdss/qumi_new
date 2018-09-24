@@ -135,7 +135,7 @@
                     ,{field:'phone', title: '联系电话', sort: true, edit:'text'}
                     ,{field:'wechat', title: '微信', sort: true, edit:'text'}
                     ,{field:'email', title: '邮箱', sort: true, edit:'text'}
-                    ,{field:'theme_id', title: '主题', event: 'editThemeId', style:'cursor: pointer;position: relative;', templet : function (d) {
+                    ,{field:'theme_id', title: '主题', event: 'editThemeId', style:'cursor: pointer', templet : function (d) {
                         var html = '<div class="themeEdit">'+themes[d.theme_id]['name']+'</div>'
                             return html;
                         }}

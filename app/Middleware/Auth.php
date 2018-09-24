@@ -38,19 +38,42 @@ class Auth
 	 */
 	public function __invoke(Request $request, Response $response, $next)
 	{
-		$ajax = $this->ci->request->getHeaderLine('HTTP_X_REQUESTED_WITH');
-		$isAjax = $ajax && strtolower($ajax) == 'xmlhttprequest';
+	    $roleMap = ['admin'=>2, 'user' => 1];
 		$userInfo = $this->ci->session->get('userInfo');
-		if (empty($userInfo)) {
-			if ($isAjax) {
-				return $response->withJson(Functions::formatApiData(40300));
-			}
-			$redirectUrl = $request->getUri();
-			return $this->ci->response->withRedirect($this->ci->router->pathFor('login'). ($redirectUrl ? '?redirect_url='.urlencode($redirectUrl) : ''));
-		}
+		$flag = -1;//-1未登陆 0 没权限 1 ok
+		if (!empty($userInfo)) {
+            $currentRouteName = $request->getAttribute('route')->getName();
+            $currentRoute = $this->ci->routes[$currentRouteName];
+
+            if (isset($currentRoute['info']['auth']) && $currentRoute['info']['auth']) {
+                $_auth = explode('|', $currentRoute['info']['auth']);
+                $currentRouteRoleLevel = $_auth[0] ? (is_numeric($_auth[0]) ? intval($_auth[0]) : $roleMap[$_auth[0]]) : 1;
+            } else {
+                $currentRouteRoleLevel = 1;
+            }
+
+            $roleLever = isset($userInfo['roleLevel']) ? intval($userInfo['roleLevel']) : 0;
+            if ($roleLever >= $currentRouteRoleLevel) {
+                $flag = 1;
+            } else {
+                $flag = 0;
+            }
+        }
+
+        if ($flag < 1) {
+            $ajax = $this->ci->request->getHeaderLine('HTTP_X_REQUESTED_WITH');
+            $isAjax = $ajax && strtolower($ajax) == 'xmlhttprequest';
+            if ($isAjax) {
+                $ajaxRet = $flag == -1 ? -1 : 2;
+                return $response->withJson(Functions::formatApiData($ajaxRet));
+            } else {
+                $redirectUrl = $request->getUri();
+                return $this->ci->response->withRedirect($this->ci->router->pathFor('login'). ($redirectUrl ? '?redirect_url='.urlencode($redirectUrl) : ''));;
+            }
+        }
 		//注入当前用户信息
 		$this->ci->offsetSet('userInfo', $userInfo);
-		$this->ci->logger->debug(__METHOD__);
+		$this->ci->offsetSet('menuGroup', $currentRouteRoleLevel > 1 ? 'admin' : 'user');
 		$response = $next($request, $response);
 		return $response;
 	}

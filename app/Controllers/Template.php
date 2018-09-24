@@ -16,7 +16,7 @@ use Slim\Http\Response;
 /**
  *
  * Class Template
- * @middleware App\Middleware\Rtime
+ * @middleware App\Middleware\Auth|App\Middleware\Rtime
  * @package App\Controllers
  */
 class Template extends Base

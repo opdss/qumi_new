@@ -21,9 +21,10 @@ class Functions
 	public static function formatApiData($param = 0, $data = array(), $extra = array(), $json = false)
 	{
 		$errMap = array(
-			-1 => 'process',
+			-1 => '未登陆',
 			0 => 'success',
 			1 => '处理失败',
+			2 => '没有权限',
 			40001 => '参数错误',
 			40002 => '上传文件为空',
 			40100 => 'token参数为空',

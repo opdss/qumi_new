@@ -22,7 +22,7 @@
         "opdss/cisession": "*",
         "opdss/cicache": "*",
         "opdss/http": "*",
-        "opdss/nroute": "1.0.0",
+        "opdss/nroute": "*",
         "piwik/device-detector" : "*",
         "phpmailer/phpmailer": "~6.0"
     },

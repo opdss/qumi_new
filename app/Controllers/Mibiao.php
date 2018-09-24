@@ -15,7 +15,7 @@ use Slim\Http\Response;
 
 /**
  * Class Mibiao
- * @middleware App\Middleware\Rtime
+ * @middleware App\Middleware\Auth|App\Middleware\Rtime
  * @package App\Controllers
  */
 class Mibiao extends Base
@@ -37,7 +37,7 @@ class Mibiao extends Base
         		$item['defaultUrl'] = HOMEPAGE.'/m/'.$item['path'];
         		$item['myUrl'] = '';
         		if ($item['domain_id'] && ($mm = Domain::find($item['domain_id']))) {
-        			$item['myUrl'] = $mm->name;
+        			$item['myUrl'] = $mm->suffix == 'app' ? 'https://'.$mm->name : 'http://'.$mm->name;
 				}
 			}
 		}

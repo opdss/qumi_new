@@ -34,6 +34,7 @@ class Redirect extends Base
 	public function index(Request $request, Response $response, $args)
 	{
 		$data = array();
+        $data['domains'] = \App\Models\Domain::isMy($this->uid)->isDns()->get();
 		return $this->view('redirect/index.twig', $data);
 	}
 
@@ -102,7 +103,8 @@ class Redirect extends Base
 	}
 
 	/**
-	 * @pattern /redirect/add
+	 * @pattern /api/redirect/add
+     * @name api.redirect.add
 	 * @method post
 	 * @param Request $request
 	 * @param Response $response
@@ -178,7 +180,8 @@ class Redirect extends Base
 
 
 	/**
-	 * @pattern /redirect/update
+	 * @pattern /api/redirect/update
+     * @name api.redirect.update
 	 * @method post
 	 * @param Request $request
 	 * @param Response $response
@@ -186,44 +189,36 @@ class Redirect extends Base
 	 */
 	public function update(Request $request, Response $response, $args)
 	{
-		$id = intval($request->getParsedBodyParam('redirect_id'));
-		if (!$id || !($current = \App\Models\DomainRedirect::find($id)) || $current->uid != $this->uid) {
+		$id = intval($request->getParsedBodyParam('id'));
+		if (!$id || !($domainRedirectModel = \App\Models\DomainRedirect::find($id)) || $domainRedirectModel->uid != $this->uid) {
 			return $this->json(40001);
 		}
-		$data['title'] = trim($request->getParsedBodyParam('title', ''));
-		$data['prefix'] = trim($request->getParsedBodyParam('prefix',  ''));
-		$data['domain_id'] = (int)$request->getParsedBodyParam('domain_id', 0);
-		$data['redirect_url'] = trim($request->getParsedBodyParam('redirect_url', 0));
-		$data['redirect_status'] = (int)$request->getParsedBodyParam('redirect_status', 0);
-		$data['redirect_status'] = $data['redirect_status'] == 301 ? '301' : '302';
+		$title = trim($request->getParsedBodyParam('title', ''));
+		$redirect_url = trim($request->getParsedBodyParam('redirect_url', 0));
+		$redirect_status = (int)$request->getParsedBodyParam('redirect_status', 0);
 
-		if (!$data['title'] || !$data['prefix'] || !$data['domain_id'] || !$data['redirect_url']) {
-			return $this->json(40001);
-		}
+        if ($title) {
+            $domainRedirectModel->title = $title;
+        }
 
-		if (!Functions::verifyUrl($data['redirect_url'])) {
-			$this->log('error', '['.__METHOD__.']非法redirect_url', $data);
-			return $this->json(40001, '您输入的目标地址格式不对！');
-		}
+        if ($redirect_url) {
+            if (!Functions::verifyUrl($redirect_url)) {
+                $this->log('error', '['.__METHOD__.']非法redirect_url', $request->getParams());
+                return $this->json(40001, '您输入的目标地址格式不对！');
+            } else {
+                $domainRedirectModel->redirect_url = $redirect_url;
+            }
+        }
 
-		if (!($domainModel = Domain::iCanUse($this->uid, $data['domain_id']))) {
-			$this->log('error', '['.__METHOD__.']非法domain_id', $data);
-			return $this->json(40001);
-		}
+        if ($redirect_status) {
+            $domainRedirectModel->redirect_status = $redirect_status == 301 ? 301 : 302;
+        }
 
-		$reModel = DomainRedirect::where('prefix', $data['prefix'])->where('domain_id', $data['domain_id'])->first();
-		if ($reModel && $reModel->id != $id) {
-			$this->log('error', '['.__METHOD__.']已经存在该源地址跳转', $data);
-			return $this->json(40001, '已经存在该源地址跳转');
-		}
-
-		$data['domain_name'] = $domainModel->name;
-
-		if (\App\Models\DomainRedirect::where('id', $id)->update($data)) {
-			$this->updateRedirectConf();
-			return $this->json(0);
-		}
-		$this->log('error', 'redirect.update error', ['id'=>$data]);
+        if ($domainRedirectModel->save()) {
+            $this->updateRedirectConf();
+            return $this->json(0);
+        }
+		$this->log('error', 'redirect.update error', $domainRedirectModel->toArray());
 		return $this->json(1);
 	}
 

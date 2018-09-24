@@ -103,8 +103,8 @@ layui.define(['layer', 'jquery'], function(exports){
             if(value.length == 0){
                 return '名称不能为空';
             }
-            if(value.length > 100){
-                return '名称最多不超过一百个字';
+            if(value.length > 60){
+                return '名称最多不超过60个字符';
             }
         },
         path : function (value) {
@@ -115,8 +115,8 @@ layui.define(['layer', 'jquery'], function(exports){
                 return '地址路径最多不超过20个字符';
             }
         },
-        varchat : function (value) {
-            if(value.length > 20){
+        varchar : function (value) {
+            if(value.length > 100){
                 return '最大长度不超过100个字符';
             }
         },

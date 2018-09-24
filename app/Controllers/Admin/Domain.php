@@ -16,6 +16,8 @@ class Domain extends Base {
 	/**
 	 * 域名管理
 	 * @pattern /admin/domain
+     * @auth admin|域名管理
+     * @name admin.domain
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args

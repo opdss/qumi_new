@@ -31,6 +31,11 @@ require APP_DIR . 'dependencies.php';
 $nroute = \Opdss\Nroute\Nroute::factory(array('cacheDir'=>CACHE_DIR));
 $nroute->attachInfoField('auth');
 $nroute->register($app, array(APP_DIR . 'Controllers' => 'App\\Controllers'));
+$_routes = [];
+foreach ($nroute->getRoutes() as $item) {
+    $_routes[$item['name']] = $item;
+}
+$app->getContainer()->routes = $_routes;
 
 //\Opdss\Nroute\Nroute::factory(array('cacheDir'=>CACHE_DIR))->register($app, array(APP_DIR . 'Controllers' => 'App\\Controllers'));
 //exit;

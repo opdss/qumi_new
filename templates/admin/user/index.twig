@@ -1,0 +1,96 @@
+{% extends 'console.twig' %}
+
+{% block console %}
+
+    <!-- content start -->
+    <div class="site-content">
+        <!--<h1 class="site-h1">域名管理</h1>-->
+
+        <!-- 数据查询条件 start -->
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="text" name="kw" class="layui-input" placeholder="关键词">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- 数据查询条件 end -->
+
+        <!-- 数据表格 start -->
+        <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        <script type="text/html" id="toolBar">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="analog">模拟登陆</a>
+        </script>
+        <!-- 数据表格 end -->
+    </div>
+    <!-- content end -->
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        layui.use(['layer', 'element', 'form', 'table', 'utils'], function(){
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var utils = layui.utils;
+            var $ = layui.$;
+
+            var API = {
+                get : '{{ path_for('api.admin.user.get') }}',
+            }
+
+            var themes = {{ themesJson|raw }}
+
+            table.render(layui.$.extend({
+                elem: '#dataTable'
+                ,url:API.get
+                ,toolbar : '#headerToolBar'
+                ,cols: [[
+                    {type:'checkbox'}
+                    ,{field:'uid',  title: 'UID', sort: true}
+                    ,{field:'email', title: '邮箱', sort: true}
+                    ,{field:'domainCount', title: '停放域名属数量', sort: true}
+                    ,{field:'login_time', title: '最后登陆时间', sort: true}
+                    ,{field:'login_num', title: '登陆次数', sort: true}
+                    ,{field:'created_at', title: '注册时间', sort: true}
+                    ,{fixed:'right', title: '操作', align:'center', toolbar : '#toolBar' }
+                ]]
+            },utils.tableOptions));
+
+            //监听查询条件
+            form.on('submit(btnSearch)', function (data) {
+                table.reload('dataTable', {
+                    //重新从第 1 页开始
+                    page: {curr: 1}
+                    ,where: data.field
+                });
+                return false;
+            });
+
+            //监听排序
+            table.on('sort(dataTable)', function(obj){
+                table.reload('dataTable', {
+                    initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                    ,where: {'order_name' : obj.field, 'order_type':obj.type}
+                });
+            });
+            //监听行工具条
+            table.on('tool(dataTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                if(layEvent === 'analog'){ //删除
+                    layer.msg('模拟登陆');
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

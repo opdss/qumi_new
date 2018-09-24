@@ -4,4 +4,12 @@ layui.config({
     utils :  'utils',
 });
 
-layui.use(['layer', 'element'], function(){});
+layui.use(['layer', 'element'], function(){
+    var idx
+    layui.$('.tips').toggle(function () {
+        var that = this;
+        idx = layer.tips($(this).data('title'), that);
+    },function () {
+        layer.close(idx)
+    })
+});

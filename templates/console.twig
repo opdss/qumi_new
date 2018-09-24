@@ -8,7 +8,7 @@
                     <ul class="layui-nav layui-nav-tree layui-inline layui-bg">
                         {% set _auth = current_menu[0] ?: 'user' %}
                         {% set _menus = menus[_auth] %}
-                        {% for item in _menus %}
+                        {% for item in menus %}
                             <li class="layui-nav-item layui-nav-itemed">
                                 <a href="{{ item['sub'] ? '#' : item.url }}">{{ item.name }}</a>
                                 {% if item['sub']%}
