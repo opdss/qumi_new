@@ -77,7 +77,7 @@ class Domain extends Base
 		$data['count'] = $builder->count();
 		$data['records'] = [];
 		if ($data['count']) {
-			if ($order_type && $order_type != 'null' && in_array($order_name, array('id', 'name', 'price'))) {
+			if ($order_type && $order_type != 'null' && in_array($order_name, array('id', 'name', 'price', 'dns_status'))) {
 				$builder = $builder->orderBy($order_name, $order_type);
 			}
 			$data['records'] = $builder->offset(($page-1)*$limit)->limit($limit)->orderBy('id', 'desc')->get();

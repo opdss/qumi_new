@@ -29,6 +29,15 @@ class Domain extends Base
 		3 => '杂'
 	];
 
+	/**
+	 * 所属域名
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function user()
+	{
+		return $this->belongsTo('\App\Models\User', 'uid', 'uid');
+	}
+
     /**
      * 判断可不可以使用某个域名
      * @param $uid

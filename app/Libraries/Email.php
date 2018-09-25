@@ -177,6 +177,9 @@ class Email
 		}
 		$emailQueue->status = 1;
 		$emailQueue->from = $this->config['username'];
-		return $emailQueue->save();
+		if (!$emailQueue->save()) {
+			$this->logger->error('插入邮件队列失败', $emailQueue->toArray());
+		}
+		return true;
 	}
 }

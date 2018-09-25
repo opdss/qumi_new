@@ -49,7 +49,7 @@
                     <li class="layui-nav-item">
                         <a href="javascript:;">{{ userInfo.email }}</a>
                         <dl class="layui-nav-child">
-                            {% for item in menus.user %}
+                            {% for item in menus %}
                             <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
                             {% endfor %}
                             <dd><a href="{{ path_for('logout') }}">安全退出</a></dd>

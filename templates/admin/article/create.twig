@@ -1,0 +1,74 @@
+{% extends 'console.twig' %}
+
+{% block console %}
+    <div class="site-content">
+        <div class="layui-card">
+            <div class="layui-card-header">添加文章</div>
+            <div class="layui-card-body">
+                <form class="layui-form" action="" lay-filter="formAdd">
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">新闻标题：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" lay-verify="required|varchar" placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">新闻内容：</label>
+                        <div class="layui-input-block">
+                            <textarea placeholder="新闻内容" name="content" id="content" style="display: none" lay-verify="content" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">新闻标题：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" lay-verify="required|varchar" placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-element">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        layui.use(['layer', 'element', 'form', 'utils', 'layedit'], function(){
+            var layer = layui.layer;
+            var form = layui.form;
+            var $ = layui.$;
+            var utils = layui.utils;
+            var layedit = layui.layedit;
+
+            var API = {
+                get : '{{ path_for('api.admin.article.get') }}',
+            }
+
+            //构建一个默认的编辑器
+            var index = layedit.build('content', {height: 400});
+
+            //编辑器外部操作
+            var active = {
+                content: function(){
+                    alert(layedit.getContent(index)); //获取编辑器内容
+                }
+                ,text: function(){
+                    alert(layedit.getText(index)); //获取编辑器纯文本内容
+                }
+                ,selection: function(){
+                    alert(layedit.getSelection(index));
+                }
+            };
+
+        });
+    </script>
+{% endblock %}

@@ -3,18 +3,16 @@
 {% block container %}
     <div class="layui-container">
         <div class="layui-row">
-            <div class="layui-col-md2 layui-col-xs12">
+            <div class="layui-col-md2 layui-hide-xs">
                 <div class="site-menu">
                     <ul class="layui-nav layui-nav-tree layui-inline layui-bg">
-                        {% set _auth = current_menu[0] ?: 'user' %}
-                        {% set _menus = menus[_auth] %}
                         {% for item in menus %}
                             <li class="layui-nav-item layui-nav-itemed">
                                 <a href="{{ item['sub'] ? '#' : item.url }}">{{ item.name }}</a>
                                 {% if item['sub']%}
                                     <dl class="layui-nav-child">
                                         {% for child in item['sub'] %}
-                                            <dd><a href="{{ child.url }}">{{ child.name }}</a></dd>
+                                            <dd class="{{ currentMenu == child.routeName ? 'layui-this' : ''}}"><a href="{{ child.url }}">{{ child.name }}</a></dd>
                                         {% endfor %}
                                     </dl>
                                 {% endif %}

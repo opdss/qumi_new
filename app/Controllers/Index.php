@@ -130,34 +130,6 @@ class Index extends Base
 	}
 
 	/**
-	 * @pattern /test
-     * @name test
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 */
-	public function test(Request $request, Response $response, $args)
-	{
-	    var_dump(($this->ci->routes));
-	    exit;
-        $userModel = User::where('email', 'opdss@qq.com')->first();
-       $res = $userModel->resetPassword('222222');
-	   var_dump($res);
-       exit;
-        $emailCode = Functions::genRandStr(6);
-        $body = "您好，opdss@qq.com，您正在使用找回密码功能，验证码：${emailCode} 。";
-        $data = ['to'=>'opdss@qq.com', 'body'=>$body, 'subject'=>'趣米停靠站-找回密码', 'level'=>10];
-        $flag = Email::factory()->insertQueue($data);
-        var_dump($flag);
-	    exit;
-		Functions::runTime('test');
-		$email = Email::factory();
-		$email->setSubject('登陆通知')->setBody('你好，登陆成功')->addAddress(['opdss@qq.com', '479531993@qq.com'])->send();
-		//$email->send('opdss@qq.com', 'test');
-		var_dump(Functions::runTime('test', 1));
-	}
-
-	/**
 	 * routes
 	 * @pattern /routes
 	 * @param Request $request

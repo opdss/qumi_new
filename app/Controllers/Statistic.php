@@ -17,7 +17,7 @@ use Slim\Http\Response;
 
 /**
  * Class Statistic
- * @middleware App\Middleware\Rtime
+ * @middleware App\Middleware\Auth|App\Middleware\Rtime
  * @package App\Controllers
  */
 class Statistic extends Base

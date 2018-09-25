@@ -7,37 +7,37 @@
 
         <!-- 数据查询条件 start -->
         <form class="layui-form">
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <div class="layui-input-inline">
+            <div class="layui-row layui-col-space10 layui-form-item">
+                <div class="layui-col-md2">
                         <select name="domain_id">
                             <option value="0">所有域名</option>
                             {% for x in domains %}
                                 <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-                    <div class="layui-input-inline">
+                </div>
+
+                <div class="layui-col-md3">
                         <select name="is_bot">
                             <option value="">所有类型</option>
                             <option value="1" {{ filter.is_bot==1 ? 'selected' : '' }}>用户或者其他</option>
                             <option value="2" {{ filter.is_bot==2 ? 'selected' : '' }}>搜索引擎</option>
                         </select>
-                    </div>
-                    <div class="layui-input-inline">
+                </div>
+                <div class="layui-col-md2">
                         <select name="is_real_clicks">
                             <option value="">所有用户</option>
                             <option value="2">回调确认</option>
                             <option value="1">其他</option>
                         </select>
-                    </div>
-                    <div class="layui-input-inline">
+                </div>
+
+                <div class="layui-col-md3">
                         <input type="text" class="layui-input" name="date_time" id="dateTime" placeholder="请选择日期">
                     </div>
 
-                    <div class="layui-input-inline">
+                <div class="layui-col-md2">
                         <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
-                    </div>
                 </div>
             </div>
         </form>

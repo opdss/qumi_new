@@ -7,111 +7,42 @@
  */
 namespace App\Controllers;
 
+use App\Libraries\Email;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class Api extends Base
 {
+
 	/**
-	 * //@pattern /api/domains
-	 * @middleware App\Middleware\Auth
+	 * @pattern /offer/{domain_id}
+	 * @name api.offer
+	 * @method post
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
 	 * @return mixed
 	 */
-	public function domain(Request $request, Response $response, $args)
-	{
-		$domain_id = $request->getQueryParam('domain_id');
-		if ($domain_id) {
-			if(is_string($domain_id) && strpos($domain_id, ',') !== false) {
-				$domain_id = explode(',', $domain_id);
-			}
+	public function offer(Request $request, Response $response, $args) {
+		$domain_id = isset($args['domain_id']) ? (int)$args['domain_id'] : 0;
+		$captcha = $request->getParsedBodyParam('captcha', 'null');
 
-			$domain_ids = [];
-			if (is_numeric($domain_id)) {
-				$domain_id>0 AND $domain_ids[] = $domain_id;
-			} elseif(is_array($domain_id)) {
-				$domain_ids = array_filter($domain_id, function($item){
-					if (is_numeric($item) && $item > 0) {
-						return true;
-					}
-					return false;
-				});
-			}
-
-			if (!empty($domain_ids)) {
-				$records = \App\Models\Domain::whereIn('id', $domain_ids)->where('uid', $this->userInfo['uid'])->toArray();
-				return $this->json(count($domain_ids) == 1 ? $records[0] : $records);
-			}
-			return $this->json(40001);
-		} else {
-			$filter = [];
-			$filter['kw'] = $request->getQueryParam('kw', '');
-			$filter['page'] = (int)$request->getParam('page');
-			$page = $filter['page'] ? $filter['page'] : 1;
-			$number = 20;
-			$filter['template_id'] = (int)$request->getParam('template_id');
-			$filter['dns_status'] = (int)$request->getParam('dns_status');
-
-			$builder = new \App\Models\Domain();
-			if ($filter['kw']){
-				$builder = $builder->where('name', 'like', '%'.$filter['kw'].'%');
-			}
-			if ($filter['dns_status'] >= 0) {
-				$builder = $builder->where('dns_status', $filter['dns_status']);
-			}
-			if ($filter['template_id'] > 0) {
-				$builder = $builder->where('template_id', $filter['template_id']);
-			}
-
-			$builder = $builder->where('uid', $this->userInfo['uid']);
-
-			$filter['count'] = $builder->count();
-			$records = [];
-			if ($filter['count']) {
-				$records = $builder->offset(($page-1)*$number)->limit($number)->get();
-			}
-
-			return $this->json(array('pageInfo'=>$filter, 'records'=>$records));
+		if (!$captcha) {
+			return $this->json(3);
 		}
-	}
 
-	/**
-	 * //@pattern /api/templatess
-	 * @middleware App\Middleware\Auth
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 * @return mixed
-	 */
-	public function template(Request $request, Response $response, $args)
-	{
-		$template_id = (int)$request->getQueryParam('template_id');
-		if ($template_id) {
-			$records = \App\Models\Template::where('id', $template_id)->where('uid', $this->userInfo['uid'])->first()->toArray();
-			return $this->json($records);
-		} else {
-			$filter = [];
-			$filter['kw'] = $request->getQueryParam('kw', '');
-			$filter['page'] = (int)$request->getParam('page');
-			$page = $filter['page'] ? $filter['page'] : 1;
-			$number = 20;
-
-			$builder = new \App\Models\Template();
-			if ($filter['kw']){
-				$builder = $builder->where('name', 'like', '%'.$filter['kw'].'%');
-			}
-
-			$builder = $builder->where('uid', $this->userInfo['uid']);
-
-			$filter['count'] = $builder->count();
-			$records = [];
-			if ($filter['count']) {
-				$records = $builder->offset(($page-1)*$number)->limit($number)->get();
-			}
-
-			return $this->json(array('pageInfo'=>$filter, 'records'=>$records));
+		if (!$domain_id || !($domainModel = \App\Models\Domain::with('user')->find($domain_id))) {
+			$this->log('error', __METHOD__.' => 非法域名id', [$domain_id, $request->getParsedBody()]);
+			return $this->json(3);
 		}
+		$price = $request->getParsedBodyParam('price');
+		$content = $request->getParsedBodyParam('content');
+		$email = $request->getParsedBodyParam('email');
+
+		$body = '你好，有人对你的域名('.$domainModel->name.')很感兴趣，报价：'.$price.'，并留言：'.$content.'，他的邮箱是：'.$email.'，有空联系吧，祝老板交易成功';
+		if (!Email::factory()->insertQueue($domainModel->user->email, $body, '客户来啦！')) {
+			return $this->json(1);
+		}
+		return $this->json(0);
 	}
 }

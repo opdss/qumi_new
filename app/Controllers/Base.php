@@ -120,7 +120,15 @@ class Base
 		$render_data['runtime'] = round(\App\Functions::runTime('run', true), 6);
 		$render_data['userInfo'] = $this->userInfo;
 		$render_data['online'] = RUN_ENV == 'production';
-		$render_data['menus'] = $this->getMenus($this->ci->menuGroup);
+
+		//由auth中间件 注入的数据
+		if ($this->ci->offsetExists('menuGroup')) {
+			$render_data['menus'] = $this->getMenus($this->ci->offsetGet('menuGroup'));
+			$render_data['currentMenu'] = $this->ci->offsetGet('currentMenu');
+		} else {
+			$render_data['menus'] = $this->getMenus('user');
+		}
+
 		return $this->ci->view->render($this->ci->response, $tpl, $render_data);
 	}
 
@@ -193,7 +201,7 @@ class Base
         $cache = $this->ci->cache;
         if (!($menus = $cache->get($cacheKey))) {
             $menus = [];
-            foreach ($routes as $route) {
+            foreach ($routes as $routeName => $route) {
                 $sub = $route['info'];
                 if (isset($sub['auth']) && $sub['auth']) {
                     $arr = explode('|', $sub['auth'], 3);
@@ -203,6 +211,7 @@ class Base
                         }
                         if (!isset($menus[$arr[0]][$arr[1]])) {
                             $menus[$arr[0]][$arr[1]] = array(
+                                'routeName' => $routeName,
                                 'name' => $arr[1],
                                 'url' => $this->ci->router->pathFor($route['name']),
                                 'sub' => []
@@ -210,6 +219,7 @@ class Base
                         }
                         if (isset($arr[2])) {
                             $one = [
+								'routeName' => $routeName,
                                 'name' => $arr[2],
                                 'url' => $this->ci->router->pathFor($route['name'])
                             ];
