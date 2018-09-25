@@ -54,7 +54,7 @@
             }
 
             //构建一个默认的编辑器
-            var index = layedit.build('content', {height: 400});
+            var index = layedit.build('content', {height: 400, uploadImage : {url : '{{ path_for('upload.layui') }}'}});
 
             //编辑器外部操作
             var active = {
