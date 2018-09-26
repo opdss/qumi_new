@@ -52,7 +52,9 @@ class Rtime
                 'params' => $request->getParams(),
                 'url' => $request->getServerParam('REQUEST_SCHEME').'://'.$request->getServerParam('HTTP_HOST').($request->getServerParam('REQUEST_URI') == '/' ? '' : $request->getServerParam('REQUEST_URI'))
             ];
-            //Email::factory()->send('opdss@qq.com', json_encode($log), '超时拉！');
+            if ($runTime >= 10) {
+                Email::factory()->insertQueue('opdss@qq.com', json_encode([$runTime,$log]), '超时拉！');
+            }
             $this->ci->logger->notice('程序运行超时:'.$runTime, $log);
         }
         return $response;
