@@ -14,7 +14,6 @@
     <title>{{ title|default(site.title) }}</title>
 
     <link rel="stylesheet" href="/statics/layui/css/layui.css">
-    {#<link rel="stylesheet" href="/statics/css/style.css">#}
 
     {#每个页面额外载入的css文件#}
     {% for css in statics.css %}
@@ -50,8 +49,9 @@
                         <a href="javascript:;">{{ userInfo.email }}</a>
                         <dl class="layui-nav-child">
                             {% for item in menus %}
-                            <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
+                                <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
                             {% endfor %}
+                            <hr/>
                             <dd><a href="{{ path_for('logout') }}">安全退出</a></dd>
                         </dl>
                     </li>

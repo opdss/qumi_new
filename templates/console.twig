@@ -9,10 +9,11 @@
                         {% for item in menus %}
                             <li class="layui-nav-item layui-nav-itemed">
                                 <a href="{{ item['sub'] ? '#' : item.url }}">{{ item.name }}</a>
-                                {% if item['sub']%}
+                                {% if item['sub'] %}
                                     <dl class="layui-nav-child">
                                         {% for child in item['sub'] %}
-                                            <dd class="{{ currentMenu == child.routeName ? 'layui-this' : ''}}"><a href="{{ child.url }}">{{ child.name }}</a></dd>
+                                            <dd class="{{ currentMenu == child.routeName ? 'layui-this' : '' }}"><a
+                                                        href="{{ child.url }}">{{ child.name }}</a></dd>
                                         {% endfor %}
                                     </dl>
                                 {% endif %}
@@ -23,11 +24,12 @@
             </div>
 
             <div class="layui-col-md10 layui-col-xs12">
-            {% block console %}
-                <div class="site-content">
-                    <div class="" style="text-align: center;padding:20%;background-color: #aaaaaa"><h1>好像啥也没有。。。</h1></div>
+                <div class="layui-fluid" style="padding: 15px;">
+                    {% block console %}
+                        <div class="" style="text-align: center;padding:20%;background-color: #aaaaaa"><h1>
+                                好像啥也没有。。。</h1></div>
+                    {% endblock %}
                 </div>
-            {% endblock %}
             </div>
         </div>
     </div>

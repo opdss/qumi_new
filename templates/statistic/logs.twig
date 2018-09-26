@@ -1,63 +1,56 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-    <!-- content start -->
-    <div class="site-content">
-        <!--<h1 class="site-h1">域名管理</h1>-->
-
-        <!-- 数据查询条件 start -->
-        <form class="layui-form">
-            <div class="layui-row layui-col-space10 layui-form-item">
-                <div class="layui-col-md2">
-                        <select name="domain_id">
-                            <option value="0">所有域名</option>
-                            {% for x in domains %}
-                                <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
-                            {% endfor %}
-                        </select>
-                </div>
-
-                <div class="layui-col-md3">
-                        <select name="is_bot">
-                            <option value="">所有类型</option>
-                            <option value="1" {{ filter.is_bot==1 ? 'selected' : '' }}>用户或者其他</option>
-                            <option value="2" {{ filter.is_bot==2 ? 'selected' : '' }}>搜索引擎</option>
-                        </select>
-                </div>
-                <div class="layui-col-md2">
-                        <select name="is_real_clicks">
-                            <option value="">所有用户</option>
-                            <option value="2">回调确认</option>
-                            <option value="1">其他</option>
-                        </select>
-                </div>
-
-                <div class="layui-col-md3">
-                        <input type="text" class="layui-input" name="date_time" id="dateTime" placeholder="请选择日期">
-                    </div>
-
-                <div class="layui-col-md2">
-                        <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
-                </div>
+    <!-- 数据查询条件 start -->
+    <form class="layui-form">
+        <div class="layui-row layui-col-space10 layui-form-item">
+            <div class="layui-col-md3">
+                <select name="domain_id" lay-search="">
+                    <option value="">选择域名</option>
+                    {% for x in domains %}
+                        <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </form>
-        <!-- 数据查询条件 end -->
 
-        <!-- 数据表格 start -->
-        <script type="text/html" id="headerToolBar">
-        </script>
-        <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
-        <script type="text/html" id="toolBar">
-            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-        </script>
-        <!-- 数据表格 end -->
+            <div class="layui-col-md2">
+                <select name="is_bot">
+                    <option value="">所有类型</option>
+                    <option value="1" {{ filter.is_bot==1 ? 'selected' : '' }}>用户或者其他</option>
+                    <option value="2" {{ filter.is_bot==2 ? 'selected' : '' }}>搜索引擎</option>
+                </select>
+            </div>
+            <div class="layui-col-md2">
+                <select name="is_real_clicks">
+                    <option value="">所有用户</option>
+                    <option value="2">回调确认</option>
+                    <option value="1">其他</option>
+                </select>
+            </div>
+
+            <div class="layui-col-md3">
+                <input type="text" class="layui-input" name="date_time" id="dateTime" placeholder="请选择日期">
+            </div>
+
+            <div class="layui-col-md2">
+                <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
+            </div>
+        </div>
+    </form>
+    <!-- 数据查询条件 end -->
+
+    <!-- 数据表格 start -->
+    <div class="layui-card">
+        <div class="layui-card-header">所有访问日志</div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        </div>
     </div>
-    <!-- content end -->
+    <!-- 数据表格 end -->
 {% endblock %}
 {% block script %}
     <script type="text/javascript">
-        layui.use(['layer', 'element', 'form', 'table', 'utils', 'laydate'], function(){
+        layui.use(['layer', 'element', 'form', 'table', 'utils', 'laydate'], function () {
             var layer = layui.layer;
             var form = layui.form;
             var laydate = layui.laydate;
@@ -65,41 +58,44 @@
 
             laydate.render({
                 elem: '#dateTime'
-                ,max: '{{ currDay }}'
-                ,format: 'yyyy/MM/dd'
-                ,range: true
+                , max: '{{ currDay }}'
+                , format: 'yyyy/MM/dd'
+                , range: true
             });
 
             //数据表格处理
             var table = layui.table;
             table.render(layui.$.extend({
                 elem: '#dataTable'
-                ,url:'{{ path_for('api.statistic.logs') }}'
-                ,toolbar : '#headerToolBar'
-                ,cols: [[
-                    {field:'url',  title: '访问url'}
-                    ,{field:'ip', title: '来源ip'}
-                    ,{field:'region', title: '地理位置'}
-                    ,{field:'cli_type', title: '访问类型'}
-                    ,{field:'cli_name', title: '客户端', templet : function (d) {
-                        return d.cli_version ? d.cli_name+'('+ d.cli_version  +')' : d.cli_name
-                    }}
-                    ,{field:'os_name', title: '系统信息', templet : function (d) {
-                        var om = d.os_name ? d.os_name+'('+ d.os_version  +')' : d.os_name;
-                        if (d.is_real_clicks) {
-                            om = '<span class="layui-badge-dot"></span>'+ om
+                , url: '{{ path_for('api.statistic.logs') }}'
+                , cols: [[
+                    {field: 'url', title: '访问url'}
+                    , {field: 'ip', title: '来源ip'}
+                    , {field: 'region', title: '地理位置'}
+                    , {field: 'cli_type', title: '访问类型'}
+                    , {
+                        field: 'cli_name', title: '客户端', templet: function (d) {
+                            return d.cli_version ? d.cli_name + '(' + d.cli_version + ')' : d.cli_name
                         }
-                        return om;
-                    }}
-                    ,{field:'created_at', title: '访问时间'}
+                    }
+                    , {
+                        field: 'os_name', title: '系统信息', templet: function (d) {
+                            var om = d.os_name ? d.os_name + '(' + d.os_version + ')' : d.os_name;
+                            if (d.is_real_clicks) {
+                                om = '<span class="layui-badge-dot"></span>' + om
+                            }
+                            return om;
+                        }
+                    }
+                    , {field: 'created_at', title: '访问时间'}
                 ]]
-            },utils.tableOptions));
+            }, utils.tableOptions));
 
             //监听查询条件
             form.on('submit(btnSearch)', function (data) {
                 table.reload('dataTable', {
                     page: {curr: 1}
-                    ,where: data.field
+                    , where: data.field
                 });
                 return false;
             });

@@ -58,7 +58,6 @@ class Auth
 			$this->ci->offsetSet('menuGroup', $currentRouteRoleLevel > 1 ? 'admin' : 'user');
 			$this->ci->offsetSet('currentMenu', $currentRouteName);
 
-
 			$roleLever = isset($userInfo['roleLevel']) ? intval($userInfo['roleLevel']) : 0;
             //权限级别越高越大
             if ($roleLever >= $currentRouteRoleLevel) {

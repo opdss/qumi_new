@@ -2,39 +2,43 @@
 
 {% block console %}
 
-    <!-- content start -->
-    <div class="site-content">
-        <!--<h1 class="site-h1">域名管理</h1>-->
+    <!--<h1 class="site-h1">域名管理</h1>-->
 
-        <!-- 数据查询条件 start -->
-        <form class="layui-form">
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <div class="layui-input-inline">
-                        <input type="text" name="kw" class="layui-input" placeholder="关键词">
-                    </div>
-                    <div class="layui-input-inline">
-                        <button class="layui-btn"  lay-filter="btnSearch" lay-submit>查询</button>
-                        <button class="layui-btn layui-btn-normal" id="btnAdd">添加模板</button>
-                    </div>
-                </div>
+    <!-- 数据查询条件 start -->
+    <form class="layui-form">
+        <div class="layui-row layui-col-space10 layui-form-item">
+            <div class="layui-inline layui-col-md4">
+                <input type="text" name="kw" class="layui-input" placeholder="关键词">
             </div>
-        </form>
-        <!-- 数据查询条件 end -->
+            <div class="layui-inline layui-col-md4">
+                <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
+                <button class="layui-btn layui-btn-normal" id="btnAdd">添加模板</button>
+            </div>
+        </div>
+    </form>
+    <!-- 数据查询条件 end -->
 
-        <!-- 数据表格 start -->
-        <script type="text/html" id="headerToolBar">
-            <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="batchDel">批量删除</button>
-            </div>
-        </script>
-        <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
-        <script type="text/html" id="toolBar">
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-        </script>
-        <!-- 数据表格 end -->
+    <!-- 数据表格 start -->
+    <div class="layui-card">
+        <div class="layui-card-header">模板列表</div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        </div>
     </div>
-    <!-- content end -->
+
+    <!-- 数据表格 end -->
+
+    <!-- 其他弹窗  start -->
+
+    <script type="text/html" id="headerToolBar">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm" lay-event="batchDel">批量删除</button>
+        </div>
+    </script>
+    <script type="text/html" id="toolBar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <!-- 其他弹窗  end -->
 
     <div style="display: none" id="modalAdd-tpl">
         <div class="modal">
@@ -42,7 +46,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">模板名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" lay-verify="required|name" autocomplete="off" placeholder="模板名称" class="layui-input">
+                        <input type="text" name="name" lay-verify="required|name" autocomplete="off" placeholder="模板名称"
+                               class="layui-input">
                     </div>
                 </div>
 
@@ -53,7 +58,8 @@
                             <input type="hidden" name="theme_id" value="{{ themes[0].id }}">
                             {% for x in themes %}
                                 <div class="layui-col-md4">
-                                    <div class="theme-img {{ loop.index==1 ? 'theme-checked' : '' }}" data-themeid="{{ x.id }}" title="{{ x.name }}">
+                                    <div class="theme-img {{ loop.index==1 ? 'theme-checked' : '' }}"
+                                         data-themeid="{{ x.id }}" title="{{ x.name }}">
                                         <img src="{{ x.image }}" alt="{{ x.name }}" style="width: 100%">
                                     </div>
                                 </div>
@@ -65,25 +71,29 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">qq</label>
                     <div class="layui-input-block">
-                        <input type="text" name="qq" lay-verify="varchat" autocomplete="off" placeholder="qq" class="layui-input">
+                        <input type="text" name="qq" lay-verify="varchat" autocomplete="off" placeholder="qq"
+                               class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">微信</label>
                     <div class="layui-input-block">
-                        <input type="text" name="wechat" lay-verify="varchat" autocomplete="off" placeholder="wechat" class="layui-input">
+                        <input type="text" name="wechat" lay-verify="varchat" autocomplete="off" placeholder="wechat"
+                               class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电话</label>
                     <div class="layui-input-block">
-                        <input type="text" name="phone" lay-verify="varchat" autocomplete="off" placeholder="phone" class="layui-input">
+                        <input type="text" name="phone" lay-verify="varchat" autocomplete="off" placeholder="phone"
+                               class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">邮箱</label>
                     <div class="layui-input-block">
-                        <input type="text" name="email" lay-verify="varchat" autocomplete="off" placeholder="email" class="layui-input">
+                        <input type="text" name="email" lay-verify="varchat" autocomplete="off" placeholder="email"
+                               class="layui-input">
                     </div>
                 </div>
                 <button lay-submit lay-filter="modalAdd" style="display: none" class="submit">提交</button>
@@ -93,22 +103,22 @@
 
     <div style="display: none" id="editTheme-tpl">
         <div class="modal">
-                <div class="layui-row" style="display: inline-block;">
-                    {% for x in themes %}
-                        <div class="layui-col-md4">
-                            <div class="theme-img" data-themeid="{{ x.id }}" title="{{ x.name }}">
-                                <img src="{{ x.image }}" alt="{{ x.name }}" style="width: 100%">
-                            </div>
+            <div class="layui-row" style="display: inline-block;">
+                {% for x in themes %}
+                    <div class="layui-col-md4">
+                        <div class="theme-img" data-themeid="{{ x.id }}" title="{{ x.name }}">
+                            <img src="{{ x.image }}" alt="{{ x.name }}" style="width: 100%">
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript">
-        layui.use(['layer', 'element', 'form', 'table', 'utils'], function(){
+        layui.use(['layer', 'element', 'form', 'table', 'utils'], function () {
             var layer = layui.layer;
             var form = layui.form;
             var table = layui.table;
@@ -116,73 +126,80 @@
             var $ = layui.$;
 
             var API = {
-                get : '{{ path_for('api.template.get') }}',
-                del : '{{ path_for('api.template.del') }}',
-                add : '{{ path_for('api.template.add') }}',
-                update : '{{ path_for('api.template.update') }}',
+                get: '{{ path_for('api.template.get') }}',
+                del: '{{ path_for('api.template.del') }}',
+                add: '{{ path_for('api.template.add') }}',
+                update: '{{ path_for('api.template.update') }}',
             }
 
             var themes = {{ themesJson|raw }}
 
-            table.render(layui.$.extend({
-                elem: '#dataTable'
-                ,url:API.get
-                ,toolbar : '#headerToolBar'
-                ,cols: [[
-                    {type:'checkbox'}
-                    ,{field:'name',  title: '模版名称', sort: true, edit:'text'}
-                    ,{field:'qq', title: 'QQ', sort: true, edit:'text'}
-                    ,{field:'phone', title: '联系电话', sort: true, edit:'text'}
-                    ,{field:'wechat', title: '微信', sort: true, edit:'text'}
-                    ,{field:'email', title: '邮箱', sort: true, edit:'text'}
-                    ,{field:'theme_id', title: '主题', event: 'editThemeId', style:'cursor: pointer', templet : function (d) {
-                        var html = '<div class="themeEdit">'+themes[d.theme_id]['name']+'</div>'
-                            return html;
-                        }}
-                    ,{field:'domainCount', title: '停靠域名数量'}
-                    ,{fixed:'right', title: '操作', align:'center', toolbar : '#toolBar' }
-                ]]
-            },utils.tableOptions));
+                table.render(layui.$.extend({
+                    elem: '#dataTable'
+                    , url: API.get
+                    , toolbar: '#headerToolBar'
+                    , cols: [[
+                        {type: 'checkbox'}
+                        , {field: 'name', title: '模版名称', sort: true, edit: 'text'}
+                        , {field: 'qq', title: 'QQ', sort: true, edit: 'text'}
+                        , {field: 'phone', title: '联系电话', sort: true, edit: 'text'}
+                        , {field: 'wechat', title: '微信', sort: true, edit: 'text'}
+                        , {field: 'email', title: '邮箱', sort: true, edit: 'text'}
+                        , {
+                            field: 'theme_id',
+                            title: '主题',
+                            event: 'editThemeId',
+                            style: 'cursor: pointer',
+                            templet: function (d) {
+                                var html = '<div class="themeEdit">' + themes[d.theme_id]['name'] + '</div>'
+                                return html;
+                            }
+                        }
+                        , {field: 'domainCount', title: '停靠域名数量'}
+                        , {fixed: 'right', title: '操作', align: 'center', toolbar: '#toolBar'}
+                    ]]
+                }, utils.tableOptions));
 
             //监听查询条件
             form.on('submit(btnSearch)', function (data) {
                 table.reload('dataTable', {
                     //重新从第 1 页开始
                     page: {curr: 1}
-                    ,where: data.field
+                    , where: data.field
                 });
                 return false;
             });
 
             //监听排序
-            table.on('sort(dataTable)', function(obj){
+            table.on('sort(dataTable)', function (obj) {
                 table.reload('dataTable', {
                     initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
-                    ,where: {'order_name' : obj.field, 'order_type':obj.type}
+                    , where: {'order_name': obj.field, 'order_type': obj.type}
                 });
             });
 
             //头工具栏事件
-            table.on('toolbar(dataTable)', function(obj){
+            table.on('toolbar(dataTable)', function (obj) {
                 var checkStatus = table.checkStatus(obj.config.id);
-                if (obj.event == 'batchDel'){
-                        var data = checkStatus.data;
-                        if (data.length > 0) {
-                            var ids = [];
-                            data.forEach(function (o, i) {
-                                ids.push(o.id)
-                            })
-                            utils.delById(API.del, ids, function (res) {
-                                table.reload('dataTable');
-                            })
-                        }
-                };
+                if (obj.event == 'batchDel') {
+                    var data = checkStatus.data;
+                    if (data.length > 0) {
+                        var ids = [];
+                        data.forEach(function (o, i) {
+                            ids.push(o.id)
+                        })
+                        utils.delById(API.del, ids, function (res) {
+                            table.reload('dataTable');
+                        })
+                    }
+                }
+                ;
             });
             //监听单元格
-            table.on('edit(dataTable)', function(obj){
+            table.on('edit(dataTable)', function (obj) {
                 var value = obj.value //得到修改后的值
-                    ,data = obj.data //得到所在行所有键值
-                    ,field = obj.field; //得到字段
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
                 var _data = {id: data.id}
                 _data[field] = value;
                 utils.ajax.post(API.update, _data, function (res) {
@@ -191,24 +208,26 @@
                 });
             });
             //监听行工具条
-            table.on('tool(dataTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.on('tool(dataTable)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
                 var data = obj.data; //获得当前行数据
                 var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
                 var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-                if(layEvent === 'del'){ //删除
-                    utils.delById(API.del, data.id, function (res) {obj.del();})
+                if (layEvent === 'del') { //删除
+                    utils.delById(API.del, data.id, function (res) {
+                        obj.del();
+                    })
                 } else if (layEvent === 'editThemeId') {
                     var id = 'editTheme';
                     var theme_id = data.theme_id;
                     layer.open({
-                        type : 1
-                        ,title:'更换模板主题'
-                        ,id: id //防止重复弹出
-                        ,content : $('#editTheme-tpl').html()
-                        ,btn: '确定'
-                        ,shade: 0 //不显示遮罩
-                        ,yes: function(index){
+                        type: 1
+                        , title: '更换模板主题'
+                        , id: id //防止重复弹出
+                        , content: $('#editTheme-tpl').html()
+                        , btn: '确定'
+                        , shade: 0 //不显示遮罩
+                        , yes: function (index) {
                             if (theme_id != data.theme_id) {
                                 var _data = {id: data.id}
                                 _data['theme_id'] = theme_id;
@@ -219,9 +238,9 @@
                             }
                             layer.close(index);
                         },
-                        success : function () {
-                            var $this = $('#'+id);
-                            var  theme_img = $this.find('.theme-img')
+                        success: function () {
+                            var $this = $('#' + id);
+                            var theme_img = $this.find('.theme-img')
                             theme_img.each(function (i, ele) {
                                 if ($(ele).data('themeid') == data.theme_id) {
                                     $(ele).addClass('theme-checked');
@@ -253,19 +272,19 @@
             $('#btnAdd').on('click', function () {
                 var id = 'modalAdd';
                 layer.open({
-                    title:'添加停靠模版',
-                    id:id,
-                    type : 1,
-                    area : ['600px', '600px'],
+                    title: '添加停靠模版',
+                    id: id,
+                    type: 1,
+                    area: ['600px', '600px'],
                     content: $('#modalAdd-tpl').html(),
-                    btn : ['确认', '取消'],
-                    yes : function (index) {
-                        $('#'+id).find('button.submit').trigger('click')
+                    btn: ['确认', '取消'],
+                    yes: function (index) {
+                        $('#' + id).find('button.submit').trigger('click')
                     },
-                    success:function () {
+                    success: function () {
                         form.render()
                         //渲染modal表单后，相关js逻辑
-                        var $form = $('#'+id);
+                        var $form = $('#' + id);
                         var $inp = $form.find('input[name=theme_id]');
                         $form.find('.theme-img').on('click', function () {
                             $inp.val($(this).data('themeid'));

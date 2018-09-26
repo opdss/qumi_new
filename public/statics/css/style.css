@@ -157,14 +157,14 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
     .header .layui-nav .layui-nav-item[mobile]{display: inline-block;}
     .site-banner{height: 300px;}
     .site-banner-bg{background-size: cover;}
-    .site-zfj{height: 100px; padding-top: 5px;}
+    /*.site-zfj{height: 100px; padding-top: 5px;}
     .site-zfj i{top: 10px; width: 100px; height: 100px; margin-left: -50px; font-size: 100px;}
     .site-desc{background-size: 70%; margin: 0;}
     .site-desc .web-font-desc{padding-top: 20px; font-size: 30px;}
     .site-desc cite{display: none;}
     .site-download{margin-top: 0; }
     .site-download a{height: 40px; line-height: 40px; padding: 0 25px 0 60px; border-radius: 30px; color: #fff; font-size: 16px;}
-    .site-download a cite{left: 20px;}
+    .site-download a cite{left: 20px;}*/
     .site-banner-other{bottom: 10px;}
 
     .site-idea{margin: 20px 0;}
@@ -193,7 +193,7 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
     body .layui-layout-admin .footer-demo{position: static; height: auto; line-height: 30px;}
     .footer-demo p{height: auto;}
 
-    .site-demo-area,
+    /*.site-demo-area,
     .site-demo-editor,
     .site-demo-result,
     .site-demo-editor textarea,
@@ -201,44 +201,42 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
     .site-demo-editor textarea{height: 350px;}
     .site-demo-zanzhu{display: none;}
     .site-demo-btn{bottom: auto; top: 370px;}
-    .site-demo-result iframe{height: 500px;}
+    .site-demo-result iframe{height: 500px;}*/
 
-    .site-demo-laytpl textarea, .site-demo-laytpl div span{margin: 0;}
+    /*.site-demo-laytpl textarea, .site-demo-laytpl div span{margin: 0;}
     .site-demo-tplres .site-demo-tplh2, .site-demo-tplres .site-demo-tplview{width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
 
     .site-demo-title{position: static; left: 0;}
     body .layui-layout-admin .site-demo{}
-    .site-demo-code{position: static; height: 350px;}
+    .site-demo-code{position: static; height: 350px;}*/
 }
 
-/*卡片*/
-/*.layui-card {
+/*米表*/
+.card-mibiao {
+    height: 200px;
+    overflow: auto;
     border: 1px solid #eee;
     margin: 10px;
     box-shadow: 3px 3px 10px rgba(0,0,0,.1);
 }
-.layui-card:hover {
+.card-mibiao > .layui-card-body {
+    text-align: center;
+}
+.card-mibiao > .layui-card-header {
+    overflow: hidden;
+}
+.card-mibiao:hover{
     box-shadow: 3px 3px 5px rgba(0,0,0,.3);
 }
-.layui-card-header {
-    background-color: #f5f5f5;
-    overflow: hidden;
-}*/
-.layui-card-header > .card-tools {
+.card-mibiao > .layui-card-header > .card-tools {
     position: absolute;
     right:0px;
     top: 0px;
     padding-right: 10px;
 }
-.layui-card-header > .card-tools i {
+.card-mibiao > .layui-card-header > .card-tools i {
     font-size: 20px;
 }
-.card-mibiao {
-    text-align: center;
-    height: 156px;
-    overflow: auto;
-}
-
 
 
 @-webkit-keyframes site-anim-closeup{ /* 特写 */

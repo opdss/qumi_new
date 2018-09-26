@@ -24,6 +24,7 @@ class Ucenter extends Base
 
 	/**
 	 * @pattern /ucenter
+	 * @auth user|个人中心
 	 * @name ucenter
 	 * @param Request $request
 	 * @param Response $response
@@ -33,11 +34,15 @@ class Ucenter extends Base
 	{
 	    $data = [];
 	    $data['info'] = [
+	    	//当前域名总数
 	    	'domainCount' => \App\Models\Domain::isMy($this->uid)->count(),
+			//访问总数
 	    	'accessCount' => DomainAccessLog::isMy($this->uid)->count(),
+			//有效访问总数
+			'trueCount' => DomainAccessLog::isMy($this->uid)->count(),
+			//今日访问总数
+			'todayCount' => DomainAccessLog::isMy($this->uid)->count(),
 		];
-	    $this->addJs('/statics/js/echarts.min.js');
-        $data['currentName'] = $request->getAttribute('route')->getName();
 	    return $this->view('ucenter/index.twig', $data);
 	}
 }

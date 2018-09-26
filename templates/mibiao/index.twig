@@ -1,22 +1,23 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-    <div class="site-content">
-
-        <!-- 数据表格 start -->
-        <div class="layui-row">
-            {% for x in records %}
+    <!-- 数据表格 start -->
+    <div class="layui-row">
+        {% for x in records %}
             <div class="layui-col-xs12 layui-col-md4">
-                <div class="layui-card">
+                <div class="layui-card  card-mibiao">
                     <div class="layui-card-header">
                         {{ x.name }}
                         <div class="card-tools">
-                            <a href="javascript:;" class="btnEdit" data-id="{{ x.id }}"><i class="layui-icon layui-icon-set-sm"></i></a>
-                            <a href="javascript:;" class="btnDel" data-id="{{ x.id }}"><i class="layui-icon layui-icon-delete"></i></a>
+                            <a href="javascript:;" class="btnEdit" data-id="{{ x.id }}"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="{{ x.id }}"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
                         </div>
                     </div>
-                    <div class="layui-card-body card-mibiao">
-                        <p style="line-height: 80px;font-size: 24px;">共有<span style="font-size: 48px;color: #00a8c6">{{ x.domainCount }}</span>个域名</p>
+                    <div class="layui-card-body">
+                        <p style="line-height: 80px;font-size: 24px;">共有<span
+                                    style="font-size: 48px;color: #00a8c6">{{ x.domainCount }}</span>个域名</p>
                         <p><a href="{{ x.defaultUrl }}" target="_blank">{{ x.defaultUrl }}</a></p>
                         {% if x.myUrl %}
                             <p>自定义地址：<a href="{{ x.myUrl }}" target="_blank">{{ x.myUrl }}</a></p>
@@ -24,44 +25,42 @@
                     </div>
                 </div>
             </div>
-            {% endfor %}
-            <div class="layui-col-xs12 layui-col-md4">
-                <div class="layui-card">
-                    <div class="layui-card-header">
+        {% endfor %}
+        <div class="layui-col-xs12 layui-col-md4">
+            <div class="layui-card  card-mibiao">
+                <div class="layui-card-header">
+                    添加米表
+                </div>
+                <div class="layui-card-body">
+                    <a style="font-size: 36px;padding: 50px 0px;display:block;cursor: pointer;" id="btnAdd">
+                        <i class="layui-icon layui-icon-add-1" style="font-size: 36px;font-weight: bold"></i>
                         添加米表
-                    </div>
-                    <div class="layui-card-body card-mibiao">
-                        <a style="font-size: 36px;padding: 50px 0px;display:block;cursor: pointer;" id="btnAdd">
-                            <i class="layui-icon layui-icon-add-1" style="font-size: 36px;font-weight: bold"></i>
-                            添加米表
-                        </a>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
-        <!-- 数据表格 end -->
     </div>
-
+    <!-- 数据表格 end -->
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript">
 
-        layui.use(['layer', 'utils', 'form'], function(){
+        layui.use(['layer', 'utils', 'form'], function () {
             var $ = layui.$;
             var utils = layui.utils;
             var form = layui.form;
             var API = {
-                modalEdit : '{{ path_for('mibiao.modal', {'act':'edit'}) }}',
-                modalAdd : '{{ path_for('mibiao.modal', {'act':'add'}) }}',
-                add : '{{ path_for('api.mibiao.add') }}',
-                update : '{{ path_for('api.mibiao.update') }}',
+                modalEdit: '{{ path_for('mibiao.modal', {'act':'edit'}) }}',
+                modalAdd: '{{ path_for('mibiao.modal', {'act':'add'}) }}',
+                add: '{{ path_for('api.mibiao.add') }}',
+                update: '{{ path_for('api.mibiao.update') }}',
             }
 
             //modal表单的监听添加
             form.on('submit(modalAdd)', function (data) {
                 utils.ajax.post(API.add, data.field, function (res) {
-                    layer.alert('添加成功！', function(index){
+                    layer.alert('添加成功！', function (index) {
                         location.reload();
                     });
                 });
@@ -74,7 +73,7 @@
             //modal表单的监听修改
             form.on('submit(modalEdit)', function (data) {
                 utils.ajax.post(API.update, data.field, function (res) {
-                    layer.alert('修改成功！', function(index){
+                    layer.alert('修改成功！', function (index) {
                         location.reload();
                     });
                 });
@@ -83,22 +82,22 @@
 
             //修改
             $('.btnEdit').on('click', function () {
-                $.get(API.modalEdit+'?id='+$(this).data('id'), function (res) {
+                $.get(API.modalEdit + '?id=' + $(this).data('id'), function (res) {
                     var id = 'modalEdit';
                     layer.open({
-                        title:'修改米表',
-                        id:id,
-                        type : 1,
-                        area : ['600px', '600px'],
+                        title: '修改米表',
+                        id: id,
+                        type: 1,
+                        area: ['600px', '600px'],
                         content: res,
-                        btn : ['确认', '取消'],
-                        yes : function (index) {
-                            $('#'+id).find('button.submit').trigger('click')
+                        btn: ['确认', '取消'],
+                        yes: function (index) {
+                            $('#' + id).find('button.submit').trigger('click')
                         },
-                        success:function () {
+                        success: function () {
                             form.render()
                             //渲染modal表单后，相关js逻辑
-                            var $form = $('#'+id);
+                            var $form = $('#' + id);
                             var $inp = $form.find('input[name=theme_id]');
                             $form.find('.theme-img').on('click', function () {
                                 $inp.val($(this).data('themeid'));
@@ -121,19 +120,19 @@
                 $.get(API.modalAdd, function (res) {
                     var id = 'modalAdd';
                     layer.open({
-                        title:'添加米表',
-                        id:id,
-                        type : 1,
-                        area : ['600px', '600px'],
+                        title: '添加米表',
+                        id: id,
+                        type: 1,
+                        area: ['600px', '600px'],
                         content: res,
-                        btn : ['确认', '取消'],
-                        yes : function (index) {
-                            $('#'+id).find('button.submit').trigger('click')
+                        btn: ['确认', '取消'],
+                        yes: function (index) {
+                            $('#' + id).find('button.submit').trigger('click')
                         },
-                        success:function () {
+                        success: function () {
                             form.render()
                             //渲染modal表单后，相关js逻辑
-                            var $form = $('#'+id);
+                            var $form = $('#' + id);
                             var $inp = $form.find('input[name=theme_id]');
                             $form.find('.theme-img').on('click', function () {
                                 $inp.val($(this).data('themeid'));
