@@ -51,7 +51,7 @@ layui.define(['layer', 'jquery'], function(exports){
                 location.href = '/login';
             })
         } else if (res.errCode == 2) {
-            layer.alert('你没有相关权限！')
+            layer.alert('你没有相关权限！', {icon: 2})
         } else {
             if (error) {
                 error(res);
