@@ -108,8 +108,11 @@ class Index extends Base
 		$filter = [];
 		$filter['kw'] = $request->getQueryParam('kw', '');
 		$filter['page'] = (int)$request->getParam('page') ?: 1;
+		$limit = (int)$request->getQueryParam('limit') ?: self::$page_number;
+		$limit = min($limit, 100);
 
 		$data['filter'] = $filter;
+		$data['filter']['limit'] = $limit;
 		$data['count'] = 0;
 		$data['records'] = [];
 
@@ -121,12 +124,12 @@ class Index extends Base
 
 		$data['count'] = $builder->count();
 		if ($data['count']) {
-			$data['records'] = $builder->offset(($filter['page']-1)*self::$page_number)->limit(self::$page_number)->orderBy('id', 'desc')->get();
-			$data['pagination'] = Functions::pagination($data['count'], self::$page_number);
+			$data['records'] = $builder->offset(($filter['page']-1)*$limit)->limit($limit)->orderBy('id', 'desc')->get();
 		}
         $data['mibiao'] = $mibiaoModel;
         $data['template'] = Template::find($mibiaoModel->template_id);
-		return $this->view(Theme::find($mibiaoModel->theme_id)->path, $data);
+		//return $this->view(Theme::find($mibiaoModel->theme_id)->path, $data);
+		return $this->view('public/mibiao.twig', $data);
 	}
 
 	/**

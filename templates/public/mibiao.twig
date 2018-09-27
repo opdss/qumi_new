@@ -1,0 +1,78 @@
+{% extends 'layout.twig' %}
+
+{% block container %}
+    <div class="layui-container">
+        <div class="layui-fluid" style="padding: 15px;">
+        <div class="layui-row">
+            <div class="layui-col-md8">
+                <div class="layui-form">
+                    <div class="layui-row layui-col-space10 layui-form-item">
+                        <div class="layui-col-md4">
+                            <input type="text" name="kw" class="layui-input" placeholder="关键词">
+                        </div>
+                        <div class="layui-col-md4">
+                            <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-header"><h2>{{ mibiao.name }}</h2></div>
+                    <div class="layui-card-body">
+                        <table class="layui-table" lay-skin="line">
+                            <thead>
+                            <tr>
+                                <th>域名</th>
+                                <th>报价</th>
+                                <th>含义</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in records %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.sale_type ? '询价' : item.price }}</td>
+                                    <td>{{ item.description }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                    <blockquote class="layui-elem-quote">
+                        {{ mibiao.description }}
+                    </blockquote>
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}<script>
+    layui.use(['laypage', 'utils'], function(){
+        var laypage = layui.laypage;
+
+        //执行一个laypage实例
+        laypage.render({
+            elem: 'pagination'
+            ,limit : {{ filter.limit }}
+            ,curr : {{ filter.page }}
+            ,count: {{ count }}
+            ,jump: function(obj, first){
+                //首次不执行
+                if(!first){
+                    var url = layui.utils.urlHelper.putParam(location.href, 'page', obj.curr);
+                    location.href = url;
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

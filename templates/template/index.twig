@@ -1,16 +1,13 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-
-    <!--<h1 class="site-h1">域名管理</h1>-->
-
     <!-- 数据查询条件 start -->
     <form class="layui-form">
         <div class="layui-row layui-col-space10 layui-form-item">
-            <div class="layui-inline layui-col-md4">
+            <div class="layui-col-md4">
                 <input type="text" name="kw" class="layui-input" placeholder="关键词">
             </div>
-            <div class="layui-inline layui-col-md4">
+            <div class="layui-col-md4">
                 <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
                 <button class="layui-btn layui-btn-normal" id="btnAdd">添加模板</button>
             </div>
@@ -25,7 +22,6 @@
             <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
         </div>
     </div>
-
     <!-- 数据表格 end -->
 
     <!-- 其他弹窗  start -->
