@@ -19,23 +19,23 @@ use Slim\Http\Response;
  */
 class Domain extends Base
 {
-	/**
-	 * 域名管理首页
-	 * @pattern ///domain
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 */
-	public function index(Request $request, Response $response, $args)
-	{
-		$data = [];
-		return $this->view('home/domain/index.twig', $data);
-	}
+    /**
+     * 域名管理首页
+     * @pattern ///domain
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     */
+    public function index(Request $request, Response $response, $args)
+    {
+        $data = [];
+        return $this->view('home/domain/index.twig', $data);
+    }
 
     /**
      * 我的域名列表
      * //@pattern /api/domain
-     * @name home.api.domain.get
+     * @name home .api.domain.get
      * @auth user|域名管理
      * @method get
      * @param Request $request
@@ -48,21 +48,21 @@ class Domain extends Base
         $this->uid = 100;
         $data = array();
         $filter = [];
-		$filter['page'] = (int)$request->getParam('page') ?: 1;
+        $filter['page'] = (int)$request->getParam('page') ?: 1;
         $filter['kw'] = trim($request->getQueryParam('kw', ''));
         $filter['template_id'] = (int)$request->getParam('template_id');
         $filter['dns_status'] = (int)$request->getParam('dns_status');
         $filter['order_name'] = $request->getQueryParam('order_name');
         $filter['order_type'] = $request->getQueryParam('order_type');
         $limit = (int)$request->getQueryParam('limit') ?: self::$page_number;
-		$limit = min($limit, 100);
+        $limit = min($limit, 100);
 
         $builder = \App\Models\Domain::isMy($this->uid);
-        if ($filter['kw']){
-            $builder = $builder->where('name', 'like', '%'.$filter['kw'].'%');
+        if ($filter['kw']) {
+            $builder = $builder->where('name', 'like', '%' . $filter['kw'] . '%');
         }
         if ($filter['dns_status'] > 0) {
-            $builder = $builder->where('dns_status', $filter['dns_status']-1);
+            $builder = $builder->where('dns_status', $filter['dns_status'] - 1);
         }
         if ($filter['template_id'] > 0) {
             $builder = $builder->where('template_id', $filter['template_id']);
@@ -71,10 +71,10 @@ class Domain extends Base
         $data['count'] = $builder->count();
         $data['records'] = [];
         if ($data['count']) {
-        	if ($filter['order_type'] && $filter['order_type'] != 'null' && in_array($filter['order_name'], array('id', 'name', 'price'))) {
-				$builder = $builder->orderBy($filter['order_name'], $filter['order_type']);
-			}
-            $data['records'] = $builder->offset(($filter['page']-1)*$limit)->limit($limit)->orderBy('id', 'desc')->get();
+            if ($filter['order_type'] && $filter['order_type'] != 'null' && in_array($filter['order_name'], array('id', 'name', 'price'))) {
+                $builder = $builder->orderBy($filter['order_name'], $filter['order_type']);
+            }
+            $data['records'] = $builder->offset(($filter['page'] - 1) * $limit)->limit($limit)->orderBy('id', 'desc')->get();
         }
         return $this->json($data);
     }
@@ -83,7 +83,7 @@ class Domain extends Base
      * 删除域名
      * 支持批量删除
      * @pattern /api/domain
-     * @name home.api.domain.del
+     * @name home .api.domain.del
      * @method delete
      * @param Request $request
      * @param Response $response
@@ -97,7 +97,7 @@ class Domain extends Base
         $ids = Functions::formatIds($id, self::BATCH, $errMsg);
         if (!$ids) {
             $this->log('error', $errMsg, $ids);
-            return $this->json(40001, $errMsg);
+            return $this->json(3, $errMsg);
         }
 
         $res = \App\Models\Domain::whereIn('id', $ids)->isMy($this->uid)->delete();
@@ -112,7 +112,7 @@ class Domain extends Base
     /**
      * 检查dns服务器来确认是否属于当前用户的域名
      * //@pattern /api/domain/dnsCheck
-     * @name home.api.domain.dnscheck
+     * @name home .api.domain.dnscheck
      * @method get
      * @param Request $request
      * @param Response $response
@@ -125,20 +125,19 @@ class Domain extends Base
         $domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
         if (!$domain_ids) {
             $this->log('error', $errMsg, $domain_id);
-            return $this->json(40001, $errMsg);
+            return $this->json(3, $errMsg);
         }
 
         $domains = \App\Models\Domain::whereIn('id', $domain_ids)->isMy($this->uid)->get()->toArray();
         if (empty($domains)) {
-            $this->ci->logger->error('[uid:'.$this->uid.'] 非法域名id', $domain_ids);
-            return $this->json(40001);
+            $this->ci->logger->error('[uid:' . $this->uid . '] 非法域名id', $domain_ids);
+            return $this->json(3);
         }
         //用户的ns服务器地址
-        $userNsArr = array_map(function($item) {
+        $userNsArr = array_map(function ($item) {
             return $item['server'];
-        },
-            $this->userInfo['dns_server']
-        );
+        }, $this->userInfo['dns_server']);
+
         $DNS = array_merge(Config::site('godaddyDNS'), $userNsArr);
 
         $result = [];
@@ -151,9 +150,11 @@ class Domain extends Base
                 //获取该域名的dns服务器
                 $whois = Functions::whois($item['name']);
                 if ($whois) {
-                    //有的是大写 转换一下
-                    if(isset($whois['Name Server'])) {
-                        $whois['Name Server'] = array_map(function ($a){return strtolower($a);}, $whois['Name Server']);
+                    //有的是大写 转换一下, 追后面跟一个.也行 - -！
+                    if (isset($whois['Name Server'])) {
+                        $whois['Name Server'] = array_map(function ($a) {
+                            return trim(strtolower($a), '.');
+                        }, $whois['Name Server']);
                     }
                     if (isset($whois['Name Server']) && count(array_intersect($whois['Name Server'], $DNS)) == 2) {
                         $check = true;
@@ -169,7 +170,7 @@ class Domain extends Base
         }
         if (!empty($successIds)) {
             //成功之后修改dns校验的状态字段
-            if(!\App\Models\Domain::whereIn('id', $successIds)->update(array('dns_status'=>1))) {
+            if (!\App\Models\Domain::whereIn('id', $successIds)->update(array('dns_status' => 1))) {
                 $this->log('error', 'update dns_status error', $successIds);
             }
         }
@@ -179,7 +180,7 @@ class Domain extends Base
     /**
      * 添加域名
      * @pattern /api/domain
-     * @name home.api.domain.create
+     * @name home .api.domain.create
      * @method post
      * @param Request $request
      * @param Response $response
@@ -190,11 +191,11 @@ class Domain extends Base
     {
         $domains = Functions::formatDomains($request->getParsedBodyParam('domains'));
         if (empty($domains)) {
-            return $this->json(40001);
+            return $this->json(3);
         }
         $description = trim($request->getParsedBodyParam('description', ''));
         $price = (int)$request->getParsedBodyParam('price', '');
-        $sale_type = (int)$request->getParsedBodyParam('sale_type',  0);
+        $sale_type = (int)$request->getParsedBodyParam('sale_type', 0);
         $template_id = $request->getParsedBodyParam('template_id', 0);
         if ($sale_type) {
             $price = 0;
@@ -204,7 +205,9 @@ class Domain extends Base
         $existsArray = [];
         $exists = \App\Models\Domain::select('name')->whereIn('name', $domains)->isMy($this->uid)->get()->toArray();
         if ($exists) {
-            $existsArray = array_map(function ($item){ return $item['name'];}, $exists);
+            $existsArray = array_map(function ($item) {
+                return $item['name'];
+            }, $exists);
         }
         $insertData = array();
         foreach ($domains as $domain) {
@@ -213,13 +216,13 @@ class Domain extends Base
                 continue;
             }
             $insertData[] = array(
-                'uid'=>$this->uid,
-                'name'=>$domain,
+                'uid' => $this->uid,
+                'name' => $domain,
                 'description' => $description,
                 'price' => $price,
-                'sale_type'=>$sale_type,
-                'suffix' => substr($domain, strpos($domain, '.')+1),
-                'template_id'=>$template_id,
+                'sale_type' => $sale_type,
+                'suffix' => substr($domain, strpos($domain, '.') + 1),
+                'template_id' => $template_id,
                 'dns_status' => 0,
                 'dtype' => $this->getDtype($domain),
                 'len' => strpos($domain, '.')
@@ -235,7 +238,7 @@ class Domain extends Base
      * 更新域名信息
      * 支持批量
      * @pattern /api/domain
-     * @name home.api.domain.update
+     * @name home .api.domain.update
      * @method put
      * @param Request $request
      * @param Response $response
@@ -250,12 +253,12 @@ class Domain extends Base
         $template_id = $request->getParsedBodyParam('template_id', 0);
 
         if (!$domain_id) {
-            return $this->json(40001);
+            return $this->json(3);
         }
         //如果是修改一个的话，包装成数组交给下面去处理
         if (is_numeric($domain_id)) {
             if (!$domain_id = intval($domain_id)) {
-                return $this->json(40001);
+                return $this->json(3);
             }
             $domain_id = [$domain_id];
             $description = [$description];
@@ -269,12 +272,14 @@ class Domain extends Base
             $existsIds = [];
             $exists = \App\Models\Domain::select('id')->whereIn('id', $domain_id)->isMy($this->uid)->get()->toArray();
             if ($exists) {
-                $existsIds = array_map(function ($item){ return $item['id'];}, $exists);
+                $existsIds = array_map(function ($item) {
+                    return $item['id'];
+                }, $exists);
             }
             if (empty($existsIds)) {
                 //应该是恶意修改
                 $this->log('error', 'update domain error', $request->getParams());
-                return $this->json(40001, '你要修改的域名有问题！');
+                return $this->json(3, '你要修改的域名有问题！');
             }
             $data = [];
             foreach ($domain_id as $k => $_domain_id) {
@@ -286,7 +291,7 @@ class Domain extends Base
                         'description' => trim($description[$k]),
                         'sale_type' => $_sale_type,
                         'price' => $_sale_type ? 0 : intval($price[$k]),
-                        'template_id'=> intval($template_id[$k])
+                        'template_id' => intval($template_id[$k])
                     );
                 }
             }

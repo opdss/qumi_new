@@ -103,7 +103,7 @@ class Domain extends Base
 		$domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
         if (!$domain_ids) {
 			$this->log('error', $errMsg, $domain_id);
-        	return $this->json(40001, $errMsg);
+        	return $this->json(3, $errMsg);
 		}
 
 		$res = \App\Models\Domain::whereIn('id', $domain_ids)->isMy($this->uid)->delete();
@@ -130,13 +130,13 @@ class Domain extends Base
 		$domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
 		if (!$domain_ids) {
 			$this->log('error', $errMsg, $domain_id);
-			return $this->json(40001, $errMsg);
+			return $this->json(3, $errMsg);
 		}
 
 		$domains = \App\Models\Domain::whereIn('id', $domain_ids)->isMy($this->uid)->get()->toArray();
 		if (empty($domains)) {
 			$this->ci->logger->error('[uid:'.$this->uid.'] 非法域名id', $domain_ids);
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		//用户的ns服务器地址
 		$userNsArr = array_map(function($item) {
@@ -195,7 +195,7 @@ class Domain extends Base
 	{
 		$domains = Functions::formatDomains($request->getParsedBodyParam('domains'));
 		if (empty($domains)) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		$description = trim($request->getParsedBodyParam('description', ''));
 		$price = (int)$request->getParsedBodyParam('price', '');
@@ -257,12 +257,12 @@ class Domain extends Base
 		}
 
 		if (!$domain_id) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		//如果是修改一个的话，包装成数组交给下面去处理
 		if (is_numeric($domain_id)) {
 			if (!$domain_id = intval($domain_id)) {
-				return $this->json(40001);
+				return $this->json(3);
 			}
 			$domain_id = [$domain_id];
 			foreach ($updateData as $key => $val) {
@@ -280,7 +280,7 @@ class Domain extends Base
 			if (empty($existsIds)) {
 				//应该是恶意修改
 				$this->log('error', 'update domain error', $request->getParams());
-				return $this->json(40001, '你要修改的域名有问题！');
+				return $this->json(3, '你要修改的域名有问题！');
 			}
 			$data = [];
 			foreach ($domain_id as $k => $_domain_id) {

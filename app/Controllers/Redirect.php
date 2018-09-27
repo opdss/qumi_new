@@ -121,22 +121,22 @@ class Redirect extends Base
 		$data['redirect_status'] = $data['redirect_status'] == 301 ? '301' : '302';
 
 		if (!$data['title'] || !$data['prefix'] || !$data['domain_id'] || !$data['redirect_url']) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 
 		if (!Functions::verifyUrl($data['redirect_url'])) {
 			$this->log('error', '['.__METHOD__.']非法redirect_url', $data);
-			return $this->json(40001, '您输入的目标地址格式不对！');
+			return $this->json(3, '您输入的目标地址格式不对！');
 		}
 
 		if (!($domainModel = Domain::iCanUse($this->uid, $data['domain_id']))) {
 			$this->log('error', '['.__METHOD__.']非法domain_id', $data);
-			return $this->json(40001);
+			return $this->json(3);
 		}
 
 		if (DomainRedirect::where('prefix', $data['prefix'])->where('domain_id', $data['domain_id'])->count() > 0) {
 			$this->log('error', '['.__METHOD__.']已经存在该源地址跳转', $data);
-			return $this->json(40001, '已经存在该源地址跳转');
+			return $this->json(3, '已经存在该源地址跳转');
 		}
 
 		$data['uid'] = $this->uid;
@@ -166,7 +166,7 @@ class Redirect extends Base
 		$ids = Functions::formatIds($id, self::BATCH, $errMsg);
 		if (!$ids) {
 			$this->log('error', $errMsg, $id);
-			return $this->json(40001, $errMsg);
+			return $this->json(3, $errMsg);
 		}
 
 		$res = \App\Models\DomainRedirect::whereIn('id', $ids)->isMy($this->uid)->delete();
@@ -191,7 +191,7 @@ class Redirect extends Base
 	{
 		$id = intval($request->getParsedBodyParam('id'));
 		if (!$id || !($domainRedirectModel = \App\Models\DomainRedirect::find($id)) || $domainRedirectModel->uid != $this->uid) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		$title = trim($request->getParsedBodyParam('title', ''));
 		$redirect_url = trim($request->getParsedBodyParam('redirect_url', 0));
@@ -204,7 +204,7 @@ class Redirect extends Base
         if ($redirect_url) {
             if (!Functions::verifyUrl($redirect_url)) {
                 $this->log('error', '['.__METHOD__.']非法redirect_url', $request->getParams());
-                return $this->json(40001, '您输入的目标地址格式不对！');
+                return $this->json(3, '您输入的目标地址格式不对！');
             } else {
                 $domainRedirectModel->redirect_url = $redirect_url;
             }

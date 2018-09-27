@@ -451,7 +451,7 @@ class Statistic extends Base
         $end_date = date('Y-m-d');
 
         if (!$domain_id || !($domainModel = Domain::find($domain_id)) || $domainModel->uid != $this->uid) {
-            return $this->json(40001);
+            return $this->json(3);
         }
 
         $_res = DomainAccessLogCount::selectRaw(implode(',', array(

@@ -91,34 +91,34 @@ class Mibiao extends Base
         $data['path'] = $request->getParsedBodyParam('path', '');
 
         if (!$data['name'] || !$data['theme_id'] || !$data['template_id']) {
-            return $this->json(40001);
+            return $this->json(3);
         }
 
         if (!Theme::iCanUse($this->uid, $data['theme_id'], Theme::THEME_TYPE_MIBIAO)) {
             $this->log('error', '非法theme_id:'. $data['theme_id']);
-            return $this->json(40001);
+            return $this->json(3);
         }
         if ($data['template_id']) {
             if (!Template::iCanUse($this->uid, $data['template_id'])) {
                 $this->log('error', '非法template_id:'. $data['template_id']);
-                return $this->json(40001);
+                return $this->json(3);
             }
         }
         if ($data['domain_id']) {
             if (!Domain::iCanUse($this->uid, $data['domain_id'])) {
                 $this->log('error', '非法domain_id:'. $data['domain_id']);
-                return $this->json(40001);
+                return $this->json(3);
             }
 			if (\App\Models\Mibiao::where('domain_id', $data['domain_id'])->count()) {
 				$this->log('error', '该绑定域名已经被启用:'. $data['domain_id']);
-				return $this->json(40001, '该绑定域名已经被启用');
+				return $this->json(3, '该绑定域名已经被启用');
 			}
         }
         if ($data['path']) {
             $preg = '/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,30}[a-zA-Z0-9])?)+/';
             if (!preg_match($preg, $data['path']) || \App\Models\Mibiao::where('path', $data['path'])->count()) {
                 $this->log('error', '非法path:'. $data['path']);
-                return $this->json(40001, 'path无效或者已经被占用');
+                return $this->json(3, 'path无效或者已经被占用');
             }
         } else {
             $c = \App\Models\Mibiao::count();
@@ -145,7 +145,7 @@ class Mibiao extends Base
     {
         $id = $request->getParam('id');
         if (!$id) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
         if (\App\Models\Mibiao::where('id', $id)->isMy($this->uid)->delete()) {
         	$this->log('error', 'mibiao.delete error', [$id]);
@@ -167,7 +167,7 @@ class Mibiao extends Base
     {
         $id = (int)$request->getParsedBodyParam('id');
 		if (!$id || !($current = \App\Models\Mibiao::find($id)) || $current->uid != $this->uid) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		$data['name'] = $request->getParsedBodyParam('name', '');
 		$data['description'] = $request->getParsedBodyParam('description',  '');
@@ -177,34 +177,34 @@ class Mibiao extends Base
 		$data['path'] = $request->getParsedBodyParam('path', '');
 
 		if (!$data['name'] || !$data['theme_id'] || !$data['path'] || !$data['template_id']) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 
 		if ($current->theme_id != $data['theme_id'] && !Theme::iCanUse($this->uid, $data['theme_id'], Theme::THEME_TYPE_MIBIAO)) {
 			$this->log('error', '非法theme_id:'. $data['theme_id']);
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		if ($data['template_id'] && $current->template_id != $data['template_id']) {
 			if (!Template::iCanUse($this->uid, $data['template_id'])) {
 				$this->log('error', '非法template_id:'. $data['template_id']);
-				return $this->json(40001);
+				return $this->json(3);
 			}
 		}
 		if ($data['domain_id']  && $current->domain_id != $data['domain_id']) {
 			if (!Domain::iCanUse($this->uid, $data['domain_id'])) {
 				$this->log('error', '非法domain_id:'. $data['domain_id']);
-				return $this->json(40001);
+				return $this->json(3);
 			}
 			if (\App\Models\Mibiao::where('domain_id', $data['domain_id'])->count()) {
 				$this->log('error', '该绑定域名已经被启用:'. $data['domain_id']);
-				return $this->json(40001, '该绑定域名已经被启用');
+				return $this->json(3, '该绑定域名已经被启用');
 			}
 		}
 		if ($data['path'] && $current->path != $data['path']) {
 			$preg = '/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,30}[a-zA-Z0-9])?)+/';
 			if (!preg_match($preg, $data['path']) || \App\Models\Mibiao::where('path', $data['path'])->count()) {
 				$this->log('error', '非法path:'. $data['path']);
-				return $this->json(40001, 'path无效或者已经被占用');
+				return $this->json(3, 'path无效或者已经被占用');
 			}
 		}
 

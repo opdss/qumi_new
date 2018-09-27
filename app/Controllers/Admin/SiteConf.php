@@ -93,7 +93,7 @@ class SiteConf extends Base
         $ids = Functions::formatIds($id, self::BATCH, $errMsg);
         if (!$ids) {
             $this->log('error', $errMsg, $ids);
-            return $this->json(40001, $errMsg);
+            return $this->json(3, $errMsg);
         }
 
         $res = \App\Models\SiteConf::whereIn('id', $ids)->delete();
@@ -121,10 +121,10 @@ class SiteConf extends Base
         $data['key'] = trim($request->getParsedBodyParam('key', ''));
         $data['val'] = trim($request->getParsedBodyParam('val', ''));
         if (!$data['title'] || !$data['key']) {
-            return $this->json(40001);
+            return $this->json(3);
         }
         if (\App\Models\SiteConf::where('key', $data['key'])->count() > 0) {
-			return $this->json(40001, '系统已经存在该配置项');
+			return $this->json(3, '系统已经存在该配置项');
 		}
         if (\App\Models\SiteConf::insert($data)) {
             return $this->json(0);
@@ -149,7 +149,7 @@ class SiteConf extends Base
         $val = trim($request->getParsedBodyParam('val', null));
 
         if (!$id || !($siteConfModel = \App\Models\SiteConf::find($id))) {
-            return $this->json(40001);
+            return $this->json(3);
         }
 
         if ($title) {

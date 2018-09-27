@@ -52,7 +52,7 @@ class Login extends Base
         $password = trim($request->getParsedBodyParam('password'));
         if (!$userObj = User::login($email, $password)) {
             $this->log('alert', '登陆验证失败', $request->getParams());
-            return $this->json('40001', '用户名或者密码错误！');
+            return $this->json('3', '用户名或者密码错误！');
         }
         $userInfo = $userObj->toArray();
         //更新登陆相关的信息
@@ -124,23 +124,23 @@ class Login extends Base
 
         $localCaptcha = $this->sessCaptcha($this->getCaptchaKey('register'));
         if (!$captcha || strtolower($captcha) != $localCaptcha) {
-            return $this->json('40001', '您输入的验证码不正确!');
+            return $this->json('3', '您输入的验证码不正确!');
         }
 
         if (!Functions::verifyEmail($email)) {
-            return $this->json('40001', '您输入的邮箱不正确!');
+            return $this->json('3', '您输入的邮箱不正确!');
         }
 
         if (User::where('email', $email)->count() > 0) {
-            return $this->json('40001', '您输入的邮箱已经被注册，请重新输入!');
+            return $this->json('3', '您输入的邮箱已经被注册，请重新输入!');
         }
 
         if (!Functions::verifyPasswd($password)) {
-            return $this->json('40001', '您输入的密码格式不正确，请输入6-20位密码');
+            return $this->json('3', '您输入的密码格式不正确，请输入6-20位密码');
         }
 
         if ($password !== $repassword) {
-            return $this->json('40001', '您两次输入的密码不一致，请重新输入！');
+            return $this->json('3', '您两次输入的密码不一致，请重新输入！');
         }
 
         $user = new User();
@@ -188,12 +188,12 @@ class Login extends Base
 		$email = trim($request->getParsedBodyParam('email'));
 		if (!$userCaptcha || strtolower($userCaptcha) !== $sessCaptcha) {
 			$this->log('debug', '找回密码-验证码错误！', [$email, $sessCaptcha, $userCaptcha]);
-			return $this->json(40001, '您输入的验证码错误！');
+			return $this->json(3, '您输入的验证码错误！');
 		}
 		if (!Functions::verifyEmail($email) || !($userModel = User::where('email', $email)->first())
 		) {
 			$this->log('error', '找回密码-获取验证码邮箱错误！', [$email, $userCaptcha]);
-			return $this->json(40001, '您输入的邮箱有误！');
+			return $this->json(3, '您输入的邮箱有误！');
 		}
 		$emailCode = Functions::genRandStr(6, false);
 		$expire = 600;
@@ -223,24 +223,24 @@ class Login extends Base
         $repassword = trim($request->getParsedBodyParam('repassword'));
 
         if (!Functions::verifyEmail($email) || !($userModel = User::where('email', $email)->first())) {
-            return $this->json('40001', '您输入的邮箱错误！');
+            return $this->json('3', '您输入的邮箱错误！');
         }
 
         $localCode = $this->findPasswdCode($email);
         if (!$localCode) {
-            return $this->json('40001', '您输入的邮箱验证码已过期，请重新获取！');
+            return $this->json('3', '您输入的邮箱验证码已过期，请重新获取！');
         }
 
         if ($localCode !== $code) {
-            return $this->json('40001', '您输入的邮箱验证码错误，请重新输入！');
+            return $this->json('3', '您输入的邮箱验证码错误，请重新输入！');
         }
 
         if (!Functions::verifyPasswd($password)) {
-            return $this->json('40001', '您输入的密码格式不正确，请输入6-20位密码');
+            return $this->json('3', '您输入的密码格式不正确，请输入6-20位密码');
         }
 
         if ($password !== $repassword) {
-            return $this->json('40001', '您两次输入的密码不一致，请重新输入！');
+            return $this->json('3', '您两次输入的密码不一致，请重新输入！');
         }
 
         $flag = $userModel->resetPassword($password);

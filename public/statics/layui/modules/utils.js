@@ -46,6 +46,12 @@ layui.define(['layer', 'jquery'], function(exports){
             if (success) {
                 success(res.data, res);
             }
+        } else if (res.errCode == -1) {
+            layer.alert('请重新登陆！', function () {
+                location.href = '/login';
+            })
+        } else if (res.errCode == 2) {
+            layer.alert('你没有相关权限！')
         } else {
             if (error) {
                 error(res);

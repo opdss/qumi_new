@@ -78,11 +78,11 @@ class Template extends Base
 		$data['phone'] = $request->getParsedBodyParam('phone', '');
 		$data['email'] = $request->getParsedBodyParam('email', '');
 		if (!$data['name']) {
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		if (!Theme::iCanUse($this->uid, $data['theme_id'])) {
 			$this->log('error', '非法theme_id:'. $data['theme_id']);
-			return $this->json(40001);
+			return $this->json(3);
 		}
 		$data['uid'] = $this->uid;
 		if (\App\Models\Template::insert($data)) {
@@ -107,7 +107,7 @@ class Template extends Base
 		$ids = Functions::formatIds($id, self::BATCH, $errMsg);
 		if (!$ids) {
 			$this->log('error', $errMsg, $id);
-			return $this->json(40001, $errMsg);
+			return $this->json(3, $errMsg);
 		}
 
 		//不要删掉默认的
@@ -149,12 +149,12 @@ class Template extends Base
         $data['phone'] = $request->getParsedBodyParam('phone', '');
         $data['email'] = $request->getParsedBodyParam('email', '');
         if (!$id) {
-            return $this->json(40001);
+            return $this->json(3);
         }
         $templateModel = \App\Models\Template::find($id);
         if (!$templateModel || $this->uid != $templateModel->uid) {
             $this->log('error', '非法template_id：'.$id);
-            return $this->json(40001);
+            return $this->json(3);
         }
 
         foreach ($data as $k=>$v) {
