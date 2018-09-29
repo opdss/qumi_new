@@ -29,30 +29,21 @@ $capsule->bootEloquent();
 $max_number = 100;
 $loop = 0;
 
+$sendEmailDay = 7;
+$deleteDay = 10;
+
+$data = [];
+
 while ($loop < $max_number) {
-	$res = \App\Models\EmailQueue::where('status', 1)->orderBy('level', 'desc')->orderBy('id', 'asc')->limit($max_number)->get()->toArray();
+	$res = \App\Models\EmailQueue::select(array('created_at', 'name'))->where('dns_status', 0)->orderBy('id', 'asc')->limit($max_number)->get()->toArray();
 	if ($res) {
 		foreach ($res as $item) {
-			$email = \App\Libraries\Email::factory();
-			$email->setSubject($item['subject'])
-				->addAddress($item['to'])
-				->setBody($item['body']);
-			if ($item['attachment']) {
-				foreach (json_decode($item['attachment']) as $one) {
-					$email->addAttachment($one);
-				}
-			}
-			if ($item['from_name']) {
-				$email->setFromName($item['from_name']);
-			}
-			$status = 2;
-			if (!$email->send()) {
-				$status = 3;
-				\App\Functions::getLogger()->error('发送队列邮件失败!', $item);
-			}
-			\App\Models\EmailQueue::where('id', $item['id'])->update(array('status' => $status));
-			$loop++;
+
+		    $time = time()-strtotime($item['created_at']);
+		    $days = (floor($time/86400));
+		    if ($days == $sendEmailDay) {
+
+            }
 		}
 	}
-	sleep(2);
 }

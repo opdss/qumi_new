@@ -9,8 +9,12 @@ namespace App\Models;
 
 use App\Functions;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Domain extends Base
 {
+    use SoftDeletes;
+
     /**
      * 表名
      * @var string

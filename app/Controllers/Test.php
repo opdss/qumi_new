@@ -30,6 +30,8 @@ class Test extends Base
 	 */
 	public function index(Request $request, Response $response, $args)
 	{
+	   $res = Functions::getDomainDns('qq.com');
+	   var_dump($res);
 	}
 
 }

@@ -29,7 +29,7 @@
 
                     </div>
                     <div class="layui-card-body">
-
+                        <div id="domainCounts" style="height: 400px"></div>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,48 @@
             var form = layui.form;
             var laydate = layui.laydate;
             var utils = layui.utils;
+            var echarts = layui.echarts;
+            var $ = layui.$;
+            var chartDomainCounts = echarts.init(document.getElementById('domainCounts'));
+            chartDomainCounts.showLoading({
+                text: '正在努力的读取数据中...',    //loading话术
+            });
 
+            utils.ajax.get('{{ path_for('api.statistic.echarts.suffix') }}', function (res) {
+                var option = {
+                    title : {
+                        text: '停靠域名后缀',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: res.legendData,
+                    },
+                    series : [
+                        {
+                            name: '后缀数量',
+                            type: 'pie',
+                            radius : '45%',
+                            center: ['50%', '60%'],
+                            data:res.seriesData,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                chartDomainCounts.setOption(option);
+                chartDomainCounts.hideLoading();
+            })
         });
     </script>
 {% endblock %}

@@ -494,4 +494,206 @@ class Statistic extends Base
         ];
         return $this->json($records);
     }
+
+
+
+    /**
+     * 域名后缀统计 --饼状图
+     * @pattern /api/statistic/echarts/suffix
+     * @auth user
+     * @name api.statistic.echarts.suffix
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function echartsSuffix(Request $request, Response $response, $args)
+    {
+        $data = [];
+        $res = \App\Models\Domain::isMy($this->uid)->selectRaw('count(*) as cc, suffix')->groupBy('suffix')->get()->toArray();
+        foreach ($res as $item) {
+            $data['legendData'][] = '.'.$item['suffix'];
+            $data['seriesData'][] = ['name'=>'.'.$item['suffix'], 'value'=>$item['cc']];
+        }
+        return $this->json($data);
+    }
+
+    /**
+     * 昨日的最高访问统计
+     * @pattern /api/statistic/echarts/yestoday
+     * @auth user
+     * @name api.statistic.echarts.yestoday
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function echartsYestoday(Request $request, Response $response, $args)
+    {
+        $data = [];
+        $res = \App\Models\Domain::isMy($this->uid)->selectRaw('count(*) as cc, suffix')->groupBy('suffix')->get()->toArray();
+        foreach ($res as $item) {
+            $data['legendData'][] = '.'.$item['suffix'];
+            $data['seriesData'][] = ['name'=>'.'.$item['suffix'], 'value'=>$item['cc']];
+        }
+        return $this->json($data);
+    }
+
+    /**
+     * 所有域名总访问统计 --折线图数据
+     * @pattern /api/statistic/echarts/count
+     * @auth user
+     * @name api.statistic.echarts.count
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function echartsCount(Request $request, Response $response, $args)
+    {
+        //最近 7 15 30 天
+        $days = (int)$request->getQueryParam('days');
+        $days = in_array($days, [7, 15, 30]) ? $days : 15;
+
+        $start_date = date('Y-m-d', strtotime('-'.$days.'day'));
+        $end_date = date('Y-m-d');
+
+        $_res = DomainAccessLogCount::selectRaw(implode(',', array(
+            'day',
+            'count(*) as total',
+            'SUM(pv) as pvs',
+            'SUM(uv) as uvs',
+            'SUM(ip) as ips',
+            'SUM(bot) as bots',
+            'SUM(user) as users',
+            'SUM(domestic) as domestics',
+            'SUM(overseas) as overseass',
+            'SUM(real_clicks) as realclicks',
+        )))->groupBy('day')->isMy($this->uid)->whereBetween('day', [$start_date, $end_date])->get();
+
+        $res = [];
+        if ($_res) {
+            foreach ($_res as $item) {
+                $res[$item['day']] = $item;
+            }
+        }
+
+        $legendData = [
+            'pvs' => 'PV',
+            'ips' => 'IP',
+            'bots' => '搜索引擎',
+            'users' => '自然用户',
+            'domestics' => '国内IP',
+            'overseass' => '国外IP',
+            'realclicks' => '真实用户'
+        ];
+        $xAxisData = [];
+        $_series = [];
+        $startTime = strtotime($start_date);
+        for($i = 0; $i <= 30; $i++) {
+            $day = date('Y-m-d', $startTime+($i*86400));
+            if ($day != $end_date) {
+                $xAxisData[] = $day;
+                foreach ($legendData as $k => $v) {
+                    $_series[$k][] = isset($res[$day]) ? $res[$day][$k] : 0;
+                }
+            } else {
+                break;
+            }
+        }
+        $series = [];
+        foreach ($legendData as $k => $v) {
+            $series[] = [
+                'name' => $v,
+                'type' => 'line',
+                'stack' => '总量',
+                'data' => $_series[$k]
+            ];
+        }
+        $records = [
+            'legendData' => (array_values($legendData)),
+            'xAxisData' => ($xAxisData),
+            'series' => ($series)
+        ];
+        return $this->json($records);
+    }
+
+    /**
+     * @pattern /api/statistic/echarts/domain
+     * @auth user
+     * @name api.statistic.echarts.domain
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function echartsDomain(Request $request, Response $response, $args)
+    {
+        $domain_id = (int)$request->getQueryParam('domain_id');
+        //最近 7 15 30 天
+        $days = (int)$request->getQueryParam('days');
+        $days = in_array($days, [7, 15, 30]) ? $days : 15;
+        $start_date = date('Y-m-d', strtotime('-'.$days.'day'));
+        $end_date = date('Y-m-d');
+
+        if (!$domain_id || !($domainModel = Domain::find($domain_id)) || $domainModel->uid != $this->uid) {
+            return $this->json(3);
+        }
+
+        $_res = DomainAccessLogCount::selectRaw(implode(',', array(
+            'day',
+            'pv as pvs',
+            'uv as uvs',
+            'ip as ips',
+            'bot as bots',
+            'user as users',
+            'domestic as domestics',
+            'overseas as overseass',
+            'real_clicks as realclicks',
+        )))->where('domain_id', $domain_id)->whereBetween('day', [$start_date, $end_date])->get();
+        $res = [];
+        foreach ($_res as $item) {
+            $res[$item['day']] = $item;
+        }
+
+        $legendData = [
+            'pvs' => 'PV',
+            'ips' => 'IP',
+            'bots' => '搜索引擎',
+            'users' => '自然用户',
+            'domestics' => '国内IP',
+            'overseass' => '国外IP',
+            'realclicks' => '真实用户'
+        ];
+        $xAxisData = [];
+        $_series = [];
+        $startTime = strtotime($start_date);
+        for($i = 0; $i <= 30; $i++) {
+            $day = date('Y-m-d', $startTime+($i*86400));
+            if ($day != $end_date) {
+                $xAxisData[] = $day;
+                foreach ($legendData as $k => $v) {
+                    $_series[$k][] = isset($res[$day]) ? $res[$day][$k] : 0;
+                }
+            } else {
+                break;
+            }
+        }
+        $series = [];
+        foreach ($legendData as $k => $v) {
+            $series[] = [
+                'name' => $v,
+                'type' => 'line',
+                'stack' => '总量',
+                'data' => $_series[$k]
+            ];
+        }
+        $records = [
+            'legendData' => (array_values($legendData)),
+            'xAxisData' => ($xAxisData),
+            'series' => ($series)
+        ];
+        return $this->json($records);
+    }
+
 }

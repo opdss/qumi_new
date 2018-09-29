@@ -299,6 +299,16 @@ class Functions
 		return $data;
 	}
 
+	public static function getDomainDns($domain)
+    {
+        $whois = self::whois($domain, 'Name Server');
+        $ns = [];
+        if (!empty($whois)) {
+            $ns = array_map(function ($a){return trim(strtolower($a), '.');}, $whois);
+        }
+        return $ns;
+    }
+
 	/**
 	 * 用来处理批量传过来的int型id
 	 * @param $id

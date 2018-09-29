@@ -36,8 +36,6 @@ class Ucenter extends Base
 	    $data['info'] = [
 	    	//当前域名总数
 	    	'domainCount' => \App\Models\Domain::isMy($this->uid)->count(),
-            'domainCounts' => \App\Models\Domain::isMy($this->uid)->selectRaw('count(*) as cc, suffix')->groupBy('suffix')->get()->toArray(),
-			//访问总数
 	    	'accessCount' => DomainAccessLog::isMy($this->uid)->count(),
 			//有效访问总数
 			'trueCount' => DomainAccessLog::isMy($this->uid)->count(),
@@ -46,4 +44,5 @@ class Ucenter extends Base
 		];
 	    return $this->view('ucenter/index.twig', $data);
 	}
+
 }
