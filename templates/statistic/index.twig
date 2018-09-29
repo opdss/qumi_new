@@ -1,51 +1,27 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-    <div class="row">
-        {#<div class="col-md-12">
-            <div>
-
-                <div class="opts">
-                    <form class="form-inline" method="get">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="kw" placeholder="搜索关键词" value="{{ filter.kw }}">
-                        </div>
-                        <div class="form-group">
-                            <select class="selectpicker" name="template_id">
-                                <option value="0">所有模板</option>
-                                {% for x in template %}
-                                    <option value="{{ x.id }}" {{ filter.template==x.id ? 'selected' : '' }}>{{ x.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">查询</button>
-                        #}{#<a href="{{ path_for('domain.create') }}" class="btn btn-info">添加域名</a>#}{#
-                        <a href="{{ path_for('statistic.logs') }}" class="btn btn-info">全部访问记录</a>
-                    </form>
-                </div>
-
-            </div>
-        </div>#}
-        <div class="col-md-12">
-            <div class="box">
-                <div class="box-header">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
                     <h2 class="h2">最近十五天的总访问记录</h2>
                     <div class="box-tool">
                         <a href="{{ path_for('statistic.count') }}" target="_blank" class="btn-close">查看各域名总访问统计</a>
                     </div>
                 </div>
-                <div class="box-content">
+                <div class="layui-card-body">
                     <div class="form-inline" style="margin-bottom: 10px">
-                        <div class="form-group">
+                        <div class="form-group layui-form">
                             <label>选择域名：</label>
-                            <select  class="selectpicker" data-live-search="true" name="domain_id" id="domain_id">
+                            <select class="selectpicker" data-live-search="true" name="domain_id" id="domain_id">
                                 <option value="0">所有域名</option>
                                 {% for x in domains %}
                                     <option value="{{ x.id }}" {{ filter.domain_id==x.id ? 'selected' : '' }}>{{ x.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <button class="btn btn-default"><a href="#" target="_blank" id="stic_day">每天统计列表</a> </button>
+                        <button class="btn btn-default"><a href="#" target="_blank" id="stic_day">每天统计列表</a></button>
                         <button class="btn btn-default"><a href="#" target="_blank" id="stic_log">详细访问记录</a></button>
                     </div>
                     <div id="echarts_count" style="height: 320px"></div>
@@ -57,74 +33,81 @@
 
 {% block script %}
     <script type="text/javascript">
-        var chartCount = echarts.init(document.getElementById('echarts_count'));
-        chartCount.showLoading({
-            text: '正在努力的读取数据中...',    //loading话术
-         });
-        var day_url = "{{ path_for('statistic.day') }}";
-        var log_url = "{{ path_for('statistic.logs') }}";
-        function upChart(domain_id) {
-            if (domain_id) {
-                var url = "{{ path_for('statistic.echarts_detail') }}"
-                var data = {'domain_id': domain_id}
-                $('#stic_day').prop('href', day_url+'?domain_id='+domain_id);
-                $('#stic_log').prop('href', log_url+'?domain_id='+domain_id);
-            } else {
-                var url = "{{ path_for('statistic.echarts_count') }}"
-                var data = {}
-                $('#stic_day').prop('href', day_url);
-                $('#stic_log').prop('href', log_url);
-            }
-            $.get(url, data, function (res) {
-                if (res.errCode == 0) {
-                    // 图表使用-------------------
-                    var option = {
-                        tooltip: {
-                            trigger: 'axis'
-                        },
-                        legend: {
-                            //data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
-                            data: res.data.legendData,
-                        },
-                        toolbox: {
-                            show: true,
-                            feature: {
-                                mark: {show: true},
-                                dataView: {show: true, readOnly: false},
-                                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
-                                restore: {show: true},
-                                saveAsImage: {show: true}
-                            }
-                        },
-                        calculable: true,
-                        xAxis: [
-                            {
-                                type: 'category',
-                                boundaryGap: false,
-                                //data : ['周一','周二','周三','周四','周五','周六','周日']
-                                data: res.data.xAxisData
-                            }
-                        ],
-                        yAxis: [
-                            {
-                                type: 'value'
-                            }
-                        ],
-                        series: res.data.series
-                    };
-                    chartCount.setOption(option);
-                    chartCount.hideLoading();
-                } else {
-                    utils.swal.error(res.errMsg);
-                }
+
+        layui.use(['layer', 'form', 'utils', 'echarts'], function () {
+            var echarts = layui.echarts;
+            var $ = layui.$;
+            var chartCount = echarts.init(document.getElementById('echarts_count'));
+            chartCount.showLoading({
+                text: '正在努力的读取数据中...',    //loading话术
             });
-        }
-        $('#domain_id').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
-            var domain_id = parseInt($(e.currentTarget).val(), 10);
-            console.log($(e.currentTarget));
-            console.log($(e.currentTarget));
-            upChart(domain_id);
+            var day_url = "{{ path_for('statistic.day') }}";
+            var log_url = "{{ path_for('statistic.logs') }}";
+
+            function upChart(domain_id) {
+                if (domain_id) {
+                    var url = "{{ path_for('statistic.echarts_detail') }}"
+                    var data = {'domain_id': domain_id}
+                    $('#stic_day').prop('href', day_url + '?domain_id=' + domain_id);
+                    $('#stic_log').prop('href', log_url + '?domain_id=' + domain_id);
+                } else {
+                    var url = "{{ path_for('statistic.echarts_count') }}"
+                    var data = {}
+                    $('#stic_day').prop('href', day_url);
+                    $('#stic_log').prop('href', log_url);
+                }
+                $.get(url, data, function (res) {
+                    if (res.errCode == 0) {
+                        // 图表使用-------------------
+                        var option = {
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                //data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+                                data: res.data.legendData,
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    //data : ['周一','周二','周三','周四','周五','周六','周日']
+                                    data: res.data.xAxisData
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: res.data.series
+                        };
+                        chartCount.setOption(option);
+                        chartCount.hideLoading();
+                    } else {
+                        utils.swal.error(res.errMsg);
+                    }
+                });
+            }
+
+            $('#domain_id').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+                var domain_id = parseInt($(e.currentTarget).val(), 10);
+                console.log($(e.currentTarget));
+                console.log($(e.currentTarget));
+                upChart(domain_id);
+            });
+            upChart(0);
         });
-        upChart(0);
     </script>
 {% endblock %}

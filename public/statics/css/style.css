@@ -216,7 +216,6 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
     height: 200px;
     overflow: auto;
     border: 1px solid #eee;
-    margin: 10px;
     box-shadow: 3px 3px 10px rgba(0,0,0,.1);
 }
 .card-mibiao > .layui-card-body {

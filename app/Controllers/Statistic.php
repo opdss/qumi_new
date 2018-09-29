@@ -22,15 +22,9 @@ use Slim\Http\Response;
  */
 class Statistic extends Base
 {
-    public function __construct(Container $ci)
-    {
-        parent::__construct($ci);
-        $this->addStaticsDir('bootstrap-datetimepicker');
-        $this->addJs('/statics/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js');
-    }
-
     /**
      * @pattern /statistic
+     * @auth user|数据统计|数据表
      * @name statistic
      * @param Request $request
      * @param Response $response
@@ -40,14 +34,7 @@ class Statistic extends Base
     {
         $data = array();
         $filter = [];
-        $this->addJs('/statics/js/echarts.min.js');
-        $data['currentName'] = $request->getAttribute('route')->getName();
         $data['domains'] = \App\Models\Domain::select('id', 'name')->isMy($this->uid)->get()->toArray();
-        if ($this->uid == 100) {
-        	$totalLog = DomainAccessLog::isMy($this->uid)->count();
-        	$totalDomain = Domain::isMy($this->uid)->count();
-        	//$realClicks = DomainAccessLogCount::
-		}
         return $this->view('statistic/index.twig', $data);
     }
 
