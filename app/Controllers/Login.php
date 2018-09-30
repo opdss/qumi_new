@@ -61,8 +61,8 @@ class Login extends Base
         $userObj->login_num += 1;
         $userObj->save();
         //获取处理用户的ns，放到session
-        $userInfo['dns_server'] = $userObj->userNs->toArray();
-        $userInfo['dns_server_str'] = implode('<br/>',array_reduce($userInfo['dns_server'], function($a, $b) {$a[] = $b['server'];return $a;}));
+        $userInfo['dns_server'] = UserNs::getDnsServer($userInfo['uid']);
+        $userInfo['dns_server_str'] = implode('<br/>',$userInfo['dns_server']);
         //测试 end
         $this->session->set('userInfo', $userInfo);
 

@@ -51,7 +51,7 @@ class User extends \App\Controllers\Base
         $limit = min($limit, 100);
 
         $builder = new \App\Models\User();
-        if ($kw) {
+        if ($kw !== '') {
             $builder = $builder->where('email', 'like', '%' . $kw . '%');
         }
 

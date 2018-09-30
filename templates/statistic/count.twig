@@ -1,118 +1,70 @@
 {% extends 'console.twig' %}
 
 {% block console %}
-    <div class="row">
-        <div class="col-md-12">
-            <div>
-                <div class="opts">
-                    <form class="form-inline" method="get" id="filter_form">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="kw" placeholder="搜索关键词" value="{{ filter.kw }}">
-                        </div>
-                        <button type="submit" class="btn btn-primary">查询</button>
-                        <a href="{{ path_for('statistic.day') }}" class="btn btn-info">查看域名每天访问统计</a>
-                        <a href="{{ path_for('statistic.logs') }}" class="btn btn-info">查看全部详细访问记录</a>
-                    </form>
-                </div>
-                <div class="table text-center">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                        <tr>
-                            <td class="text-left">
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="domain_name"
-                                   data-val="{{ filter.order_by.domain_name ? (filter.order_by.domain_name == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    域名
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="pvs"
-                                   data-val="{{ filter.order_by.pvs ? (filter.order_by.pvs == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    PV
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="ips"
-                                   data-val="{{ filter.order_by.ips ? (filter.order_by.ips == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    IP
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="bots"
-                                   data-val="{{ filter.order_by.bots ? (filter.order_by.bots == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    搜索引擎
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="users"
-                                   data-val="{{ filter.order_by.users ? (filter.order_by.users == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    自然用户
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="domestics"
-                                   data-val="{{ filter.order_by.domestics ? (filter.order_by.domestics == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    国内用户
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="javascript:void(0)"
-                                   class="order_by"
-                                   data-order_name="overseass"
-                                   data-val="{{ filter.order_by.overseass ? (filter.order_by.overseass == 'asc' ? 'desc' : 'asc') : 'desc'}}">
-                                    海外用户
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </a>
-                            </td>
-                            {#<td>操作</td>#}
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        {% for item in records %}
-                            <tr>
-                                <td class="text-left"><a href="{{ path_for('statistic.logs') }}?domain_id={{ item.domain_id }}" target="_blank">{{ item.domain_name }}</a></td>
-                                <td>{{ item.pvs }}</td>
-                                <td>{{ item.ips }}</td>
-                                <td>{{ item.bots }}</td>
-                                <td>{{ item.users }}</td>
-                                <td>{{ item.domestics }}</td>
-                                <td>{{ item.overseass }}</td>
-                                {#<td>详情</td>#}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            {{ pagination|raw }}
-                        </div>
-                    </div>
-                </div>
+    <!-- 数据查询条件 start -->
+    <form class="layui-form">
+        <div class="layui-form-item layui-col-space10 layui-row">
+            <div class="layui-col-md3">
+                <input type="text" name="kw" class="layui-input" placeholder="关键词">
+            </div>
+            <div class="layui-col-md3">
+                <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
             </div>
         </div>
+    </form>
+    <!-- 数据查询条件 end -->
+
+    <!-- 数据表格 start -->
+    <div class="layui-card">
+        <div class="layui-card-header">域名访问统计</div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        </div>
     </div>
+    <!-- 数据表格 end -->
 {% endblock %}
 
 {% block script %}
     <script type="text/javascript">
+        layui.use(['layer', 'element', 'form', 'table', 'utils'], function () {
+            var layer = layui.layer;
+            var form = layui.form;
+            var utils = layui.utils;
+
+            //数据表格处理
+            var table = layui.table;
+            table.render(layui.$.extend({
+                elem: '#dataTable'
+                , url: '{{ path_for('api.statistic.count') }}'
+                , cols: [[
+                    {field: 'domain_name', title: '域名', sort: true}
+                    , {field: 'pvs', title: 'PV', sort: true}
+                    , {field: 'ips', title: 'IP', sort: true}
+                    , {field: 'bots', title: '搜索引擎', sort: true}
+                    , {field: 'users', title: '用户', sort: true}
+                    , {field: 'domestics', title: '国内IP', sort: true}
+                    , {field: 'overseass', title: '海外IP', sort: true}
+                    , {field: 'realclicks', title: '真实用户(beta)', sort: true}
+                ]]
+            }, utils.tableOptions));
+
+            //监听查询条件
+            form.on('submit(btnSearch)', function (data) {
+                table.reload('dataTable', {
+                    page: {curr: 1}
+                    , where: data.field
+                });
+                return false;
+            });
+
+            //监听排序
+            table.on('sort(dataTable)', function (obj) {
+                table.reload('dataTable', {
+                    initSort: obj
+                    , where: {'order_name': obj.field, 'order_type': obj.type}
+                });
+            });
+
+        });
     </script>
 {% endblock %}

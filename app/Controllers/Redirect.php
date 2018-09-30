@@ -58,7 +58,7 @@ class Redirect extends Base
 		$limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
 
 		$builder = \App\Models\DomainRedirect::isMy($this->uid);
-		if ($kw){
+		if ($kw !== ''){
 			$builder = $builder->where('redirect_url', 'like', '%'.$kw.'%');
 		}
 		if ($redirect_status > 0) {

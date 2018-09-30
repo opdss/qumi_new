@@ -10,6 +10,7 @@ namespace App\Controllers;
 use App\Functions;
 use App\Models\DomainAccessLog;
 use App\Models\DomainAccessLogCount;
+use App\Models\UserNs;
 use Illuminate\Support\Facades\DB;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -30,6 +31,7 @@ class Test extends Base
 	 */
 	public function index(Request $request, Response $response, $args)
 	{
+		var_dump(UserNs::getDnsServer(120));exit;
 	   $res = Functions::getDomainDns('qq.com');
 	   var_dump($res);
 	}

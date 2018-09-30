@@ -57,7 +57,7 @@ class Domain extends Base {
 		$limit = min($limit, 100);
 
 		$builder = new \App\Models\Domain();
-		if ($kw){
+		if ($kw !== ''){
 			$builder = $builder->where('name', 'like', '%'.$kw.'%');
 		}
 		if ($dns_status > 0) {

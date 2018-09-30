@@ -37,7 +37,8 @@ if (file_exists(VENDOR_DIR . "autoload.php")) {
 	die("<pre>vendor目录不存在，请运行`composer install`</pre>");
 }
 
-
+//设置配置目录
+\App\Libraries\Config::setConfigPath(CONFIG_DIR);
 
 /**
  * 设置时区

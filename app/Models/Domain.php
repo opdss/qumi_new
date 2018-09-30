@@ -9,11 +9,11 @@ namespace App\Models;
 
 use App\Functions;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Domain extends Base
 {
-    use SoftDeletes;
+    use SoftDeletingTrait;
 
     /**
      * 表名

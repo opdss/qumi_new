@@ -3,16 +3,16 @@
 {% block console %}
     <div class="layui-row">
         <div class="layui-col-md12">
-            <div class="layui-card">
+            <div class="layui-card tool-card">
                 <div class="layui-card-header">
                     <h2 class="h2">最近十五天的总访问记录</h2>
-                    <div class="box-tool">
+                    <div class="card-tools">
                         <a href="{{ path_for('statistic.count') }}" target="_blank" class="btn-close">查看各域名总访问统计</a>
                     </div>
                 </div>
                 <div class="layui-card-body">
-                    <div class="form-inline" style="margin-bottom: 10px">
-                        <div class="form-group layui-form">
+                    <div class="layui-row layui-form">
+                        <div class="layui-input-inline layui-col-md4">
                             <label>选择域名：</label>
                             <select class="selectpicker" data-live-search="true" name="domain_id" id="domain_id">
                                 <option value="0">所有域名</option>
@@ -21,8 +21,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <button class="btn btn-default"><a href="#" target="_blank" id="stic_day">每天统计列表</a></button>
-                        <button class="btn btn-default"><a href="#" target="_blank" id="stic_log">详细访问记录</a></button>
                     </div>
                     <div id="echarts_count" style="height: 320px"></div>
                 </div>

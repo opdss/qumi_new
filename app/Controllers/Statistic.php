@@ -172,7 +172,7 @@ class Statistic extends Base
 
         //获取校验参数
         $page = (int)$request->getQueryParam('page') ?: 1;
-        $kw = $request->getQueryParam('kw');
+        $kw = trim($request->getQueryParam('kw', ''));
         $domain_id = (int)$request->getQueryParam('domain_id');
         $date_time = $request->getQueryParam('date_time');
         $order_name = trim($request->getQueryParam('order_name'));
@@ -184,7 +184,7 @@ class Statistic extends Base
         if ($domain_id) {
             $builder = $builder->where('domain_id', $domain_id);
         } else {
-            if ($kw) {
+            if ($kw !== '') {
                 $builder = $builder->where('domain_name', 'like', '%' . $kw . '%');
             }
         }
@@ -223,51 +223,60 @@ class Statistic extends Base
     public function count(Request $request, Response $response, $args)
     {
         $data = array();
-        $allowOrder = array('domain_name', 'pvs', 'ips', 'bots', 'users', 'domestics', 'overseass');
-        $page = (int)$request->getQueryParam('page') ?: 1;
-        $filter['kw'] = $request->getQueryParam('kw', '');
-        $filter['order_by'] = $request->getQueryParam('order_by');
-
-        $data['filter'] = $filter;
-
-        //这是一个分组查询
-        $builder = \App\Models\DomainAccessLogCount::isMy($this->uid)->groupBy('domain_id');
-        if ($filter['kw']) {
-            $builder = $builder->where('domain_name', 'like', '%' . $filter['kw'] . '%');
-        }
-
-        $data['count'] = count($builder->selectRaw('domain_id')->get()->toArray());
-        $data['records'] = [];
-        if ($data['count']) {
-			if ($filter['order_by'] && is_array($filter['order_by'])) {
-				foreach ($filter['order_by'] as $k => $v) {
-					if (in_array($k, $allowOrder)) {
-						$builder = $builder->orderBy($k, $v == 'asc' ? 'asc' : 'desc');
-					}
-				}
-			}
-            $select = array(
-                '(select name from domain where id=domain_id) as domain_name',
-                'count(*) as total',
-                'SUM(pv) as pvs',
-                'SUM(uv) as uvs',
-                'SUM(ip) as ips',
-                'SUM(bot) as bots',
-                'SUM(user) as users',
-                'SUM(domestic) as domestics',
-                'SUM(overseas) as overseass',
-            );
-			$records = $builder->selectRaw(implode(',', $select))
-                ->offset(($page - 1) * self::$page_number)
-                ->limit(self::$page_number)->get()->toArray();
-            $data['records'] = $records;
-            $data['pagination'] = Functions::pagination($data['count'], self::$page_number);
-        }
-
-        $data['currentName'] = 'statistic';
         return $this->view('statistic/count.twig', $data);
-
     }
+
+	/**
+	 * @pattern /api/statistic/count
+	 * @name api.statistic.count
+	 * @method get
+	 * @param Request $request
+	 * @param Response $response
+	 * @param $args
+	 * @return mixed
+	 */
+	public function countApi(Request $request, Response $response, $args)
+	{
+		$data = array();
+		$page = (int)$request->getQueryParam('page') ?: 1;
+		$kw = trim($request->getQueryParam('kw', ''));
+		$order_name = trim($request->getQueryParam('order_name'));
+		$order_type = trim($request->getQueryParam('order_type'));
+		$limit = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
+
+		$allowOrder = array('domain_name', 'pvs', 'ips', 'bots', 'users', 'domestics', 'overseass', 'realclicks');
+
+		//这是一个分组查询
+		$builder = \App\Models\DomainAccessLogCount::isMy($this->uid)->groupBy('domain_id');
+		if ($kw !== '') {
+			$builder = $builder->where('domain_name', 'like', '%' . $kw . '%');
+		}
+
+		$data['count'] = count($builder->selectRaw('domain_id')->get()->toArray());
+		$data['records'] = [];
+		if ($data['count']) {
+			if ($order_type && $order_type != 'null' && in_array($order_name, $allowOrder)) {
+				$builder = $builder->orderBy($order_name, $order_type);
+			}
+			$select = array(
+				'(select name from domain where id=domain_id) as domain_name',
+				'count(*) as total',
+				'SUM(pv) as pvs',
+				'SUM(uv) as uvs',
+				'SUM(ip) as ips',
+				'SUM(bot) as bots',
+				'SUM(user) as users',
+				'SUM(domestic) as domestics',
+				'SUM(overseas) as overseass',
+				'SUM(real_clicks) as realclicks',
+			);
+			$records = $builder->selectRaw(implode(',', $select))
+				->offset(($page - 1) * $limit)
+				->limit($limit)->get()->toArray();
+			$data['records'] = $records;
+		}
+		return $this->json($data);
+	}
 
     /**
      * 详细的访问记录

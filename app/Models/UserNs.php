@@ -42,4 +42,18 @@ class UserNs extends Base
         }
         return self::insert($servers) ? $server : false;
     }
+
+	/**
+	 * 获取一个用户的dns
+	 * @param $uid
+	 * @return array
+	 */
+    public static function getDnsServer($uid)
+	{
+		$data = [];
+		if ($uid && $res = self::where('uid', $uid)->get()) {
+			$data = array_reduce($res->toArray(), function ($a, $b){$a[] = $b['server']; return $a;});
+		}
+		return $data;
+	}
 }

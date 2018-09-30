@@ -64,7 +64,7 @@ class Domain extends Base
 		$limit = min($limit, 100);
 
 		$builder = \App\Models\Domain::isMy($this->uid);
-		if ($kw){
+		if ($kw !== ''){
 			$builder = $builder->where('name', 'like', '%'.$kw.'%');
 		}
 		if ($dns_status > 0) {
@@ -144,7 +144,7 @@ class Domain extends Base
 			},
 			$this->userInfo['dns_server']
 		);
-        $DNS = array_merge(Config::site('godaddyDNS'), $userNsArr);
+        $userDns = array_merge(Config::site('godaddyDNS'), $userNsArr);
 
 		$result = [];
 		$successIds = [];
@@ -154,13 +154,9 @@ class Domain extends Base
                 $check = true;
             } else {
                 //获取该域名的dns服务器
-				$whois = Functions::whois($item['name']);
-				if ($whois) {
-					//有的是大写 转换一下
-					if(isset($whois['Name Server'])) {
-						$whois['Name Server'] = array_map(function ($a){return strtolower($a);}, $whois['Name Server']);
-					}
-					if (isset($whois['Name Server']) && count(array_intersect($whois['Name Server'], $DNS)) == 2) {
+				$domainDns = Functions::getDomainDns($item['name']);
+				if (!empty($domainDns)) {
+					if (count(array_intersect($domainDns, $userDns)) == 2) {
 						$check = true;
 						$successIds[] = $item['id'];
 					}

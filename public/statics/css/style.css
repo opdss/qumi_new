@@ -227,16 +227,16 @@ body .layui-layout-admin .footer-demo{height: 50px; padding: 5px 0;}
 .card-mibiao:hover{
     box-shadow: 3px 3px 5px rgba(0,0,0,.3);
 }
-.card-mibiao > .layui-card-header > .card-tools {
+
+.tool-card > .layui-card-header > .card-tools {
     position: absolute;
     right:0px;
     top: 0px;
     padding-right: 10px;
 }
-.card-mibiao > .layui-card-header > .card-tools i {
+.tool-card > .layui-card-header > .card-tools i {
     font-size: 20px;
 }
-
 
 @-webkit-keyframes site-anim-closeup{ /* 特写 */
     from {-webkit-transform: translate3d(0, 0, 0) scale(1);  opacity: 1;}
