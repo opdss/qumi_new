@@ -139,12 +139,7 @@ class Domain extends Base
 			return $this->json(3);
 		}
 		//用户的ns服务器地址
-		$userNsArr = array_map(function($item) {
-			return $item['server'];
-			},
-			$this->userInfo['dns_server']
-		);
-        $userDns = array_merge(Config::site('godaddyDNS'), $userNsArr);
+        $userDns = array_merge(Config::site('godaddyDNS'), $this->userInfo['dns_server']);
 
 		$result = [];
 		$successIds = [];

@@ -97,6 +97,7 @@
         <div class="modal layui-row">
             <div class="layui-col-md6 ">
                 <div class="dnsCheck" style="max-height: 230px;overflow: auto">
+                    <span class="loading">校验中...</span>
                 </div>
             </div>
             <div class="layui-col-md6">
@@ -303,6 +304,7 @@
                                 } else {
                                     info = '<p>domain_id:' + n + '  => ' + res.errMsg + ' </p>'
                                 }
+                                $this.find('.loading').remove();
                                 $this.append(info);
                             }, 'json')
                         });

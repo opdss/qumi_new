@@ -67,28 +67,28 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">qq</label>
                     <div class="layui-input-block">
-                        <input type="text" name="qq" lay-verify="varchat" autocomplete="off" placeholder="qq"
+                        <input type="text" name="qq" lay-verify="varchar" autocomplete="off" placeholder="qq"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">微信</label>
                     <div class="layui-input-block">
-                        <input type="text" name="wechat" lay-verify="varchat" autocomplete="off" placeholder="wechat"
+                        <input type="text" name="wechat" lay-verify="varchar" autocomplete="off" placeholder="wechat"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电话</label>
                     <div class="layui-input-block">
-                        <input type="text" name="phone" lay-verify="varchat" autocomplete="off" placeholder="phone"
+                        <input type="text" name="phone" lay-verify="varchar" autocomplete="off" placeholder="phone"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">邮箱</label>
                     <div class="layui-input-block">
-                        <input type="text" name="email" lay-verify="varchat" autocomplete="off" placeholder="email"
+                        <input type="text" name="email" lay-verify="email" autocomplete="off" placeholder="email"
                                class="layui-input">
                     </div>
                 </div>
@@ -121,11 +121,14 @@
             var utils = layui.utils;
             var $ = layui.$;
 
+            var defId =  '{{ userInfo.def_template_id }}'
+
             var API = {
                 get: '{{ path_for('api.template.get') }}',
                 del: '{{ path_for('api.template.del') }}',
                 add: '{{ path_for('api.template.add') }}',
                 update: '{{ path_for('api.template.update') }}',
+                setdef: '{{ path_for('api.template.setdef') }}',
             }
 
             var themes = {{ themesJson|raw }}
@@ -151,8 +154,13 @@
                                 return html;
                             }
                         }
-                        , {field: 'domainCount', title: '停靠域名数量'}
-                        , {fixed: 'right', title: '操作', align: 'center', toolbar: '#toolBar'}
+                        , {field: 'domainCount', title: '停靠数量'}
+                        , {fixed: 'right', title: '操作', align: 'center', templet : function (d) {
+                            var html = '<div>' +
+                                (defId != d.id ? '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a><a class="layui-btn layui-btn-info layui-btn-xs" lay-event="setdef">设为默认</a>' : '') +
+                                '</div>';
+                            return html
+                        }}
                     ]]
                 }, utils.tableOptions));
 
@@ -213,6 +221,12 @@
                     utils.delById(API.del, data.id, function (res) {
                         obj.del();
                     })
+                } else if (layEvent === 'setdef') {
+                    utils.ajax.get(API.setdef+'?template_id='+data.id, function (res) {
+                        layer.msg('设置成功！')
+                        defId = data.id
+                        table.reload('dataTable');
+                    });
                 } else if (layEvent === 'editThemeId') {
                     var id = 'editTheme';
                     var theme_id = data.theme_id;
@@ -254,7 +268,7 @@
             });
 
             //自定义验证规则
-            form.verify(utils.getVerifyByField(['name', 'varchat']));
+            form.verify(utils.getVerifyByField(['name', 'varchar']));
             //modal表单的监听修改
             form.on('submit(modalAdd)', function (data) {
                 utils.ajax.post(API.add, data.field, function (res) {

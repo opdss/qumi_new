@@ -168,7 +168,7 @@ class Template extends Base
     }
 
 	/**
-	 * @pattern /api/template/setdef
+	 * //@pattern /api/template/setdef
      * @name home.api.template.setdef
      * @method get
 	 * @param Request $request

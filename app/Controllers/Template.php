@@ -49,6 +49,7 @@ class Template extends Base
     /**
      * 我的模板
      * @pattern /api/templates
+     * @auth user
      * @name api.template.get
      * @param Request $request
      * @param Response $response
@@ -85,32 +86,8 @@ class Template extends Base
     }
 
 	/**
-	 * @pattern /template/modal/{act}
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 */
-	public function modal(Request $request, Response $response, $args)
-	{
-		$act = $args['act'];
-		$data = [];
-		$data['themes'] = \App\Models\Theme::getICanUse($this->uid);
-		if ($act == 'edit') {
-			$id = (int)$request->getParam('template_id');
-			if (!$id || !$records = \App\Models\Template::where('id', $id)->isMy($this->uid)->first()) {
-				$this->log('error', '修改模板id错误:'.$id);
-				return 'id错误！';
-			}
-			//要修改的模板
-			$data['template'] = $records;
-			return $this->view('template/modal-edit.twig', $data);
-		} elseif ($act == 'add') {
-			return $this->view('template/modal-add.twig', $data);
-		}
-	}
-
-	/**
 	 * @pattern /api/template/add
+     * @auth user
 	 * @name api.template.add
 	 * @method post
 	 * @param Request $request
@@ -142,6 +119,7 @@ class Template extends Base
 
 	/**
 	 * @pattern /api/template/del
+     * @auth user
      * @name api.template.del
      * @method delete
 	 * @param Request $request
@@ -182,6 +160,7 @@ class Template extends Base
 
     /**
      * @pattern /api/template/update
+     * @auth user
      * @name api.template.update
      * @method post
      * @param Request $request
@@ -217,7 +196,9 @@ class Template extends Base
     }
 
 	/**
-	 * @pattern /template/setdef
+	 * @pattern /api/template/setdef
+     * @auth user
+     * @name api.template.setdef
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
