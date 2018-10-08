@@ -20,6 +20,9 @@ use Slim\Http\Response;
  */
 class Mibiao extends Base
 {
+	//个人米表最多数量
+	const MAX_NUM = 5;
+
     /**
      * @pattern /mibiao
      * @auth user|我的米表
@@ -42,12 +45,14 @@ class Mibiao extends Base
 			}
 		}
 		$data['records'] = $res;
+		$data['show_add'] = count($res) < self::MAX_NUM;
         return $this->view('mibiao/index.twig', $data);
     }
 
 
 	/**
 	 * @pattern /mibiao/modal/{act}
+	 * @auth user
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
@@ -74,6 +79,7 @@ class Mibiao extends Base
 
     /**
      * @pattern /api/mibiao/add
+	 * @auth user
 	 * @name api.mibiao.add
      * @method post
      * @param Request $request
@@ -93,6 +99,10 @@ class Mibiao extends Base
         if (!$data['name'] || !$data['theme_id'] || !$data['template_id']) {
             return $this->json(3);
         }
+
+        if (\App\Models\Mibiao::isMy($this->uid)->count() >= self::MAX_NUM) {
+			return $this->json(3, '个人米表最多不超过'.self::MAX_NUM.'个！');
+		}
 
         if (!Theme::iCanUse($this->uid, $data['theme_id'], Theme::THEME_TYPE_MIBIAO)) {
             $this->log('error', '非法theme_id:'. $data['theme_id']);
@@ -121,6 +131,7 @@ class Mibiao extends Base
                 return $this->json(3, 'path无效或者已经被占用');
             }
         } else {
+        	//此处有bug
             $c = \App\Models\Mibiao::count();
             $data['path'] = $this->uid.($c+1);
         }
@@ -134,6 +145,7 @@ class Mibiao extends Base
 
     /**
      * @pattern /api/mibiao/delete
+	 * @auth user
      * @name api.mibiao.del
      * @method delete
      * @param Request $request
@@ -158,6 +170,7 @@ class Mibiao extends Base
     /**
      * @pattern /api/mibiao/update
 	 * @name api.mibiao.update
+	 * @auth user
      * @method post
      * @param Request $request
      * @param Response $response

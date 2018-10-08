@@ -38,7 +38,7 @@ class Auth
 	 */
 	public function __invoke(Request $request, Response $response, $next)
 	{
-	    $roleMap = ['admin'=>2, 'user' => 1];
+	    $roleMap = ['admin'=>2, 'user' => 1, 'userss' => 1000];
 		$userInfo = $this->ci->session->get('userInfo');
 		$flag = -1;//-1未登陆 0 没权限 1 ok
 		if (!empty($userInfo)) {
@@ -67,16 +67,26 @@ class Auth
             }
         }
 
+        $raw = $request->getParam('raw');
         //未登陆或者没有权限
         if ($flag < 1) {
             $ajax = $this->ci->request->getHeaderLine('HTTP_X_REQUESTED_WITH');
             $isAjax = $ajax && strtolower($ajax) == 'xmlhttprequest';
+			$ajaxRet = $flag == -1 ? -1 : 2;
+
+			if ($raw) {
+				return $response->write('对不起，你没有权限访问！');
+			}
+
             if ($isAjax) {
-                $ajaxRet = $flag == -1 ? -1 : 2;
                 return $response->withJson(Functions::formatApiData($ajaxRet));
             } else {
                 $redirectUrl = $request->getUri();
-                return $this->ci->response->withRedirect($this->ci->router->pathFor('login'). ($redirectUrl ? '?redirect_url='.urlencode($redirectUrl) : ''));;
+                if ($ajaxRet == -1) {
+					return $response->withRedirect($this->ci->router->pathFor('login') . ($redirectUrl ? '?redirect_url=' . urlencode($redirectUrl) : ''));
+				} else {
+					return $response->write('对不起，你没有权限访问！');
+				}
             }
         }
 

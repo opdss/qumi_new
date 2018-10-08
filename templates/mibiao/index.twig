@@ -26,6 +26,7 @@
                 </div>
             </div>
         {% endfor %}
+        {% if show_add %}
         <div class="layui-col-xs12 layui-col-md4">
             <div class="layui-card  card-mibiao">
                 <div class="layui-card-header">
@@ -39,6 +40,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
     <!-- 数据表格 end -->
 {% endblock %}
@@ -82,7 +84,7 @@
 
             //修改
             $('.btnEdit').on('click', function () {
-                $.get(API.modalEdit + '?id=' + $(this).data('id'), function (res) {
+                $.get(API.modalEdit + '?raw=1&id=' + $(this).data('id'), function (res) {
                     var id = 'modalEdit';
                     layer.open({
                         title: '修改米表',
@@ -117,7 +119,7 @@
 
             //添加
             $('#btnAdd').on('click', function () {
-                $.get(API.modalAdd, function (res) {
+                $.get(API.modalAdd+'?raw=1&', function (res) {
                     var id = 'modalAdd';
                     layer.open({
                         title: '添加米表',
