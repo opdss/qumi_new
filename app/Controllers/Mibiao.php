@@ -45,6 +45,7 @@ class Mibiao extends Base
 			}
 		}
 		$data['records'] = $res;
+		$data['max_num'] = self::MAX_NUM;
 		$data['show_add'] = count($res) < self::MAX_NUM;
         return $this->view('mibiao/index.twig', $data);
     }

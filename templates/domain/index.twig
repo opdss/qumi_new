@@ -140,36 +140,38 @@
                 elem: '#dataTable'
                 , url: '{{ path_for('api.domain.get') }}'
                 , toolbar: '#headerToolBar'
+                //,skin: 'row ' //行边框风格
+                //,even: true //开启隔行背景
                 , cols: [[
                     {type: 'checkbox'}
                     , {field: 'name', title: '域名', sort: true}
-                    , {field: 'description', title: '含义', event: 'editDescription', style: 'cursor: pointer;'}
+                    , {field: 'description', title: '含义',minWidth : 200, event: 'editDescription', style: 'cursor: pointer;'}
                     , {
-                        field: 'price', title: '报价', sort: true, templet: function (d) {
+                        field: 'price', title: '报价', width: 90, sort: true, templet: function (d) {
                             return d.sale_type == 1 ? '询价' : '￥' + d.price
                         }
                     }
                     , {
-                        field: 'ssl_status', title: 'SLL证书', sort: true, templet: function (d) {
+                        field: 'ssl_status', title: 'SLL证书', width: 100, sort: true, templet: function (d) {
                             if (d.suffix != "app") {
-                                return "不需要";
+                                return "无需";
                             } else {
                                 if (!d.dns_status) {
-                                    return "等待NS验证"
+                                    return "待NS验证"
                                 } else {
                                     if (d.ssl_status == 0) {
                                         return "申请中";
                                     } else if (d.ssl_status == 1) {
                                         return "成功";
                                     } else {
-                                        return "等待重试"
+                                        return "待重试"
                                     }
                                 }
                             }
                         }
                     }
                     , {
-                        field: 'dns_status', title: 'NS验证', sort: true, event: 'dnsCheck', templet: function (d) {
+                        field: 'dns_status', title: 'NS验证', width: 90, sort: true, event: 'dnsCheck', templet: function (d) {
                             if (d.dns_status) {
                                 return '<span class="layui-badge layui-bg-blue">已通过</span>';
                             } else {
@@ -177,7 +179,7 @@
                             }
                         }
                     }
-                    , {fixed: 'right', title: '操作', align: 'center', toolbar: '#toolBar'}
+                    , {fixed: 'right', title: '操作', width: 110, align: 'center', toolbar: '#toolBar'}
                 ]]
             }, utils.tableOptions));
 

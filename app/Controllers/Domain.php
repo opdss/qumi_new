@@ -20,10 +20,12 @@ use Slim\Http\Response;
  */
 class Domain extends Base
 {
-    const COIN_CNY = 1;
-    const COIN_USD = 2;
-    const COIN_GBP = 3;
-    const COIN_EUR = 4;
+	public static $unit = array(
+		\App\Models\Domain::COIN_UNIT_CNY,
+		\App\Models\Domain::COIN_UNIT_USD,
+		\App\Models\Domain::COIN_UNIT_GBP,
+		\App\Models\Domain::COIN_UNIT_EUR,
+	);
 	/**
 	 * 我的域名列表
 	 * @pattern /domain
@@ -192,6 +194,11 @@ class Domain extends Base
 		$price = (int)$request->getParsedBodyParam('price', '');
         $price = $price > 0 ? $price : 0;
         $sale_type = $price ? 0 : 1;
+		$unit = (int)$request->getParsedBodyParam('unit', '');
+		$unit = $unit && in_array($unit, self::$unit) ? $unit : \App\Models\Domain::COIN_UNIT_CNY;
+		$buy_link = trim($request->getParsedBodyParam('buy_link', ''));
+		$buy_link = $buy_link && Functions::verifyUrl($buy_link) ? $buy_link : '';
+
 		//$sale_type = (int)$request->getParsedBodyParam('sale_type',  0);
 		$template_id = (int)$request->getParsedBodyParam('template_id', 0);
 
@@ -218,6 +225,8 @@ class Domain extends Base
 				'template_id'=>$template_id,
 				'dns_status' => 0,
 				'dtype' => $this->getDtype($domain),
+				'unit' => $unit,
+				'buy_link' => $buy_link,
 				'len' => strpos($domain, '.')
 			);
 		}

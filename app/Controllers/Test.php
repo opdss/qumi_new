@@ -31,6 +31,11 @@ class Test extends Base
 	 */
 	public function index(Request $request, Response $response, $args)
 	{
+		$r = '44422466';		$res = (explode(",", $r));
+		$res = array_map('trim', $res);
+		echo var_export($res, true);
+//		var_dump($res);
+		exit;
 		var_dump(UserNs::getDnsServer(120));exit;
 	   $res = Functions::getDomainDns('qq.com');
 	   var_dump($res);

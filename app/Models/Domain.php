@@ -13,6 +13,11 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Domain extends Base
 {
+	const COIN_UNIT_CNY = 'CNY'; //人民币
+	const COIN_UNIT_USD = 'USD'; //美元
+	const COIN_UNIT_GBP = 'GBP'; //英镑
+	const COIN_UNIT_EUR = 'EUR'; //欧元
+
     use SoftDeletingTrait;
 
     /**
