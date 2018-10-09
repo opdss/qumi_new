@@ -17,6 +17,8 @@
             <a href="?l=zh" class="active">中文</a>
             <span class="div">|</span>
             <a href="?l=en">English</a>
+            <span class="div">|</span>
+            <a href="#">联系卖家</a>
         </div>
         <div>
             <h1>{{ domain.name }}</h1>
@@ -53,11 +55,14 @@
             <p class="lastline">{{ lang(1012) }}</p>
         </a>
         <div>
-            <span class="footer-name">默认模板</span>
+            <span class="footer-name">{{ lang(1014) }}</span>
             <a href="https://qumi.app/" target="_blank" class="footer-qumi">&copy;Qumi</a>
         </div>
     </div>
     <script type="text/javascript" logid="{{ logid }}"  src="{{ site.homepage }}/statics/js/realclicks.js"></script>
+
+    <link rel="stylesheet" href="{{ site.homepage }}/statics/layui/css/layui.css">
+    <script src="{{ site.homepage }}/statics/layui/layui.js"></script>
 </body>
 </html>
 

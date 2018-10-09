@@ -19,7 +19,7 @@ return array(
 	1011 => ['zh'=>'闲置域名停放转发，请上Qumi.APP！', 'en'=> 'Parking or redirecting your idle domains with Qumi.app!'],
 	1012 => ['zh'=>'免费停放转发，支持自动签发免费HTTPS证书。', 'en'=> 'Totally free service, plus free SSL certificates.'],
 	1013 => ['zh'=>'￥', 'en'=> '$'],
-	1014 => ['zh'=>'', 'en'=> ''],
+	1014 => ['zh'=>'默认模版', 'en'=> 'Default template'],
 	1015 => ['zh'=>'', 'en'=> ''],
 	1016 => ['zh'=>'', 'en'=> ''],
 	1017 => ['zh'=>'', 'en'=> ''],

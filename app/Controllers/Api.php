@@ -8,6 +8,8 @@
 namespace App\Controllers;
 
 use App\Libraries\Email;
+use App\Models\DomainAccessLog;
+use App\Models\DomainAccessLogCount;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -48,7 +50,7 @@ class Api extends Base
 
 	/**
 	 * routes
-	 * @pattern /realclick/{logid}
+	 * @pattern /realclicks/{logid}
 	 * @name api.realclicks
 	 * @method get
 	 * @param Request $request

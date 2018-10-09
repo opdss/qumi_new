@@ -9,15 +9,10 @@ namespace App\Controllers;
 
 use App\Functions;
 use App\Libraries\Config;
-use App\Libraries\Email;
 use App\Models\Domain;
 use App\Models\DomainAccessLog;
 use App\Models\DomainAccessLogCount;
-use App\Models\DomainRedirect;
 use App\Models\Template;
-use App\Models\Theme;
-use App\Models\User;
-use Opdss\Cicache\Cache;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -173,23 +168,10 @@ class Index extends Base
             return $response->withRedirect(HOMEPAGE, 301);
         }
 
+        //记录访问日志 start
         $from = $request->getQueryParam('from', '');
-        if ($from) {
-            $from = base64_decode($from);
-        }
-		//记录访问日志 start
-		$logModel = Functions::saveAccessLog($domainModel, $from);
-
+		$logModel = Functions::saveAccessLog($domainModel, $from ? base64_decode($from) : '');
 		//记录访问日志 end
-
-        //检查有没有跳转记录
-        if ($from) {
-            $fromInfo = parse_url($from);
-            if ($fromInfo && $fromInfo['host']) {
-                //Functions::
-            }
-            //DomainRedirect::where('domain_id', $domainModel->id)->where('');
-        }
 
 		//检查有没有绑定米表
 		$mibiaoModel = \App\Models\Mibiao::where('domain_id', $domainModel->id)->first();
@@ -197,6 +179,14 @@ class Index extends Base
 		    $url = $this->ci->router->pathFor('index.mibiao', ['path'=> $mibiaoModel->path]);
 			return $response->withRedirect($url, 301);
 		}
+
+		//根据ip地理位置设置语言
+		if (!isset($_GET['l'])) {
+            if (strpos($logModel->region, '中国') === false && strpos($logModel->region, '台湾') === false) {
+                $_GET['l'] = 'en';
+            }
+        }
+
         $temp['logid'] = $logModel->id;
 		//开始准备渲染模板页面
 		if ($domainModel->template_id && $templateInfo = \App\Models\Template::find($domainModel->template_id)) {
@@ -214,30 +204,7 @@ class Index extends Base
 			\App\Functions::getLogger()->debug('domain_id:' . $domainModel->id . '('.$domainModel->name.')未设置模板 =>' . $domainModel->template_id);
 			$temp['domain'] = $domainModel;
 			$temp['site'] = Config::get('site');
-			return $this->view('public/domain.twig', $temp);
-			//header('location:' . HOMEPAGE);
+			return $this->view('theme/default/big.twig', $temp);
 		}
-    }
-
-    /**
-     * routes
-     * @pattern /realclicks/{logid}
-     * @method get
-     * @param Request $request
-     * @param Response $response
-     * @param $args
-     */
-    public function realclicks(Request $request, Response $response, $args) {
-        $outtime = 10;
-        $logid = isset($args['logid']) ? (int)$args['logid'] : 0;
-        if ($logid && ($logModel = DomainAccessLog::select('domain_id', 'is_bot', 'is_real_clicks', 'created_at')->find($logid))) {
-            if ($logModel->is_bot == 0 && $logModel->is_real_clicks == 0 && time() - strtotime($logModel->created_at) <= $outtime ) {
-                DomainAccessLog::where('id', $logid)->update(['is_real_clicks'=>1]);
-                DomainAccessLogCount::where('domain_id', $logModel->domain_id)->where('day', substr($logModel->created_at, 0, 10))->increment('real_clicks', 1);
-                return $this->json(0);
-            }
-            $this->log('error', 'realclicks', [$logid, $logModel->toArray()]);
-        }
-        return $this->json(1);
     }
 }

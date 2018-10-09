@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        a{
+            display: block;
+        }
+        a>.a{
+            position: relative;
+            left:-145px;
+        }
+        #mask{
+            background: #000;
+            opacity: 0.65;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom:0;
+            z-index: 1000;
+        }
+        #vide{
+            position: absolute;
+            /*display: block;*/
+            /*background-color: red;*/
+            width:800px;
+            height:600px;
+            z-index:1001;
+            left:50%;
+            top:50%;
+            transform:translate(-50%,-50%);
+        }
+        /*vedio{
+            width:800px;
+            height:600px;
+        }*/
+        #close{
+            position:absolute;
+            top:10px;
+            right:10px;
+            cursor: pointer;
+            width:30px;
+            height:30px;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+<!-- <div id="mask"></div>
+<div id="vide">
+     <video  vwidth="750px" height="600px" controls="controls" src="movie.ogg" autoplay="autoplay">
+    </video>
+    <div id="close">X</div>
+
+</div> -->
+<a href="javascript:;" id="video">
+    <img src="icon/about_b_buttom.png" alt="">
+    <img class="a" src="icon/about_b.png" alt="">
+</a>
+
+</body>
+<script>
+    var cWidth=document.documentElement.clientWidth;
+    var cHeight=document.documentElement.clientHeight;
+    // 获取客户区大小
+    var v=document.getElementById("video");
+    function TurnOnVedio(){
+        var oMask=document.createElement("div");
+        oMask.id="mask";
+        document.body.appendChild(oMask);
+        //插入遮障
+        var modal=document.createElement("div");
+        modal.id="vide";
+        modal.innerHTML='<div style="width:800px;height: 600px;background-color: #00a8c6"></div><div id="close">X</div>';//插入关闭X形状和视频
+        var oVedio=document.createElement("video");
+        modal.appendChild(oVedio);
+        document.body.appendChild(modal);
+        var oClose=document.getElementById("close");
+        //关闭弹窗
+        oMask.onclick=oClose.onclick=function(){
+            document.body.removeChild(oMask);
+            document.body.removeChild(modal);
+        };
+    }
+    window.onload=function(){
+        v.onclick=function(){
+            TurnOnVedio();
+        };
+    }
+</script>
+</html>
