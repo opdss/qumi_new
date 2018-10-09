@@ -18,6 +18,13 @@ class Domain extends Base
 	const COIN_UNIT_GBP = 'GBP'; //英镑
 	const COIN_UNIT_EUR = 'EUR'; //欧元
 
+	static public $coin_unit = [
+		self::COIN_UNIT_CNY,
+		self::COIN_UNIT_USD,
+		self::COIN_UNIT_GBP,
+		self::COIN_UNIT_EUR
+	];
+
     use SoftDeletingTrait;
 
     /**

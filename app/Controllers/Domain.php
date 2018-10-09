@@ -20,12 +20,7 @@ use Slim\Http\Response;
  */
 class Domain extends Base
 {
-	public static $unit = array(
-		\App\Models\Domain::COIN_UNIT_CNY,
-		\App\Models\Domain::COIN_UNIT_USD,
-		\App\Models\Domain::COIN_UNIT_GBP,
-		\App\Models\Domain::COIN_UNIT_EUR,
-	);
+
 	/**
 	 * 我的域名列表
 	 * @pattern /domain
@@ -195,7 +190,7 @@ class Domain extends Base
         $price = $price > 0 ? $price : 0;
         $sale_type = $price ? 0 : 1;
 		$unit = (int)$request->getParsedBodyParam('unit', '');
-		$unit = $unit && in_array($unit, self::$unit) ? $unit : \App\Models\Domain::COIN_UNIT_CNY;
+		$unit = $unit && in_array($unit, \App\Models\Domain::$coin_unit) ? $unit : \App\Models\Domain::COIN_UNIT_CNY;
 		$buy_link = trim($request->getParsedBodyParam('buy_link', ''));
 		$buy_link = $buy_link && Functions::verifyUrl($buy_link) ? $buy_link : '';
 

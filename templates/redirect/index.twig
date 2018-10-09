@@ -112,10 +112,10 @@
                             return d.prefix + '.' + d.domain_name;
                         }
                     }
-                    , {field: 'redirect_url', title: '目标地址', sort: true, edit: 'text'}
-                    , {field: 'redirect_status', title: '转发状态', style: 'cursor: pointer', sort: true}
-                    , {field: 'clicks', title: '点击数', sort: true}
-                    , {fixed: 'right', title: '操作', align: 'center', toolbar: '#toolBar'}
+                    , {field: 'redirect_url', title: '目标地址',minWidth:300, sort: true, edit: 'text'}
+                    , {field: 'redirect_status', title: '转发状态',width:100, style: 'cursor: pointer', sort: true}
+                    , {field: 'clicks', title: '点击数',width:80, sort: true}
+                    , {fixed: 'right', title: '操作',width:80, align: 'center', toolbar: '#toolBar'}
                 ]]
             }, utils.tableOptions));
 

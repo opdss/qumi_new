@@ -8,6 +8,7 @@
 namespace App\Controllers;
 
 use App\Functions;
+use App\Libraries\Email;
 use App\Libraries\File;
 use App\Models\Domain;
 use App\Models\DomainRedirect;
@@ -40,6 +41,7 @@ class Redirect extends Base
 
 	/**
 	 * @pattern /api/redirects
+	 * @auth user
 	 * @name api.redirect.get
 	 * @param Request $request
 	 * @param Response $response
@@ -80,30 +82,8 @@ class Redirect extends Base
 	}
 
 	/**
-	 * @pattern /redirect/modal/{act}
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 */
-	public function modal(Request $request, Response $response, $args)
-	{
-		$act = $args['act'];
-		$data = [];
-		$data['domains'] = \App\Models\Domain::isMy($this->uid)->isDns()->get();
-		if ($act == 'edit') {
-			$id = (int)$request->getParam('redirect_id');
-			if (!$id || !($records = \App\Models\DomainRedirect::find($id)) || $records->uid != $this->uid) {
-				return 'id错误！';
-			}
-			$data['detail'] = $records;
-			return $this->view('redirect/modal-edit.twig', $data);
-		} elseif ($act == 'add') {
-			return $this->view('redirect/modal-add.twig', $data);
-		}
-	}
-
-	/**
 	 * @pattern /api/redirect/add
+	 * @auth user
      * @name api.redirect.add
 	 * @method post
 	 * @param Request $request
@@ -118,7 +98,7 @@ class Redirect extends Base
 		$data['domain_id'] = (int)$request->getParsedBodyParam('domain_id', 0);
 		$data['redirect_url'] = trim($request->getParsedBodyParam('redirect_url', 0));
 		$data['redirect_status'] = (int)$request->getParsedBodyParam('redirect_status', 0);
-		$data['redirect_status'] = $data['redirect_status'] == 301 ? '301' : '302';
+		$data['redirect_status'] = in_array($data['redirect_status'], DomainRedirect::$redirect_status) ? $data['redirect_status'] : DomainRedirect::REDIRECT_STATUS_A;
 
 		if (!$data['title'] || !$data['prefix'] || !$data['domain_id'] || !$data['redirect_url']) {
 			return $this->json(3);
@@ -234,7 +214,9 @@ class Redirect extends Base
 			];
 		}
 		if (!File::writeRetPhp(CONFIG_DIR.'redirect.php', $data)) {
-			$this->log('error', '['.__METHOD__.']写入redirect.php 失败:'.CONFIG_DIR.'redirect.php');
+			$log = '['.__METHOD__.']写入redirect.php 失败:'.CONFIG_DIR.'redirect.php';
+			$this->log('error', $log);
+			Email::factory()->insertQueue('opdss@qq.com', '['.$this->uid.']'.$log, '写入redirect.php 失败');
 			return false;
 		}
 		return true;
