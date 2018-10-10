@@ -1,0 +1,158 @@
+{% extends "layout.twig" %}
+
+{% block css %}
+    <style>
+        .domain-label {
+            cursor: pointer;
+        }
+        .active{
+            background: #286090!important;
+            color: white!important;
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="layui-container" style="margin-top: 10px">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header"><h2>域名筛选</h2></div>
+                    <div class="layui-card-body">
+
+                        <div class="well" style="border: 2px solid #F2F2F2;padding: 10px">
+                            <p>
+                                <span>域名类型：</span>
+                                <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 1 ? 'active' : '' }}" data-name="dtype" data-val="1">字母</span>
+                                <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 2 ? 'active' : '' }}" data-name="dtype" data-val="2">数字</span>
+                                <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 3 ? 'active' : '' }}" data-name="dtype" data-val="3">杂米</span>
+                            </p>
+                            <p>
+                                <span>域名长度：</span>
+                                {% for item in lens %}
+                                    <span class="layui-badge layui-bg-gray domain-label {{ filter.len == item ? 'active' : '' }}" data-name="len" data-val="{{ item }}">{{ item }}位</span>
+                                {% endfor %}
+                            </p>
+                            <p>
+                                <span>后缀类型：</span>
+                                {% for item in suffixs %}
+                                    <span class="layui-badge layui-bg-gray domain-label {{ filter.suffix == item ? 'active' : '' }}" data-name="suffix" data-val="{{ item }}">{{ item }}</span>
+                                {% endfor %}
+                            </p>
+                        </div>
+
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="150">
+                                <col width="500">
+                                <col>
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>域名</th>
+                                <th>含义</th>
+                                <th>报价</th>
+                                <th>购买链接</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in records %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.price }}</td>
+                                    <td>{{ item.buy_link }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+{#
+
+                        <table lay-filter="dataTable">
+                            <thead>
+                            <tr>
+                                <th lay-data="{field:'name'}">域名</th>
+                                <th lay-data="{field:'description', width:500, sort:true}">含义</th>
+                                <th lay-data="{field:'price'}">报价</th>
+                                <th lay-data="{field:'buy_link'}">购买链接</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in records %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.price }}</td>
+                                <td>{{ item.buy_link }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+#}
+
+                        <div id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        layui.use(['laypage', 'utils', 'table'], function(){
+            var laypage = layui.laypage;
+            var table = layui.table;
+            var $ = layui.$;
+            //转换静态表格
+            /*table.init('dataTable', {
+                limit: 10 //注意：请务必确保 limit 参数（默认：10）是与你服务端限定的数据条数一致
+                //支持所有基础参数
+            });
+*/
+
+
+            var filter = {{ filterObj|raw }}
+            var urlEncode = function (param, key, encode) {
+                if(param==null) return '';
+                var paramStr = '';
+                var t = typeof (param);
+                if (t == 'string' || t == 'number' || t == 'boolean') {
+                    paramStr += '&' + key + '=' + ((encode==null||encode) ? encodeURIComponent(param) : param);
+                } else {
+                    for (var i in param) {
+                        var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+                        paramStr += urlEncode(param[i], k, encode);
+                    }
+                }
+                return paramStr;
+            };
+            $('.domain-label').click(function () {
+                var name = $(this).data('name')
+                var val = $(this).data('val')
+                if ($(this).prop('class').indexOf('active') > 0) {
+                    val = 0
+                }
+                filter[name] = val;
+                filter['page'] = 1
+                location.href = '?'+urlEncode(filter)
+            })
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'pagination'
+                ,limit : {{ filter.limit }}
+                ,curr : {{ filter.page }}
+                ,count: {{ count }}
+                ,jump: function(obj, first){
+                    //首次不执行
+                    if(!first){
+                        var url = layui.utils.urlHelper.putParam(location.href, 'page', obj.curr);
+                        location.href = url;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

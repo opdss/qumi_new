@@ -24,6 +24,7 @@ use Slim\Http\Response;
 class Index extends Base
 {
 	/**
+     * 首页
 	 * @pattern /
 	 * @name index
 	 * @param Request $request
@@ -54,37 +55,62 @@ class Index extends Base
 		return $this->view('public/index.twig',$data);
 	}
 
-	/**
-	 * @pattern /search
-	 * @name search
-	 * @param Request $request
-	 * @param Response $response
-	 * @param $args
-	 */
-	public function search(Request $request, Response $response, $args)
-	{
-		$data = array();
-		$filter = [];
-		$filter['kw'] = $request->getQueryParam('kw', '');
-		$filter['page'] = (int)$request->getParam('page') ?: 1;
+    /**
+     * 域名聚合页
+     * @pattern /domains
+     * @method post|get
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function domains(Request $request, Response $response, $args)
+    {
+        $allowOrder = array('name', 'price', 'len', 'dtype', 'suffix');
+        $filter = [];
+        $filter['kw'] = $request->getQueryParam('kw', '');
+        $filter['page'] = (int)$request->getParam('page') ?: 1;
+        $filter['suffix'] = $request->getParam('suffix');
+        $filter['dtype'] = (int)$request->getParam('dtype');
+        $filter['len'] = (int)$request->getQueryParam('len');
+        $filter['order_by'] = $request->getQueryParam('order_by');
+        $filter['limit'] = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
 
-		$data['filter'] = $filter;
+        $builder = new Domain();
+        $builder = $builder->where('dns_status', 1);
+        if ($filter['dtype'] > 0 ) {
+            $builder = $builder->where('dtype', $filter['dtype']);
+        }
+        if ($filter['len'] > 0) {
+            $builder = $builder->where('len', $filter['len']);
+        }
+        if ($filter['suffix']) {
+            $builder = $builder->where('suffix', $filter['suffix']);
+        }
 
-		$builder = \App\Models\Domain::isDns();
-		if ($filter['kw']){
-			$builder = $builder->where(function ($query) use ($filter){
-			    return $query->where('name', 'like', '%'.$filter['kw'].'%')->orWhere('description', 'like', '%'.$filter['kw'].'%');
-            });
-		}
+        if ($filter['kw']) {
+            $builder = $builder->where('name', 'like', '%'.$filter['kw'].'%');
+        }
 
+        $data['filter'] = $filter;
         $data['count'] = $builder->count();
         $data['records'] = [];
         if ($data['count']) {
-            $data['records'] = $builder->offset(($filter['page']-1)*self::$page_number)->limit(self::$page_number)->orderBy('id', 'desc')->get();
-            $data['pagination'] = Functions::pagination($data['count'], self::$page_number);
+            if ($filter['order_by'] && is_array($filter['order_by'])) {
+                foreach ($filter['order_by'] as $k => $v) {
+                    $v = $v == 'asc' ? 'asc' : 'desc';
+                    if (in_array($k, $allowOrder)) {
+                        $builder = $builder->orderBy($k, $v);
+                    }
+                }
+            }
+            $data['records'] = $builder->offset(($filter['page']-1)*$filter['limit'])->limit($filter['limit'])->orderBy('id', 'desc')->get();
         }
-		return $this->view('public/searchPage.twig',$data);
-	}
+        $data['suffixs'] = Domain::getAllSuffix();
+        $data['lens'] = Domain::getAllLen();
+        $data['filterObj'] = json_encode($filter);
+        return $this->view('public/domains.twig', $data);
+    }
 
 	/**
 	 * @pattern /m/{path}

@@ -10,11 +10,11 @@ namespace App\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class Login extends Base
+class Js extends Base
 {
 
     /**
-     * @pattern /js/offer
+     * //@pattern /js/offer
      * @param Request $request
      * @param Response $response
      * @param $args

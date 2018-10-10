@@ -21,7 +21,7 @@ use Slim\Http\Response;
 class Index extends Base
 {
 	/**
-	 * @pattern /domains
+	 * //@pattern /domains
 	 * @method post|get
 	 * @param Request $request
 	 * @param Response $response

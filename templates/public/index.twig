@@ -5,16 +5,26 @@
         <div carousel-item>
             {% for x in carousel.records %}
                 <div>
-                    <a href="{{ x.url ? x.url : '#' }}" target="{{ x.url ? target : '' }}"><img src="{{ x.image }}" alt="{{ x.title }}" title="{{ x.title }}" style="height: {{ height }};width: {{ width }}"></a>
+                    <a href="{{ x.url ? x.url : '#' }}" target="{{ x.url ? target : '' }}"><img src="{{ x.image }}" alt="{{ x.title }}" title="{{ x.title }}" style="height: 100%;width: 100%"></a>
                 </div>
             {% endfor %}
         </div>
     </div>
-    <div class="container">
-        <div class="layui-row layui-col-space20">
-            <div class="layui-col-md4">gaweg</div>
-            <div class="layui-col-md4">gwaeg</div>
-            <div class="layui-col-md4">awegaweg</div>
+    <div class="layui-container">
+        <div class="layui-row layui-fluid layui-col-space20">
+            <div class="layui-col-md4 ">
+                <div class="index-block">gaweg
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="index-block">gaeg
+                </div>
+            </div>
+
+            <div class="layui-col-md4">
+                <div class="index-block">gae
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
