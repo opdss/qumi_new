@@ -1,37 +1,36 @@
 {% extends "layout.twig" %}
 
 {% block container %}
-    <div class="container">
-        <div class="row-fluid">
-            {% if carousel %}
-            {% include 'public/carousel.twig' %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="container">
-        <div class="row-fluid">
-            {% include 'public/searchBox.twig' %}
-        </div>
-        <div class="row">
-            {% for x in records %}
-                <div class="col-md-3">
-                    <div class="box-domain">
-                        <a class="domain" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.uc_name }}</a>
-                        {% if x.description %}
-                        <div class="description">
-                            {{ x.description }}
-                        </div>
-                        {% endif %}
-                        <div  class="price">
-                            {% if x.sale_type %}询价{% else %}¥ {{ x.price }}{% endif %}
-                        </div>
-                    </div>
+    <div class="layui-carousel" id="carousel">
+        <div carousel-item>
+            {% for x in carousel.records %}
+                <div>
+                    <a href="{{ x.url ? x.url : '#' }}" target="{{ x.url ? target : '' }}"><img src="{{ x.image }}" alt="{{ x.title }}" title="{{ x.title }}" style="height: {{ height }};width: {{ width }}"></a>
                 </div>
             {% endfor %}
         </div>
-
-        <div class="row text-center">
-            {{ pagination | raw }}
+    </div>
+    <div class="container">
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md4">gaweg</div>
+            <div class="layui-col-md4">gwaeg</div>
+            <div class="layui-col-md4">awegaweg</div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        layui.use(['carousel'], function () {
+            var carousel = layui.carousel;
+            //建造实例
+            carousel.render({
+                elem: '#carousel'
+                ,width: '100%' //设置容器宽度
+                ,height: '360px' //设置容器宽度
+                ,arrow: 'hover' //始终显示箭头
+                //,anim: 'updown' //切换动画方式
+            });
+        });
+    </script>
 {% endblock %}
