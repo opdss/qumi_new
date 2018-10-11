@@ -27,6 +27,9 @@ html {background: #f2f2f2}
     width: 42px;
     height: 42px;
 }
+.tips {
+    padding: 5px; cursor: pointer;border: 1px solid #f2f2f2;
+}
 
 
 .header .layui-nav{position: absolute; right: 0; top: 0; padding: 0; background: none;}

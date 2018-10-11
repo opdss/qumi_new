@@ -27,6 +27,7 @@
                 <button class="layui-btn" lay-filter="btnSearch" lay-submit>查询</button>
                 <button class="layui-btn layui-btn-normal" id="btnAdd">添加域名</button>
             </div>
+            </div>
         </div>
     </form>
     <!-- 数据查询条件 end -->
@@ -71,9 +72,20 @@
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">报价</label>
-                    <div class="layui-input-block">
-                        <input type="number" name="price" autocomplete="off" placeholder="请输入您的报价，0或空则为询价"
+                    <div class="layui-input-inline" style="width: 80px">
+                        <select name="unit" lay-verify="required">
+                            {% for item in coin_units %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 160px">
+                        <input type="number" name="price" autocomplete="off" placeholder="请输入您的报价"
                                class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="sale_type" title="询价" lay-filter="sale_type" checked="">
+                        <i class="layui-icon layui-icon-help tips" data-title="输入的报价为0的时候，也会认为是询价"></i>
                     </div>
                 </div>
 
@@ -192,7 +204,7 @@
                 return false;
             });
 
-            //监听查询条件
+            //监听提交表单
             form.on('submit(modalAdd)', function (data) {
                 utils.ajax.post(API.add, data.field, function (res) {
                     table.reload('dataTable');
@@ -200,6 +212,11 @@
                     layer.msg('添加域名成功！');
                 })
                 return false;
+            });
+
+            //监听指定开关
+            form.on('checkbox(sale_type)', function(data){
+                layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
             });
 
             //监听排序

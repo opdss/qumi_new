@@ -6,11 +6,16 @@ layui.config({
 });
 
 layui.use(['layer', 'element'], function(){
+    var $ = layui.$
     var idx
-    layui.$('.tips').toggle(function () {
+    $('body').on('mouseenter', '.tips', function () {
         var that = this;
-        idx = layer.tips($(this).data('title'), that);
-    },function () {
+        idx = layer.tips($(this).data('title'), that, {
+            tips: 1
+        });
+    })
+
+    $('body').on('mouseleave', '.tips', function () {
         layer.close(idx)
     })
 });

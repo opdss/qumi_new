@@ -35,6 +35,7 @@ class Domain extends Base
 	{
 		$data = [];
 		$data['templates'] = \App\Models\Template::isMy($this->uid)->get();
+		$data['coin_units'] = \App\Models\Domain::$coin_unit;
 		return $this->view('domain/index.twig', $data);
 	}
 
