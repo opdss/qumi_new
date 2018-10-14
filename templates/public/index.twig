@@ -1,28 +1,75 @@
-{% extends "layout.twig" %}
+{% extends "index.twig" %}
 
 {% block container %}
-    <div class="layui-carousel" id="carousel">
-        <div carousel-item>
-            {% for x in carousel.records %}
-                <div>
-                    <a href="{{ x.url ? x.url : '#' }}" target="{{ x.url ? target : '' }}"><img src="{{ x.image }}" alt="{{ x.title }}" title="{{ x.title }}" style="height: 100%;width: 100%"></a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
     <div class="layui-container">
-        <div class="layui-row layui-fluid layui-col-space20">
-            <div class="layui-col-md4 ">
-                <div class="index-block">gaweg
+        <div class="layui-row">
+            <div class="layui-col-md12">
+            <div class="poster-main" id="piccarousel">
+                <div class="poster-btn poster-prev-btn"></div>
+                <ul class="poster-list">
+                    {% for x in carousel.records %}
+                        <li class="poster-item"><a href="{{ x.url ? x.url : '#' }}" target="{{ x.url ? target : '' }}"><img src="{{ x.image }}" alt="{{ x.title }}" title="{{ x.title }}" style="height: 100%;width:100%" ></a></li>
+                    {% endfor %}
+                </ul>
+                <div class="poster-btn poster-next-btn"></div>
+            </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        热门域名
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">热门域名</div>
                 </div>
             </div>
             <div class="layui-col-md4">
-                <div class="index-block">gaeg
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        最新资讯
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">最新资讯</div>
                 </div>
             </div>
-
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP极品
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">热门域名</div>
+                </div>
+            </div>
             <div class="layui-col-md4">
-                <div class="index-block">gae
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP酷站
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">.APP酷站</div>
                 </div>
             </div>
         </div>
@@ -31,16 +78,15 @@
 
 {% block script %}
     <script>
-        layui.use(['carousel'], function () {
-            var carousel = layui.carousel;
-            //建造实例
-            carousel.render({
-                elem: '#carousel'
-                ,width: '100%' //设置容器宽度
-                ,height: '360px' //设置容器宽度
-                ,arrow: 'hover' //始终显示箭头
-                //,anim: 'updown' //切换动画方式
-            });
+        layui.use(['piccarousel'], function () {
+            var $ = layui.$;
+            var jQuery = layui.$;
+            var piccarousel = layui.piccarousel;
+            piccarousel('#piccarousel', {
+                width:'1140',
+                'verticalAlign' : 'bottom'
+            })
         });
+
     </script>
 {% endblock %}

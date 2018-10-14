@@ -59,7 +59,7 @@
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">域名</label>
                     <div class="layui-input-block">
-                        <textarea name="domains" placeholder="一行一个域名，也可支持逗号','和空格' '等分隔的域名，域名不用带www" rows="10"
+                        <textarea name="domains" placeholder="一行一个域名，也可支持逗号','和空格' '等分隔的域名，域名不用带www" rows="8"
                                   lay-verify="required" class="layui-textarea"></textarea>
                     </div>
                 </div>
@@ -98,6 +98,14 @@
                                 <option value="{{ item.id }}">{{ item.name }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">购买链接</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="buy_link"  placeholder="购买链接"
+                               class="layui-input">
                     </div>
                 </div>
                 <button lay-submit lay-filter="modalAdd" style="display: none" class="submit">提交</button>

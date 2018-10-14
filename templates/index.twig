@@ -14,7 +14,7 @@
     <title>{{ title|default(site.title) }}</title>
 
     <link rel="stylesheet" href="/statics/layui/css/layui.css">
-    <link rel="stylesheet" href="/statics/css/manage.css">
+    <link rel="stylesheet" href="/statics/css/index.css">
 
     {#每个页面额外载入的css文件#}
     {% for css in statics.css %}
@@ -31,14 +31,55 @@
 <body>
 {% block navbar %}
     <!-- header start -->
-    <div class="layui-header header header-doc" autumn>
+    <div class="layui-header header header-doc" autumn style="background-color: ">
         <div class="layui-main">
             <a class="logo" href="/">
-                <span style="font-size: 32px;color:#fff;">趣米<small style="font-size: 18px;color:#eee;">Qumi.APP</small></span>
-                {#<img src="/statics/images/logo_42x42.png" alt="qumi.app">#}
+                <img src="/statics/images/logo.jpg" title="趣米">
             </a>
-            <div class="layui-form component" lay-filter="LAY-site-header-component"></div>
-            <ul class="layui-nav">
+            {#<div class="layui-form component" lay-filter="LAY-site-header-component"></div>#}
+            <ul class="layui-nav layui-bg-white">
+                <li class="layui-nav-item layui-this">
+                    <a href="https://qumi.app/article/1" target="_blank">域名列表</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">域名资讯</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">APP趣站</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">我的域名</a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs">
+                    <a href="{{ path_for('home.feedback.index') }}">留言建议<span class="layui-badge-dot"></span></a>
+                </li>
+                {% if userInfo %}
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">{{ userInfo.email }}</a>
+                        <dl class="layui-nav-child">
+                            {% for item in menus %}
+                                <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
+                            {% endfor %}
+                            <hr/>
+                            <dd><a href="{{ path_for('logout') }}">安全退出</a></dd>
+                        </dl>
+                    </li>
+                {% else %}
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('login') }}">登陆</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('register') }}">注册</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    {#<div class="layui-header header header-doc" autumn>
+        <div class="layui-main">
+            <div class="logo"><img src="/statics/images/logo.jpg" title="趣米"> </div>
+            <ul class="layui-nav layui-bg-white">
                 <li class="layui-nav-item layui-this">
                     <a href="https://qumi.app/article/1" target="_blank">如何使用</a>
                 </li>
@@ -66,7 +107,7 @@
                 {% endif %}
             </ul>
         </div>
-    </div>
+    </div>#}
     <!-- header end -->
 {% endblock %}
 

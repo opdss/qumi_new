@@ -3,6 +3,7 @@ layui.config({
 }).extend({ //设定组件别名
     utils :  'utils',
     echarts :  'echarts',
+    piccarousel :  'piccarousel',
 });
 
 layui.use(['layer', 'element'], function(){

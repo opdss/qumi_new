@@ -59,7 +59,6 @@ class Base
         }
 		//$this->menus = $this->getMenus();
 		$this->addJs('/statics/js/main.js', !ONLINE ? time() : 0);
-		$this->addCss('/statics/css/style.css', !ONLINE ? time() : 0);
 	}
 
 	protected function addJs($file, $version = 0)

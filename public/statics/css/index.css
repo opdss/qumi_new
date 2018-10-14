@@ -1,0 +1,89 @@
+
+html {
+    background: #f2f3f7
+}
+
+
+/* 头部 */
+.header {
+    height: 90px;
+    width: 100%;
+    box-shadow: 0px 1px 3px rgba(0,0,0,.2);
+    background-color: white;
+}
+
+.header .layui-nav .layui-nav-item{margin: 0 10px; }
+.header .logo{
+    display: inline-block;
+}
+.header .logo img{
+    height: 90px;
+}
+
+.header .layui-nav{display: inline-block;}
+.header .layui-nav .layui-nav-item[mobile]{display: none;}
+
+.layui-nav .layui-nav-item a{color: #333}
+.layui-nav .layui-nav-item{line-height: 80px}
+.layui-nav .layui-nav-item a:hover{color: #ff5252}
+.layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after {
+    height: 3px;
+    background-color: #ff5252;
+}
+
+.layui-bg-white {
+    background-color: white!important;
+    color: black!important;
+    display: inline-block;
+}
+
+
+.tool-card > .layui-card-header > .card-tools {
+    position: absolute;
+    right:0px;
+    top: 0px;
+    padding-right: 10px;
+}
+.tool-card > .layui-card-header > .card-tools i {
+    font-size: 20px;
+}
+
+/*** piccarousel start *****/
+.poster-main {
+    width: 1140px;
+    height: 500px;
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.poster-main a, .poster-main img { display: block; }
+
+.poster-main .poster-list {
+    width: 1140px;
+    height: 500px;
+}
+
+.poster-main .poster-list .poster-item {
+    width: 200px;
+    height: 500px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.poster-main .poster-btn {
+    position: absolute;
+    top: 0;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.poster-main .poster-prev-btn {
+    left: 0;
+}
+
+.poster-main .poster-next-btn {
+    right: 0;
+}
+/*** piccarousel start *****/

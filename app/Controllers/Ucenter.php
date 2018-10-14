@@ -10,6 +10,7 @@ namespace App\Controllers;
 use App\Functions;
 use App\Models\DomainAccessLog;
 use App\Models\DomainAccessLogCount;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -44,5 +45,44 @@ class Ucenter extends Base
 		];
 	    return $this->view('ucenter/index.twig', $data);
 	}
+
+    /**
+     * @pattern /ucenter/reset
+     * @method post
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+	public function reset(Request $request, Response $response, $args)
+    {
+        $type = trim($request->getParsedBodyParam('type', ''));
+        $val = trim($request->getParsedBodyParam('val', ''));
+        if (!$type || !$val) {
+            return $this->json(3);
+        }
+        if ($type == 'email') {
+            if (!Functions::verifyEmail($val)) {
+                return $this->json(3, '邮箱格式错误！');
+            }
+            if (User::where('email', $val)->count() > 0) {
+                return $this->json(3, '此邮箱已经被使用！');
+            }
+            if (User::where('uid', $this->uid)->update(array('email', $val))) {
+                return $this->json(0);
+            }
+        }
+        else if ($type == 'passwd') {
+            if (!Functions::verifyPasswd($val)) {
+                return $this->json(3);
+            }
+            if (User::find($this->uid)->resetPasswd($val)) {
+                return $this->json(0);
+            }
+        }
+        $this->log('error', '重置'.$type.'错误', [$type, $val]);
+		$this->session->destroy();
+        return $this->json(1);
+    }
 
 }
