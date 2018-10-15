@@ -9,6 +9,7 @@ namespace App\Controllers;
 
 use App\Functions;
 use App\Libraries\Config;
+use App\Models\Article;
 use App\Models\Domain;
 use App\Models\DomainAccessLog;
 use App\Models\DomainAccessLogCount;
@@ -35,23 +36,13 @@ class Index extends Base
 	{
 
         $data = array();
-        $filter = [];
-        $filter['kw'] = $request->getQueryParam('kw', '');
-        $filter['page'] = (int)$request->getParam('page') ?: 1;
-
-        $builder = \App\Models\Domain::isDns();
-        if ($filter['kw']){
-            $builder = $builder->where('name', 'like', '%'.$filter['kw'].'%');
-        }
-        $data['filter'] = $filter;
-        $data['count'] = $builder->count();
-        $data['records'] = [];
-        if ($data['count']) {
-            $data['records'] = $builder->offset(($filter['page']-1)*self::$page_number)->limit(self::$page_number)->orderBy('id', 'desc')->get();
-            $data['pagination'] = Functions::pagination($data['count'], self::$page_number);
-        }
+        $data['hotDomain'] = Domain::isDns()->orderBy('pvs', 'desc')->limit(12)->get()->toArray();
+        $data['newDomain'] = Domain::isDns()->orderBy('id', 'desc')->limit(12)->get()->toArray();
+        $data['topDomain'] = Domain::isDns()->orderBy('istop', 'desc')->limit(12)->get()->toArray();
+        $data['newArticle'] = Article::orderBy('id', 'desc')->limit(10)->get()->toArray();
 		$data['carousel'] = Config::get('carousel');
         //var_dump($data['carousel']);exit;
+        //var_dump($data);exit;
 		return $this->view('public/index.twig',$data);
 	}
 

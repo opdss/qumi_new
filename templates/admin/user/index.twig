@@ -24,7 +24,7 @@
         <!-- 数据表格 start -->
         <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
         <script type="text/html" id="toolBar">
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="analog">模拟登陆</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="vlogin">模拟登陆</a>
         </script>
         <!-- 数据表格 end -->
     </div>
@@ -43,6 +43,7 @@
 
             var API = {
                 get : '{{ path_for('api.admin.user.get') }}',
+                vlogin : '{{ path_for('api.admin.vlogin') }}',
             }
 
             var themes = {{ themesJson|raw }}
@@ -86,8 +87,10 @@
                 var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
                 var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-                if(layEvent === 'analog'){ //删除
-                    layer.msg('模拟登陆');
+                if(layEvent === 'vlogin'){ //删除
+                    utils.ajax.post(API.vlogin, {uid: data.uid}, function (data) {
+                        location.href = data.redirect_url
+                    })
                 }
             });
 

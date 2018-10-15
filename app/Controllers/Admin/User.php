@@ -7,6 +7,7 @@
  */
 namespace App\Controllers\Admin;
 
+use App\Models\UserNs;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -69,4 +70,30 @@ class User extends \App\Controllers\Base
         }
         return $this->json($data);
     }
+    /**
+     * @pattern /api/admin/vlogin
+     * @method post
+     * @auth admin
+     * @name api.admin.vlogin
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function vloginApi(Request $request, Response $response, $args)
+    {
+        $uid = intval($request->getParsedBodyParam('uid'));
+        if (!$userObj = \App\Models\User::find($uid)) {
+            return $this->json(3);
+        }
+        $userInfo = $userObj->toArray();
+        //获取处理用户的ns，放到session
+        $userInfo['dns_server'] = UserNs::getDnsServer($userInfo['uid']);
+        $userInfo['dns_server_str'] = implode('<br/>',$userInfo['dns_server']);
+        //测试 end
+        $this->session->set('userInfo', $userInfo);
+        $redirectUrl =  $this->ci->router->pathFor('index');
+        return $this->json(array('redirect_url'=>$redirectUrl));
+    }
+
 }

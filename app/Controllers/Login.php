@@ -74,7 +74,7 @@ class Login extends Base
         return $this->json(array('redirect_url'=>$redirectUrl));
     }
 
-	/**
+    /**
 	 * @pattern /logout
 	 * @name logout
 	 * @param Request $request

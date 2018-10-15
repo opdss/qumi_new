@@ -19,15 +19,29 @@
             <div class="layui-col-md8">
                 <div class="layui-card tool-card">
                     <div class="layui-card-header">
-                        热门域名
+                        <h3>热门域名</h3>
                         <div class="card-tools">
-                            <a href="javascript:;" class="btnEdit" data-id="3"><i
-                                        class="layui-icon layui-icon-set-sm"></i></a>
-                            <a href="javascript:;" class="btnDel" data-id="4"><i
-                                        class="layui-icon layui-icon-delete"></i></a>
+                            <a href="{{ path_for('index.domains') }}">更多...</a>
                         </div>
                     </div>
-                    <div class="layui-card-body">热门域名</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row">
+
+                            {% for x in hotDomain %}
+                                <div class="layui-col-md3">
+                                    <div class="domain-list">
+                                        <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+                                        {% if x.description %}
+                                        {% endif %}
+                                        </a>
+                                        <div  class="domain-list-price">
+                                            {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="layui-col-md4">
@@ -41,13 +55,47 @@
                                         class="layui-icon layui-icon-delete"></i></a>
                         </div>
                     </div>
-                    <div class="layui-card-body">最新资讯</div>
+                    <div class="layui-card-body">
+                        <ul>
+                        {% for x in newArticle %}
+                            <li>[{{ x.created_at }}] <a href="{{ path_for('article.detail', {id:x.id}) }}">{{ x.title }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="layui-col-md8">
                 <div class="layui-card tool-card">
                     <div class="layui-card-header">
-                        .APP极品
+                        最新停靠
+                        <div class="card-tools">
+                            <a href="{{ path_for('index.domains') }}">更多...</a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-row">
+                        {% for x in newDomain %}
+                            <div class="layui-col-md3">
+                                <div class="domain-list">
+                                    <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+                                        {% if x.description %}
+                                        {% endif %}
+                                    </a>
+                                    <div  class="domain-list-price">
+                                        {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP酷站
                         <div class="card-tools">
                             <a href="javascript:;" class="btnEdit" data-id="3"><i
                                         class="layui-icon layui-icon-set-sm"></i></a>
@@ -55,7 +103,35 @@
                                         class="layui-icon layui-icon-delete"></i></a>
                         </div>
                     </div>
-                    <div class="layui-card-body">热门域名</div>
+                    <div class="layui-card-body">.APP酷站</div>
+                </div>
+            </div>
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP极品
+                        <div class="card-tools">
+                            <a href="{{ path_for('index.domains') }}">更多...</a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-row">
+                            {% for x in topDomain %}
+                                <div class="layui-col-md3">
+                                    <div class="domain-list">
+                                        <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+                                            {% if x.description %}
+                                            {% endif %}
+                                        </a>
+                                        <div  class="domain-list-price">
+                                            {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="layui-col-md4">

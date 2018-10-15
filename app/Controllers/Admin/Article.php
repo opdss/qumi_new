@@ -41,7 +41,6 @@ class Article extends Base
 	public function create(Request $request, Response $response, $args)
 	{
 		$data = [];
-
 		return $this->view('admin/article/create.twig', $data);
 	}
 
