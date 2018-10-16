@@ -58,7 +58,7 @@
                     <div class="layui-card-body">
                         <ul>
                         {% for x in newArticle %}
-                            <li>[{{ x.created_at }}] <a href="{{ path_for('article.detail', {id:x.id}) }}">{{ x.title }}</a></li>
+                            <li class="news-title">[{{ x.created_at|slice(0, 10) }}] <a href="{{ path_for('article.detail', {id:x.id}) }}">{{ x.title }}</a></li>
                         {% endfor %}
                         </ul>
                     </div>
