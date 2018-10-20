@@ -28,12 +28,16 @@
                         <div class="layui-row">
 
                             {% for x in hotDomain %}
-                                <div class="layui-col-md3">
+                                <div class="layui-col-md3 domain-box">
                                     <div class="domain-list">
                                         <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
-                                        {% if x.description %}
-                                        {% endif %}
+
                                         </a>
+                                        {% if x.description %}
+                                            <div class="domain-list-description">
+                                                {{ x.description }}
+                                            </div>
+                                        {% endif %}
                                         <div  class="domain-list-price">
                                             {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
                                         </div>
@@ -76,12 +80,16 @@
 
                         <div class="layui-row">
                         {% for x in newDomain %}
-                            <div class="layui-col-md3">
+                            <div class="layui-col-md3 domain-box">
                                 <div class="domain-list">
                                     <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
-                                        {% if x.description %}
-                                        {% endif %}
+
                                     </a>
+                                    {% if x.description %}
+                                        <div class="domain-list-description">
+                                            {{ x.description }}
+                                        </div>
+                                    {% endif %}
                                     <div  class="domain-list-price">
                                         {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
                                     </div>
@@ -118,12 +126,17 @@
 
                         <div class="layui-row">
                             {% for x in topDomain %}
-                                <div class="layui-col-md3">
+
+                                <div class="layui-col-md3 domain-box">
                                     <div class="domain-list">
                                         <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
-                                            {% if x.description %}
-                                            {% endif %}
+
                                         </a>
+                                        {% if x.description %}
+                                            <div class="domain-list-description">
+                                                {{ x.description }}
+                                            </div>
+                                        {% endif %}
                                         <div  class="domain-list-price">
                                             {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
                                         </div>

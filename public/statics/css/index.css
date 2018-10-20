@@ -86,9 +86,11 @@ html {
 .poster-main .poster-next-btn {
     right: 0;
 }
-/*** piccarousel start *****/
+/*** piccarousel end *****/
 
+/*** 域名box start ***/
 .domain-list {
+    position: relative;
     margin: 5px;
     height: 80px;
     border: 1px solid #f2f3f7;
@@ -116,24 +118,71 @@ html {
     position: absolute;
     top:0px;
     right: 0px;
-    color:red;
+    color:#ff5252;
     padding: 5px 10px;
 }
 
 .domain-list-description {
     position: absolute;
-    top:60px;
+    top:62px;
     left: 0px;
-    height: 220px;
+    width: 100%;
     color:white;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 14px;
+    line-height: 18px;
     padding: 0px;
     overflow: hidden;
     background-color: rgba(0, 0, 0, .3);
     z-index: 999;
     text-align: center;
 }
+
+.domain-list-description:hover {
+    top:0px;
+    height:80px;
+    background-color: rgba(0, 0, 0, .8);
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;"
+
+    animation: domain_des 300ms;
+    -webkit-animation: domain_des 300ms; /* Safari 与 Chrome */
+}
+
+@keyframes domain_des
+{
+    from {
+        top: 62px;
+        height: 18px;
+        background-color: rgba(0, 0, 0, .3);
+    }
+    to {
+        top: 0px;
+        height: 80px;
+        background-color: rgba(0, 0, 0, .8);
+    }
+}
+
+@-webkit-keyframes domain_des /* Safari 与 Chrome */
+{
+    from {
+        top: 62px;
+        height: 18px;
+        background-color: rgba(0, 0, 0, .3);
+    }
+    to {
+        top: 0px;
+        height: 80px;
+        background-color: rgba(0, 0, 0, .8);
+    }
+}
+/*** 域名box end ***/
+
+
 /*
 
 .box-domain {
