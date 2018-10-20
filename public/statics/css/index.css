@@ -88,6 +88,14 @@ html {
 }
 /*** piccarousel end *****/
 
+
+.news-title{
+    width: 300px;
+    overflow: hidden;/*超出部分隐藏*/
+    white-space: nowrap;/*不换行*/
+    text-overflow:ellipsis;/*超出部分文字以...显示*/
+}
+
 /*** 域名box start ***/
 .domain-list {
     position: relative;
@@ -130,6 +138,7 @@ html {
     color:white;
     font-size: 14px;
     line-height: 18px;
+    height: 18px;
     padding: 0px;
     overflow: hidden;
     background-color: rgba(0, 0, 0, .3);
@@ -183,82 +192,12 @@ html {
 /*** 域名box end ***/
 
 
-/*
-
-.box-domain {
-    width: 100%;
-    position: relative;
-    border: 1px solid #f2f3f7;
-    !*box-shadow: 0px 0px 10px #ddd;*!
-    margin-bottom: 10px;
-}
-
-.box-domain:hover{
-    !*box-shadow: 0px 0px 10px #aaa;*!
-    border: 1px solid #bbb;
-}
-
-
-.box-domain .domain{
-    height: 80px;
-    padding: 0px;
-    font-size: 24px;
-    color: #0099CC;
-    width: 100%;
-    overflow: auto;
-    word-break:break-all;
-    display : block;
-
-    !*display: -webkit-flex;
-    display: flex;*!
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: center;
-    justify-content: center;"
-}
-.box-domain a{
-    text-decoration: none;
-}
-
-.box-domain .price {
-    position: absolute;
-    top:0px;
-    right: 0px;
-    color:red;
-    padding: 5px 10px;
-}
-
-.box-domain .description
-{
-    position: absolute;
-    top:96px;
-    height: 24px;
-    width: 100%;
-    color:white;
-    font-size: 16px;
-    line-height: 24px;
-    padding: 0px 10px;
-    overflow: hidden;
-    background-color: rgba(0, 0, 0, .3);
-    z-index: 999;
+/*** footer start***/
+.footer{
+    padding: 30px 0;
+    line-height: 30px;
     text-align: center;
-
+    color: #666;
+    font-weight: 300;
 }
-
-.box-domain .description:hover
-{
-    top:0px;
-    height: 120px;
-    background-color: rgba(0, 0, 0, .8);
-    padding: 10px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: center;
-    justify-content: center;"
-
-animation: do_des 300ms;
-    -webkit-animation: do_des 300ms; !* Safari 与 Chrome *!
-}
-*/
+/*** footer end***/

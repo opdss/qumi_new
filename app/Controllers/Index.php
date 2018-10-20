@@ -39,7 +39,7 @@ class Index extends Base
         $data['hotDomain'] = Domain::isDns()->orderBy('pvs', 'desc')->limit(12)->get()->toArray();
         $data['newDomain'] = Domain::isDns()->orderBy('id', 'desc')->limit(12)->get()->toArray();
         $data['topDomain'] = Domain::isDns()->orderBy('istop', 'desc')->limit(12)->get()->toArray();
-        $data['newArticle'] = Article::orderBy('id', 'desc')->limit(10)->get()->toArray();
+        $data['newArticle'] = Article::orderBy('id', 'desc')->limit(12)->get()->toArray();
 		$data['carousel'] = Config::get('carousel');
         //var_dump($data['carousel']);exit;
         //var_dump($data);exit;
