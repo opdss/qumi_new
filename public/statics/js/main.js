@@ -19,4 +19,14 @@ layui.use(['layer', 'element'], function(){
     $('body').on('mouseleave', '.tips', function () {
         layer.close(idx)
     })
+    $('body').on('mouseenter', '.itips', function () {
+        var that = this;
+        idx = layer.tips($(this).data('title'), that, {
+            tips: 1
+        });
+    })
+
+    $('body').on('mouseleave', '.itips', function () {
+        layer.close(idx)
+    })
 });

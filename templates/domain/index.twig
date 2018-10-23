@@ -152,6 +152,7 @@
             var API = {
                 del: '{{ path_for('api.domain.del') }}',
                 add: '{{ path_for('api.domain.add') }}',
+                modalEdit: '{{ path_for('domain.modal', {'act':'edit'}) }}',
             }
 
             //数据表格处理
@@ -222,11 +223,6 @@
                 return false;
             });
 
-            //监听指定开关
-            form.on('checkbox(sale_type)', function(data){
-                layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
-            });
-
             //监听排序
             table.on('sort(dataTable)', function (obj) {
                 table.reload('dataTable', {
@@ -249,8 +245,33 @@
                 })
                 switch (obj.event) {
                     case 'batchEdit':
-                        var data = checkStatus.data;
-                        layer.alert(JSON.stringify(data));
+                        $.get(API.modalEdit + '?raw=1&id=' + ids.join(','), function (res) {
+                            var id = 'modalBatchEdit';
+                            var lay = layer.open({
+                                title: '批量修改域名信息',
+                                id: id,
+                                type: 1,
+                                area: ['900px', '600px'],
+                                content: res,
+                                maxmin: true, //开启最大化最小化按钮
+                                btn: ['确认', '取消'],
+                                yes: function (index) {
+                                    $('#' + id).find('button.submit').trigger('click')
+                                },
+                                success: function () {
+                                    form.render()
+                                    //渲染modal表单后，相关js逻辑
+                                    var $form = $('#' + id);
+                                    var $inp = $form.find('input[name=theme_id]');
+                                    $form.find('.theme-img').on('click', function () {
+                                        $inp.val($(this).data('themeid'));
+                                        $form.find('.theme-img').removeClass('theme-checked');
+                                        $(this).addClass('theme-checked');
+                                    })
+                                }
+                            })
+                            layer.full(lay)
+                        })
                         break;
                     case 'batchDel':
                         utils.delById(API.del, ids, function (res) {

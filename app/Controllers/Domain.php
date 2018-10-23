@@ -42,6 +42,7 @@ class Domain extends Base
 	/**
 	 * 我的域名列表
 	 * @pattern /api/domains
+     * @auth user
 	 * @name api.domain.get
 	 * @method get
 	 * @param Request $request
@@ -87,6 +88,7 @@ class Domain extends Base
 	 * 删除域名
 	 * 支持批量删除
 	 * @pattern /domain/delete
+     * @auth user
 	 * @name api.domain.del
 	 * @method delete
 	 * @param Request $request
@@ -116,6 +118,7 @@ class Domain extends Base
     /**
      * 检查dns服务器来确认是否属于当前用户的域名
      * @pattern /api/domain/dnsCheck
+     * @auth user
      * @name api.domain.dnscheck
      * @param Request $request
      * @param Response $response
@@ -173,6 +176,7 @@ class Domain extends Base
 	/**
 	 * 添加域名
 	 * @pattern /api/domain/add
+     * @auth user
      * @name api.domain.add
 	 * @method post
 	 * @param Request $request
@@ -232,10 +236,12 @@ class Domain extends Base
 		return $this->json(1);
 	}
 
+
 	/**
 	 * 更新域名信息
 	 * 支持批量
 	 * @pattern /domain/update
+     * @auth user
 	 * @name api.domain.update
 	 * @method post
 	 * @param Request $request
@@ -303,6 +309,7 @@ class Domain extends Base
 
 	/**
 	 * @pattern /domain/modal/{act}
+     * @auth user
 	 * @param Request $request
 	 * @param Response $response
 	 * @param $args
@@ -312,9 +319,10 @@ class Domain extends Base
 		$act = $args['act'];
 		$data = [];
 		$data['templates'] = \App\Models\Template::isMy($this->uid)->get();
+        $data['coin_units'] = \App\Models\Domain::$coin_unit;
 		if ($act == 'edit') {
 			$errMsg = '';
-			$domain_id = $request->getParam('domain_id');
+			$domain_id = $request->getParam('id');
 			$domain_ids = Functions::formatIds($domain_id, self::BATCH, $errMsg);
 			if (!$domain_ids) {
 				$this->log('error', $errMsg, $domain_id);

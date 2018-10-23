@@ -1,0 +1,107 @@
+<div class="modal">
+    <div class="layui-form" id="batchEditForm">
+        <table class="layui-table">
+            <colgroup>
+                <col width="100">
+                <col width="300">
+                <col width="320">
+                <col width="200">
+                <col width="200">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>域名</th>
+                <th>
+                    <textarea placeholder="域名简介" id="tmp-description" lay-verify="description" class="layui-textarea"></textarea>
+                </th>
+                <th>
+                        <div class="layui-input-inline" style="width: 80px">
+                            <select id="tmp-unit" lay-verify="required">
+                                {% for item in coin_units %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline" style="width: 120px">
+                            <input type="number" id="tmp-price" autocomplete="off" placeholder="请输入报价"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-input-inline itips" data-title="输入的报价为0的时候，也会认为是询价">
+                            <input type="checkbox" id="tmp-sale_price" title="询价?" lay-skin="primary" lay-filter="sale_type" checked="" >
+                        </div>
+                </th>
+                <th>
+                        <select lay-verify="required" id="tmp-template_id">
+                            <option value="">所有模版</option>
+                            {% for item in templates %}
+                                <option value="{{ item.id }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                </th>
+                <th>
+                        <input type="text" id="tmp-buy_link"  placeholder="购买链接"
+                               class="layui-input">
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in records %}
+            <tr>
+                <td>{{ item.name }}<input type="hidden" name="id[{{ loop.index }}]" value="{{ item.id }}"></td>
+                <td>
+                    <textarea placeholder="域名简介" name="description[{{ loop.index }}]" lay-verify="description" class="layui-textarea description">{{ item.description }}</textarea>
+                </td>
+                <td>
+                        <div class="layui-input-inline" style="width: 80px">
+                            <select class="unit" name="unit[{{ loop.index }}]" lay-verify="required">
+                                {% for _units in coin_units %}
+                                    <option value="{{ _units }}" {{ item.unit == _unit ? 'checked' : '' }}>{{ _units }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline" style="width: 120px">
+                            <input type="number" name="price[{{ loop.index }}]" autocomplete="off" placeholder="请输入报价" value="{{ item.price }}"
+                                   class="layui-input price">
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" class="sale_type" name="sale_type[{{ loop.index }}]" title="询价" lay-skin="primary" lay-filter="sale_type" checked="{{ item.sale_type ? "true" : 'false' }}">
+                        </div>
+                </td>
+                <th>
+                        <select name="template_id[{{ loop.index }}]" class="template_id" lay-verify="required">
+                            <option value="">所有模版</option>
+                            {% for _template in templates %}
+                                <option value="{{ _template.id }}" {{ _template.id==item.template_id ? 'checked' : '' }}>{{ _template.name }}</option>
+                            {% endfor %}
+                        </select>
+                </th>
+                <th>
+                        <input type="text" name="buy_link[{{ loop.index }}]"  placeholder="购买链接" value="{{ item.buy_link }}"
+                               class="layui-input buy_link">
+                </th>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'element', 'form', 'table', 'utils'], function () {
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.$;
+        var utils = layui.utils;
+
+        var $batchEditForm = $("#batchEditForm")
+        $('#tmp-description').blur(function () {
+            $batchEditForm.find('textarea.description').val($(this).val());
+        })
+        $('#tmp-price').blur(function () {
+            $batchEditForm.find('input.price').val($(this).val());
+        })
+        $('#tmp-buy_link').blur(function () {
+            $batchEditForm.find('input.buy_link').val($(this).val());
+        })
+
+    });
+</script>

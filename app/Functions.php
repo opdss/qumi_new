@@ -495,6 +495,10 @@ class Functions
 		return $domain;
 	}
 
+    /**
+     * 获取完整的访问路径
+     * @return string
+     */
 	public static function getFullUrl()
     {
         $url = '';
@@ -504,6 +508,11 @@ class Functions
         return $url;
     }
 
+    /**
+     * 解析完整的访问路径
+     * @param $url
+     * @return mixed|null
+     */
 	public static function parseUrl($url)
     {
         $info = null;
@@ -519,7 +528,7 @@ class Functions
                     $_c = count($_arr);
                     if ($_c > 1) {
                         $info['suffix'] = $_arr[$_c - 1];
-                        $info['domain'] = $_arr[$_c - 2] . '.' . $_arr[$_c - 1];
+                        $info['domain'] = $_arr[$_c - 2] . '.' . $info['suffix'];
                         if ($_c > 2) {
                             $info['prefix'] = str_replace('.' . $info['domain'], '', $host);
                         } else {

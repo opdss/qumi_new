@@ -3,13 +3,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">米表名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" lay-verify="required|title" autocomplete="off" placeholder="米表名称" class="layui-input">
+                <input type="text" name="name" lay-verify="required|title" autocomplete="off" placeholder="米表名称" class="layui-input" value="{{ info.name }}">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">米表简介</label>
             <div class="layui-input-block">
-                <textarea placeholder="米表简介" name="description" lay-verify="description" class="layui-textarea"></textarea>
+                <textarea placeholder="域名简介" name="description" lay-verify="description" class="layui-textarea">{{ info.description }}</textarea>
             </div>
         </div>
 
@@ -17,13 +17,13 @@
             <label class="layui-form-label">选择主题</label>
             <div class="layui-input-block">
                 <div class="layui-row" style="display: inline-block;">
-                    <input type="hidden" name="theme_id" value="{{ themes[0].id }}">
+                    <input type="hidden" name="theme_id" value="{{ info.theme_id }}">
                     {% for x in themes %}
-                    <div class="layui-col-md4">
-                        <div class="theme-img {{ loop.index==1 ? 'theme-checked' : '' }}" data-themeid="{{ x.id }}" title="{{ x.name }}">
-                            <img src="{{ x.image }}" alt="{{ x.name }}" style="width: 100%">
+                        <div class="layui-col-md4">
+                            <div class="theme-img {{ x.id==info.theme_id ? 'theme-checked' : '' }}" data-themeid="{{ x.id }}" title="{{ x.name }}">
+                                <img src="{{ x.image }}" alt="{{ x.name }}" style="width: 100%">
+                            </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
             </div>
@@ -33,7 +33,7 @@
             <label class="layui-form-label">米表地址</label>
             <div class="layui-form-mid">https://qumi/m/</div>
             <div class="layui-input-inline">
-                <input type="text" name="path" required lay-verify="path" autocomplete="off" class="layui-input">
+                <input type="text" name="path" required lay-verify="path" autocomplete="off" class="layui-input" value="{{ info.path }}">
             </div>
         </div>
 
@@ -43,7 +43,7 @@
                 <select name="template_id" lay-search="" lay-verify="required">
                     <option value="">请选择模板</option>
                     {% for x in templates %}
-                        <option value="{{ x.id }}">{{ x.name }}</option>
+                        <option value="{{ x.id }}"  {{ x.id == info.template_id ? 'selected' : '' }}>{{ x.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -55,12 +55,13 @@
                 <select name="domain_id" lay-search="">
                     <option value="0">请选择域名</option>
                     {% for x in domains %}
-                        <option value="{{ x.id }}">{{ x.name }}</option>
+                        <option value="{{ x.id }}" {{ x.id==info.domain_id ? 'selected' : '' }}>{{ x.name }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
 
-        <button lay-submit lay-filter="modalAdd" style="display: none" class="submit">提交</button>
+        <input type="hidden" name="id" value="{{ info.id }}">
+        <button lay-submit lay-filter="modalEdit" style="display: none" class="submit">提交</button>
     </form>
 </div>

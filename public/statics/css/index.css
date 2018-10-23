@@ -105,17 +105,22 @@ html {
 }
 .domain-list:hover {
     border: 1px solid #bbb;
+    /*margin: 0px;
+    height: 90px;
+    animation: domain_list_ani 300ms;
+    -webkit-animation: domain_list_ani 300ms;*/ /* Safari 与 Chrome */
 }
 
 .domain-list-name {
-    height: 80px;
+    height: 100%;
     font-size: 16px;
-    line-height: 80px;
     /*color: #0099CC;*/
     overflow: auto;
     word-break:break-all;
     display : block;
-    text-align: center;
+
+    display: -webkit-flex;
+    display: flex;
 
     -webkit-align-items: center;
     align-items: center;
@@ -132,7 +137,7 @@ html {
 
 .domain-list-description {
     position: absolute;
-    top:62px;
+    bottom: 0px;
     left: 0px;
     width: 100%;
     color:white;
@@ -147,8 +152,7 @@ html {
 }
 
 .domain-list-description:hover {
-    top:0px;
-    height:80px;
+    height:100%;
     background-color: rgba(0, 0, 0, .8);
     display: -webkit-flex;
     display: flex;
@@ -165,13 +169,11 @@ html {
 @keyframes domain_des
 {
     from {
-        top: 62px;
         height: 18px;
         background-color: rgba(0, 0, 0, .3);
     }
     to {
-        top: 0px;
-        height: 80px;
+        height: 100%;
         background-color: rgba(0, 0, 0, .8);
     }
 }
@@ -179,14 +181,35 @@ html {
 @-webkit-keyframes domain_des /* Safari 与 Chrome */
 {
     from {
-        top: 62px;
         height: 18px;
         background-color: rgba(0, 0, 0, .3);
     }
     to {
-        top: 0px;
-        height: 80px;
+        height: 100%;
         background-color: rgba(0, 0, 0, .8);
+    }
+}
+@keyframes domain_list_ani
+{
+    from {
+        margin: 5px;
+        height: 80px;
+    }
+    to {
+        margin: 0px;
+        height: 90px;
+    }
+}
+
+@-webkit-keyframes domain_list_ani /* Safari 与 Chrome */
+{
+    from {
+        margin: 5px;
+        height: 80px;
+    }
+    to {
+        margin: 0px;
+        height: 90px;
     }
 }
 /*** 域名box end ***/
