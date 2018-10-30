@@ -11,7 +11,13 @@ html {
     box-shadow: 0px 1px 3px rgba(0,0,0,.2);
     background-color: white;
 }
-
+.layui-nav-right{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0;
+    background: none;
+}
 .header .layui-nav .layui-nav-item{margin: 0 10px; }
 .header .logo{
     display: inline-block;

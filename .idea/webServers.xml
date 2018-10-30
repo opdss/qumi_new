@@ -10,6 +10,14 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
+      <webServer id="32593ce4-64c3-49a7-90f3-c8e12a6ae752" name="149.28.21.81" url="http://149.28.21.81">
+        <fileTransfer host="149.28.21.81" port="7659" rootFolder="/data/www/wuxin/qumi_new" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="7659" />
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

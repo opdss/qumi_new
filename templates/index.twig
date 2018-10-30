@@ -42,21 +42,50 @@
                     <a href="https://qumi.app/article/1" target="_blank">域名列表</a>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="https://qumi.app/article/1" target="_blank">域名资讯</a>
+                    <a href="https://qumi.app/article/1" target="_blank">米市资讯</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="https://qumi.app/article/1" target="_blank">APP趣站</a>
                 </li>
-                <li class="layui-nav-item">
+                <li class="layui-nav-item layui-hide-xs">
                     <a href="https://qumi.app/article/1" target="_blank">我的域名</a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs">
                     <a href="{{ path_for('home.feedback.index') }}">留言建议<span class="layui-badge-dot"></span></a>
                 </li>
+                {#{% if userInfo %}
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">{{ userInfo.email }}</a>
+                        <dl class="layui-nav-child">
+                            <dd class="layui-hide-sm layui-show-xs"><a href="{{ path_for('index.domains') }}" target="_blank">域名列表</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">米市资讯</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">我的域名</a><hr></dd>
+                            <hr>
+                            {% for item in menus %}
+                                <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
+                            {% endfor %}
+                            <hr/>
+                            <dd><a href="{{ path_for('logout') }}">安全退出</a></dd>
+                        </dl>
+                    </li>
+                {% else %}
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('login') }}">登陆</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="{{ path_for('register') }}">注册</a>
+                    </li>
+                {% endif %}#}
+            </ul>
+            <ul class="layui-nav layui-nav-right layui-bg-white">
                 {% if userInfo %}
                     <li class="layui-nav-item">
                         <a href="javascript:;">{{ userInfo.email }}</a>
                         <dl class="layui-nav-child">
+                            <dd class="layui-hide-sm layui-show-xs"><a href="{{ path_for('index.domains') }}" target="_blank">域名列表</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">米市资讯</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">我的域名</a><hr></dd>
+                            <hr>
                             {% for item in menus %}
                                 <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
                             {% endfor %}
@@ -75,21 +104,40 @@
             </ul>
         </div>
     </div>
-
-    {#<div class="layui-header header header-doc" autumn>
+    {#<div class="layui-header header header-index" autumn >
         <div class="layui-main">
-            <div class="logo"><img src="/statics/images/logo.jpg" title="趣米"> </div>
+            <a class="logo" href="/">
+                <img src="/statics/images/logo.jpg" title="趣米停靠站" alt="Qumi.app">
+            </a>
+            <div class="layui-form component" lay-filter="LAY-site-header-component"></div>
             <ul class="layui-nav layui-bg-white">
                 <li class="layui-nav-item layui-this">
-                    <a href="https://qumi.app/article/1" target="_blank">如何使用</a>
+                    <a href="#" target="_blank">首页</a>
                 </li>
-                <li class="layui-nav-item layui-hide-xs">
+                <li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">域名列表</a>
+                </li>
+                #}{#<li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">米市资讯</a>
+                </li>#}{#
+                #}{#<li class="layui-nav-item">
+                    <a href="https://qumi.app/article/1" target="_blank">APP趣站</a>
+                </li>#}{#
+                #}{#<li class="layui-nav-item layui-hide-xs">
+                    <a href="https://qumi.app/article/1" target="_blank">我的域名</a>
+                </li>#}{#
+                #}{#<li class="layui-nav-item layui-hide-xs">
                     <a href="{{ path_for('home.feedback.index') }}">留言建议<span class="layui-badge-dot"></span></a>
-                </li>
+                </li>#}{#
                 {% if userInfo %}
                     <li class="layui-nav-item">
                         <a href="javascript:;">{{ userInfo.email }}</a>
                         <dl class="layui-nav-child">
+
+                            <dd class="layui-hide-sm layui-show-xs"><a href="{{ path_for('domains') }}" target="_blank">域名列表</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">米市资讯</a><hr></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">我的域名</a><hr></dd>
+                            <hr>
                             {% for item in menus %}
                                 <dd><a href="{{ item.url }}">{{ item.name }}</a></dd>
                             {% endfor %}
@@ -108,7 +156,6 @@
             </ul>
         </div>
     </div>#}
-    <!-- header end -->
 {% endblock %}
 
 
