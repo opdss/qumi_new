@@ -8,6 +8,8 @@ layui.config({
 
 layui.use(['layer', 'element'], function(){
     var $ = layui.$
+    var form = layui.form
+    var utils = layui.utils
     var idx
     $('body').on('mouseenter', '.tips', function () {
         var that = this;

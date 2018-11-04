@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "index.twig" %}
 
 {% block css %}
     <style>
@@ -22,11 +22,15 @@
 
                         <div class="well" style="border: 2px solid #F2F2F2;padding: 10px">
                             <p>
+                                <span>域名搜索：</span>
+                                <input type="text" value="">
+                            </p>
+                            <p>
                                 <span>域名类型：</span>
                                 <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 1 ? 'active' : '' }}" data-name="dtype" data-val="1">字母</span>
                                 <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 2 ? 'active' : '' }}" data-name="dtype" data-val="2">数字</span>
                                 <span class="layui-badge layui-bg-gray domain-label {{ filter.dtype == 3 ? 'active' : '' }}" data-name="dtype" data-val="3">杂米</span>
-                            </p>
+                                </p>
                             <p>
                                 <span>域名长度：</span>
                                 {% for item in lens %}
@@ -61,8 +65,19 @@
                                 <tr>
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.description }}</td>
-                                    <td>{{ item.price }}</td>
-                                    <td>{{ item.buy_link }}</td>
+                                    <td>
+                                        {%  if item.price > 0  %}
+                                            {{ item.unit~item.price }}
+                                        {% else %}
+                                            询价
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {%  if item.buy_link  %}
+                                        <a href="{{ item.buy_link }}" target="_blank">去购买</a>
+                                        {% endif %}
+                                        <a href="javascript:void(0)" class="send-offer" data-id="{{ item.id }}">联系卖家</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

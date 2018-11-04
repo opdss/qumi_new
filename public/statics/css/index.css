@@ -6,32 +6,41 @@ html {
 
 /* 头部 */
 .header {
-    height: 90px;
+    height: 80px;
     width: 100%;
     box-shadow: 0px 1px 3px rgba(0,0,0,.2);
     background-color: white;
 }
-.layui-nav-right{
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0;
-    background: none;
-}
-.header .layui-nav .layui-nav-item{margin: 0 10px; }
+
 .header .logo{
     display: inline-block;
 }
 .header .logo img{
-    height: 90px;
+    height: 80px;
 }
 
-.header .layui-nav{display: inline-block;}
+.layui-right{
+    float:right;
+}
+.layui-left{
+    float:left;
+}
+.header .layui-nav .layui-nav-item{
+    box-sizing: border-box;
+    margin: 0px;
+}
+
 .header .layui-nav .layui-nav-item[mobile]{display: none;}
 
-.layui-nav .layui-nav-item a{color: #333}
-.layui-nav .layui-nav-item{line-height: 80px}
-.layui-nav .layui-nav-item a:hover{color: #ff5252}
+.layui-nav .layui-nav-item a{
+    color: #333
+}
+.layui-nav .layui-nav-item{
+    line-height: 80px
+}
+.layui-nav .layui-nav-item a:hover{
+    color: #ff5252
+}
 .layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after {
     height: 3px;
     background-color: #ff5252;
@@ -219,6 +228,7 @@ html {
     }
 }
 /*** 域名box end ***/
+.modal {padding: 20px 10px}
 
 
 /*** footer start***/
@@ -230,3 +240,12 @@ html {
     font-weight: 300;
 }
 /*** footer end***/
+
+
+/* 适配多设备 */
+@media screen and (max-width: 750px) {
+    .layui-main {
+        width: auto;
+        margin: 0 10px;
+    }
+}

@@ -57,6 +57,7 @@ class Index extends Base
      */
     public function domains(Request $request, Response $response, $args)
     {
+        $this->addJs('statics/js/offer.js');
         $allowOrder = array('name', 'price', 'len', 'dtype', 'suffix');
         $filter = [];
         $filter['kw'] = $request->getQueryParam('kw', '');

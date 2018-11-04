@@ -1,0 +1,45 @@
+<div class="modal">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">您的昵称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="nickname" lay-verify="required|title" autocomplete="off" placeholder="您的昵称" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系邮箱：</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" lay-verify="required|email" autocomplete="off" placeholder="联系邮箱" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">合作详情：</label>
+            <div class="layui-input-block">
+                <textarea placeholder="合作详情" name="content" lay-verify="description" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">您的预算：</label>
+            <div class="layui-input-block">
+                <input type="number" name="price" autocomplete="off" placeholder="您的预算" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="captcha" lay-verify="captcha" class="layui-input"  autocomplete="off">
+                </div>
+                <div class="layui-input-inline" style="width: 106px" id="captchaImg">
+                    {{ captchaImg|raw }}
+                </div>
+            </div>
+        </div>
+
+        <button lay-submit lay-filter="send_offer" style="display: none" class="submit">提交</button>
+    </form>
+</div>
