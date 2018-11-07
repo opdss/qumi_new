@@ -45,7 +45,7 @@
                     <a href="{{ path_for('index.domains') }}">域名列表</a>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="https://qumi.app/article/1">米市资讯</a>
+                    <a href="{{ path_for('article.index') }}">米市资讯</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="https://qumi.app/article/1">APP趣站</a>
@@ -63,7 +63,7 @@
                         <a href="javascript:;">{{ userInfo.email }}</a>
                         <dl class="layui-nav-child">
                             <dd class="layui-hide-sm layui-show-xs"><a href="{{ path_for('index.domains') }}" target="_blank">域名列表</a></dd>
-                            <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">米市资讯</a></dd>
+                            <dd class="layui-hide-sm layui-show-xs"><a href="{{ path_for('article.index') }}" target="_blank">米市资讯</a></dd>
                             <dd class="layui-hide-sm layui-show-xs"><a href="/" target="_blank">我的域名</a></dd>
                             <hr>
                             {% for item in menus %}

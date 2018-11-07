@@ -26,8 +26,22 @@ class Article extends Base
 	 * @param $args
 	 */
 	public function index(Request $request, Response $response, $args)
-	{
+    {
+        $data = [];
+        $filter = [];
+        $filter['kw'] = $request->getQueryParam('kw', '');
+        $filter['page'] = (int)$request->getParam('page') ?: 1;
+        $filter['limit'] = min((int)$request->getQueryParam('limit') ?: self::$page_number, 100);
 
+        $builder = new \App\Models\Article();
+        //$builder = $builder->where('status', 1);
+        $data['filter'] = $filter;
+        $data['count'] = $builder->count();
+        $data['records'] = [];
+        if ($data['count']) {
+            $data['records'] = $builder->offset(($filter['page']-1)*$filter['limit'])->limit($filter['limit'])->orderBy('id', 'desc')->get();
+        }
+        return $this->view('article/index.twig', $data);
 	}
 
 	/**

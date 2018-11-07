@@ -1,0 +1,169 @@
+{% extends "index.twig" %}
+
+{% block container %}
+    <div class="layui-container">
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        <h3>热门域名</h3>
+                        <div class="card-tools">
+                            <a href="{{ path_for('index.domains') }}">更多...</a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="layui-row">
+
+                            {% for x in hotDomain %}
+                                <div class="layui-col-md3 domain-box">
+                                    <div class="domain-list">
+                                        <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+
+                                        </a>
+                                        {% if x.description %}
+                                            <div class="domain-list-description">
+                                                {{ x.description }}
+                                            </div>
+                                        {% endif %}
+                                        <div  class="domain-list-price">
+                                            {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        最新资讯
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+                        <ul>
+                        {% for x in newArticle %}
+                            <li class="news-title">[{{ x.created_at|slice(0, 10) }}] <a href="{{ path_for('article.detail', {id:x.id}) }}">{{ x.title }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        最新停靠
+                        <div class="card-tools">
+                            <a href="{{ path_for('index.domains') }}"><small>更多...</small></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-row">
+                        {% for x in newDomain %}
+                            <div class="layui-col-md3 domain-box">
+                                <div class="domain-list">
+                                    <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+
+                                    </a>
+                                    {% if x.description %}
+                                        <div class="domain-list-description">
+                                            {{ x.description }}
+                                        </div>
+                                    {% endif %}
+                                    <div  class="domain-list-price">
+                                        {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP酷站
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">.APP酷站</div>
+                </div>
+            </div>
+            <div class="layui-col-md8">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP极品
+                        <div class="card-tools">
+                            <a href="{{ path_for('index.domains') }}">更多...</a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-row">
+                            {% for x in topDomain %}
+
+                                <div class="layui-col-md3 domain-box">
+                                    <div class="domain-list">
+                                        <a class="domain-list-name" href="{{ path_for('index.detail', {'domainIdOrName':x.name}) }}" target="_blank">{{ x.name }}
+
+                                        </a>
+                                        {% if x.description %}
+                                            <div class="domain-list-description">
+                                                {{ x.description }}
+                                            </div>
+                                        {% endif %}
+                                        <div  class="domain-list-price">
+                                            {% if x.sale_type %}询价{% else %}¥ {{ x.unit~x.price }}{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card tool-card">
+                    <div class="layui-card-header">
+                        .APP酷站
+                        <div class="card-tools">
+                            <a href="javascript:;" class="btnEdit" data-id="3"><i
+                                        class="layui-icon layui-icon-set-sm"></i></a>
+                            <a href="javascript:;" class="btnDel" data-id="4"><i
+                                        class="layui-icon layui-icon-delete"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">.APP酷站</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        layui.use(['piccarousel'], function () {
+            var $ = layui.$;
+            var jQuery = layui.$;
+            var piccarousel = layui.piccarousel;
+            piccarousel('#piccarousel', {
+                width:'1140',
+                'verticalAlign' : 'bottom'
+            })
+        });
+    </script>
+{% endblock %}
